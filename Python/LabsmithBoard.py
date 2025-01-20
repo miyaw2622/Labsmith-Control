@@ -25,8 +25,11 @@ class LabsmithBoard:
         
         
         ## Listener
-        # TODO ##
-    
+        self._listeners = []
+        
+        def addlistener(self, callback):
+            if callable(callback):
+                self._listeners.append(callback)
 
 
     ### Events
@@ -81,7 +84,7 @@ class LabsmithBoard:
         else:
             if d1 != None and v1 != None:  # # 1 syringe as input
                 i1=FindIndexS(self,d1) 
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1))   # #it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
+                self.listener_firstdone = self.addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1))   # #it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
                 if len(i1)>0:
                     if self.SPS01[1,i1].FlagIsDone == True:
                         self.SPS01[1,i1].device.CmdMoveToVolume(v1)                             
