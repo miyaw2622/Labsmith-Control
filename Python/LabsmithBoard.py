@@ -24,16 +24,24 @@ class LabsmithBoard:
         ## TODO ##
         
         
-        ## Listener
-        self._listeners = []
+        ## Events
+        self._listeners = {event: dict() for event in [
+            "FirstDone",
+            "FirstDoneStop",
+            "FirstDoneStopM",
+            "FirstDoneStopPause",
+            "FirstDoneStopPauseM",
+            "FirstDoneStopPauseWait"]}
         
-        def addlistener(self, callback):
-            if callable(callback):
-                self._listeners.append(callback)
+    ## Add Listeners to Events
+    def addlistener(self, event, listener, callback, args):
+        if callable(callback):
+            self._listeners[event][listener] = [callback, args]
 
-
-    ### Events
-    ## TODO ###
+    ## Trigger Events
+    def notify(self, event):
+        for listener, [callback, args] in self._listeners[event].items():
+            callback(*args)
 
     
     ### Constructor
@@ -83,199 +91,693 @@ class LabsmithBoard:
             print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
         else:
             if d1 != None and v1 != None:  # # 1 syringe as input
-                i1=FindIndexS(self,d1) 
-                self.listener_firstdone = self.addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1))   # #it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
+                i1=self.FindIndexS(d1) 
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1])   # #it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
                 if len(i1)>0:
-                    if self.SPS01[1,i1].FlagIsDone == True:
-                        self.SPS01[1,i1].device.CmdMoveToVolume(v1)                             
-                        self.SPS01[1,i1].FlagReady = False 
-                        displaymovement(self.SPS01[1,i1])
-                        if self.SPS01[1,i1].FlagIsMoving == True:
-                            notify(self.SPS01[1,i1],'MovingState') 
+                    if self.SPS01[0,i1].FlagIsDone == True:
+                        self.SPS01[0,i1].device.CmdMoveToVolume(v1)                             
+                        self.SPS01[0,i1].FlagReady = False 
+                        self.SPS01[0,i1].displaymovement()
+                        if self.SPS01[0,i1].FlagIsMoving == True:
+                            self.SPS01[0,i1].notify('MovingState') 
             elif v2 != None and d3 == None:  # # 2 syringes as input
-                i1=FindIndexS(self,d1) 
-                i2=FindIndexS(self,d2)  
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1,i2))   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                i1=self.FindIndexS(d1) 
+                i2=self.FindIndexS(d2)  
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
                 if len(i1)>0 and len(i2)>0:
-                    if self.SPS01[1,i1].FlagIsDone == True and self.SPS01[1,i2].FlagIsDone == True:
-                        self.SPS01[1,i1].device.CmdMoveToVolume(v1) 
-                        self.SPS01[1,i2].device.CmdMoveToVolume(v2) 
-                        self.SPS01[1,i1].FlagReady = False 
-                        self.SPS01[1,i2].FlagReady = False 
-                        displaymovement(self.SPS01[1,i1])
-                        displaymovement(self.SPS01[1,i2])  
-                        if self.SPS01[1,i1].FlagIsMoving == True and self.SPS01[1,i2].FlagIsMoving == True:
-                            notify(self,'FirstDone') 
+                    if self.SPS01[0,i1].FlagIsDone == True and self.SPS01[0,i2].FlagIsDone == True:
+                        self.SPS01[0,i1].device.CmdMoveToVolume(v1) 
+                        self.SPS01[0,i2].device.CmdMoveToVolume(v2) 
+                        self.SPS01[0,i1].FlagReady = False 
+                        self.SPS01[0,i2].FlagReady = False 
+                        self.SPS01[0,i1].displaymovement()
+                        self.SPS01[0,i2].displaymovement()  
+                        if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True:
+                            self.notify('FirstDone') 
 
             elif v3 != None and d4 == None:  # # 3 syringes as input
-                i1=FindIndexS(self,d1) 
-                i2=FindIndexS(self,d2) 
-                i3=FindIndexS(self,d3) 
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1,i2,i3))   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                i1=self.FindIndexS(d1) 
+                i2=self.FindIndexS(d2) 
+                i3=self.FindIndexS(d3) 
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
                 if len(i1)>0 and len(i2)>0 and len(i3)>0:
-                    self.SPS01[1,i1].device.CmdMoveToVolume(v1) 
-                    self.SPS01[1,i2].device.CmdMoveToVolume(v2) 
-                    self.SPS01[1,i3].device.CmdMoveToVolume(v3) 
-                    self.SPS01[1,i1].FlagReady = False 
-                    self.SPS01[1,i2].FlagReady = False 
-                    self.SPS01[1,i3].FlagReady = False 
-                    displaymovement(self.SPS01[1,i1])
-                    displaymovement(self.SPS01[1,i2]) 
-                    displaymovement(self.SPS01[1,i3])
-                    if self.SPS01[1,i1].FlagIsMoving == True and self.SPS01[1,i2].FlagIsMoving == True and self.SPS01[1,i3].FlagIsMoving == True:
-                        notify(self,'FirstDone') 
-                    end
-                end                    
-            elif v4 != None and d5 == None  # # 4 syringes as input:
-                i1=FindIndexS(self,d1) 
-                i2=FindIndexS(self,d2) 
-                i3=FindIndexS(self,d3) 
-                i4=FindIndexS(self,d4) 
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1,i2,i3,i4))   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    self.SPS01[0,i1].device.CmdMoveToVolume(v1) 
+                    self.SPS01[0,i2].device.CmdMoveToVolume(v2) 
+                    self.SPS01[0,i3].device.CmdMoveToVolume(v3) 
+                    self.SPS01[0,i1].FlagReady = False 
+                    self.SPS01[0,i2].FlagReady = False 
+                    self.SPS01[0,i3].FlagReady = False 
+                    self.SPS01[0,i1].displaymovement()
+                    self.SPS01[0,i2].displaymovement() 
+                    self.SPS01[0,i3].displaymovement()
+                    if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True:
+                        self.notify('FirstDone')               
+            elif v4 != None and d5 == None:  # # 4 syringes as input
+                i1=self.FindIndexS(d1) 
+                i2=self.FindIndexS(d2) 
+                i3=self.FindIndexS(d3) 
+                i4=self.FindIndexS(d4) 
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
                 if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0:
-                    self.SPS01[1,i1].device.CmdMoveToVolume(v1) 
-                    self.SPS01[1,i2].device.CmdMoveToVolume(v2) 
-                    self.SPS01[1,i3].device.CmdMoveToVolume(v3) 
-                    self.SPS01[1,i4].device.CmdMoveToVolume(v4) 
-                    self.SPS01[1,i1].FlagReady = False 
-                    self.SPS01[1,i2].FlagReady = False 
-                    self.SPS01[1,i3].FlagReady = False 
-                    self.SPS01[1,i4].FlagReady = False 
-                    displaymovement(self.SPS01[1,i1])
-                    displaymovement(self.SPS01[1,i2]) 
-                    displaymovement(self.SPS01[1,i3])
-                    displaymovement(self.SPS01[1,i4])
-                    if self.SPS01[1,i1].FlagIsMoving == True and self.SPS01[1,i2].FlagIsMoving == True and self.SPS01[1,i3].FlagIsMoving == True and self.SPS01[1,i4].FlagIsMoving == True
-                        notify(self,'FirstDone') 
+                    self.SPS01[0,i1].device.CmdMoveToVolume(v1) 
+                    self.SPS01[0,i2].device.CmdMoveToVolume(v2) 
+                    self.SPS01[0,i3].device.CmdMoveToVolume(v3) 
+                    self.SPS01[0,i4].device.CmdMoveToVolume(v4) 
+                    self.SPS01[0,i1].FlagReady = False 
+                    self.SPS01[0,i2].FlagReady = False 
+                    self.SPS01[0,i3].FlagReady = False 
+                    self.SPS01[0,i4].FlagReady = False 
+                    self.SPS01[0,i1].displaymovement()
+                    self.SPS01[0,i2].displaymovement() 
+                    self.SPS01[0,i3].displaymovement()
+                    self.SPS01[0,i4].displaymovement()
+                    if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
+                        self.notify('FirstDone') 
             elif v5 != None and d6 == None:  # # 5 syringes as input
-                i1=FindIndexS(self,d1) 
-                i2=FindIndexS(self,d2) 
-                i3=FindIndexS(self,d3) 
-                i4=FindIndexS(self,d4) 
-                i5=FindIndexS(self,d5) 
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1,i2,i3,i4,i5))   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                i1=self.FindIndexS(d1) 
+                i2=self.FindIndexS(d2) 
+                i3=self.FindIndexS(d3) 
+                i4=self.FindIndexS(d4) 
+                i5=self.FindIndexS(d5) 
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
                 if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0:
-                    self.SPS01[1,i1].device.CmdMoveToVolume(v1) 
-                    self.SPS01[1,i2].device.CmdMoveToVolume(v2) 
-                    self.SPS01[1,i3].device.CmdMoveToVolume(v3) 
-                    self.SPS01[1,i4].device.CmdMoveToVolume(v4) 
-                    self.SPS01[1,i5].device.CmdMoveToVolume(v5) 
-                    self.SPS01[1,i1].FlagReady = False 
-                    self.SPS01[1,i2].FlagReady = False 
-                    self.SPS01[1,i3].FlagReady = False 
-                    self.SPS01[1,i4].FlagReady = False 
-                    self.SPS01[1,i5].FlagReady = False 
-                    displaymovement(self.SPS01[1,i1])
-                    displaymovement(self.SPS01[1,i2]) 
-                    displaymovement(self.SPS01[1,i3])
-                    displaymovement(self.SPS01[1,i4])
-                    displaymovement(self.SPS01[1,i5])
-                    if self.SPS01[1,i1].FlagIsMoving == True and self.SPS01[1,i2].FlagIsMoving == True and self.SPS01[1,i3].FlagIsMoving == True and self.SPS01[1,i4].FlagIsMoving == True and self.SPS01[1,i5].FlagIsMoving == True:
-                        notify(self,'FirstDone') 
+                    self.SPS01[0,i1].device.CmdMoveToVolume(v1) 
+                    self.SPS01[0,i2].device.CmdMoveToVolume(v2) 
+                    self.SPS01[0,i3].device.CmdMoveToVolume(v3) 
+                    self.SPS01[0,i4].device.CmdMoveToVolume(v4) 
+                    self.SPS01[0,i5].device.CmdMoveToVolume(v5) 
+                    self.SPS01[0,i1].FlagReady = False 
+                    self.SPS01[0,i2].FlagReady = False 
+                    self.SPS01[0,i3].FlagReady = False 
+                    self.SPS01[0,i4].FlagReady = False 
+                    self.SPS01[0,i5].FlagReady = False 
+                    self.SPS01[0,i1].displaymovement()
+                    self.SPS01[0,i2].displaymovement() 
+                    self.SPS01[0,i3].displaymovement()
+                    self.SPS01[0,i4].displaymovement()
+                    self.SPS01[0,i5].displaymovement()
+                    if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
+                        self.notify('FirstDone') 
             elif v6 != None and d7 == None:  # # 6 syringes as input
-                i1=FindIndexS(self,d1) 
-                i2=FindIndexS(self,d2) 
-                i3=FindIndexS(self,d3) 
-                i4=FindIndexS(self,d4) 
-                i5=FindIndexS(self,d5) 
-                i6=FindIndexS(self,d6) 
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1,i2,i3,i4,i5,i6))   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                i1=self.FindIndexS(d1) 
+                i2=self.FindIndexS(d2) 
+                i3=self.FindIndexS(d3) 
+                i4=self.FindIndexS(d4) 
+                i5=self.FindIndexS(d5) 
+                i6=self.FindIndexS(d6) 
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5,i6])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
                 if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0 and len(i6)>0:
-                    self.SPS01[1,i1].device.CmdMoveToVolume(v1) 
-                    self.SPS01[1,i2].device.CmdMoveToVolume(v2) 
-                    self.SPS01[1,i3].device.CmdMoveToVolume(v3) 
-                    self.SPS01[1,i4].device.CmdMoveToVolume(v4) 
-                    self.SPS01[1,i5].device.CmdMoveToVolume(v5) 
-                    self.SPS01[1,i6].device.CmdMoveToVolume(v6) 
-                    self.SPS01[1,i1].FlagReady = False 
-                    self.SPS01[1,i2].FlagReady = False 
-                    self.SPS01[1,i3].FlagReady = False 
-                    self.SPS01[1,i4].FlagReady = False 
-                    self.SPS01[1,i5].FlagReady = False 
-                    self.SPS01[1,i6].FlagReady = False 
-                    displaymovement(self.SPS01[1,i1])
-                    displaymovement(self.SPS01[1,i2]) 
-                    displaymovement(self.SPS01[1,i3])
-                    displaymovement(self.SPS01[1,i4])
-                    displaymovement(self.SPS01[1,i5])
-                    displaymovement(self.SPS01[1,i6])
-                    if self.SPS01[1,i1].FlagIsMoving == True and self.SPS01[1,i2].FlagIsMoving == True and self.SPS01[1,i3].FlagIsMoving == True and self.SPS01[1,i4].FlagIsMoving == True and self.SPS01[1,i5].FlagIsMoving == True and self.SPS01[1,i6].FlagIsMoving == True:
-                        notify(self,'FirstDone') 
+                    self.SPS01[0,i1].device.CmdMoveToVolume(v1) 
+                    self.SPS01[0,i2].device.CmdMoveToVolume(v2) 
+                    self.SPS01[0,i3].device.CmdMoveToVolume(v3) 
+                    self.SPS01[0,i4].device.CmdMoveToVolume(v4) 
+                    self.SPS01[0,i5].device.CmdMoveToVolume(v5) 
+                    self.SPS01[0,i6].device.CmdMoveToVolume(v6) 
+                    self.SPS01[0,i1].FlagReady = False 
+                    self.SPS01[0,i2].FlagReady = False 
+                    self.SPS01[0,i3].FlagReady = False 
+                    self.SPS01[0,i4].FlagReady = False 
+                    self.SPS01[0,i5].FlagReady = False 
+                    self.SPS01[0,i6].FlagReady = False 
+                    self.SPS01[0,i1].displaymovement()
+                    self.SPS01[0,i2].displaymovement() 
+                    self.SPS01[0,i3].displaymovement()
+                    self.SPS01[0,i4].displaymovement()
+                    self.SPS01[0,i5].displaymovement()
+                    self.SPS01[0,i6].displaymovement()
+                    if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
+                        self.notify('FirstDone') 
             elif v7 != None and d8 == None:  # # 7 syringes as input
-                i1=FindIndexS(self,d1) 
-                i2=FindIndexS(self,d2) 
-                i3=FindIndexS(self,d3) 
-                i4=FindIndexS(self,d4) 
-                i5=FindIndexS(self,d5) 
-                i6=FindIndexS(self,d6) 
-                i7=FindIndexS(self,d7) 
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1,i2,i3,i4,i5,i6,i7))   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                i1=self.FindIndexS(d1) 
+                i2=self.FindIndexS(d2) 
+                i3=self.FindIndexS(d3) 
+                i4=self.FindIndexS(d4) 
+                i5=self.FindIndexS(d5) 
+                i6=self.FindIndexS(d6) 
+                i7=self.FindIndexS(d7) 
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5,i6,i7])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
                 if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0 and len(i6)>0 and len(i7)>0:
-                    self.SPS01[1,i1].device.CmdMoveToVolume(v1) 
-                    self.SPS01[1,i2].device.CmdMoveToVolume(v2) 
-                    self.SPS01[1,i3].device.CmdMoveToVolume(v3) 
-                    self.SPS01[1,i4].device.CmdMoveToVolume(v4) 
-                    self.SPS01[1,i5].device.CmdMoveToVolume(v5) 
-                    self.SPS01[1,i6].device.CmdMoveToVolume(v6) 
-                    self.SPS01[1,i7].device.CmdMoveToVolume(v7) 
-                    self.SPS01[1,i1].FlagReady = False 
-                    self.SPS01[1,i2].FlagReady = False 
-                    self.SPS01[1,i3].FlagReady = False 
-                    self.SPS01[1,i4].FlagReady = False 
-                    self.SPS01[1,i5].FlagReady = False 
-                    self.SPS01[1,i6].FlagReady = False 
-                    self.SPS01[1,i7].FlagReady = False 
-                    displaymovement(self.SPS01[1,i1])
-                    displaymovement(self.SPS01[1,i2]) 
-                    displaymovement(self.SPS01[1,i3])
-                    displaymovement(self.SPS01[1,i4])
-                    displaymovement(self.SPS01[1,i5])
-                    displaymovement(self.SPS01[1,i6])
-                    displaymovement(self.SPS01[1,i7])
-                    if self.SPS01[1,i1].FlagIsMoving == True and self.SPS01[1,i2].FlagIsMoving == True and self.SPS01[1,i3].FlagIsMoving == True and self.SPS01[1,i4].FlagIsMoving == True and self.SPS01[1,i5].FlagIsMoving == True and self.SPS01[1,i6].FlagIsMoving == True and self.SPS01[1,i7].FlagIsMoving == True:
-                        notify(self,'FirstDone') 
+                    self.SPS01[0,i1].device.CmdMoveToVolume(v1) 
+                    self.SPS01[0,i2].device.CmdMoveToVolume(v2) 
+                    self.SPS01[0,i3].device.CmdMoveToVolume(v3) 
+                    self.SPS01[0,i4].device.CmdMoveToVolume(v4) 
+                    self.SPS01[0,i5].device.CmdMoveToVolume(v5) 
+                    self.SPS01[0,i6].device.CmdMoveToVolume(v6) 
+                    self.SPS01[0,i7].device.CmdMoveToVolume(v7) 
+                    self.SPS01[0,i1].FlagReady = False 
+                    self.SPS01[0,i2].FlagReady = False 
+                    self.SPS01[0,i3].FlagReady = False 
+                    self.SPS01[0,i4].FlagReady = False 
+                    self.SPS01[0,i5].FlagReady = False 
+                    self.SPS01[0,i6].FlagReady = False 
+                    self.SPS01[0,i7].FlagReady = False 
+                    self.SPS01[0,i1].displaymovement()
+                    self.SPS01[0,i2].displaymovement() 
+                    self.SPS01[0,i3].displaymovement()
+                    self.SPS01[0,i4].displaymovement()
+                    self.SPS01[0,i5].displaymovement()
+                    self.SPS01[0,i6].displaymovement()
+                    self.SPS01[0,i7].displaymovement()
+                    if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
+                        self.notify('FirstDone') 
             elif v8 != None:  # # 8 syringes as input
-                i1=FindIndexS(self,d1) 
-                i2=FindIndexS(self,d2) 
-                i3=FindIndexS(self,d3) 
-                i4=FindIndexS(self,d4) 
-                i5=FindIndexS(self,d5) 
-                i6=FindIndexS(self,d6) 
-                i7=FindIndexS(self,d7) 
-                i8=FindIndexS(self,d8) 
-                self.listener_firstdone = addlistener(self, 'FirstDone',@(src,evnt)self.CheckFirstDone(src,evnt,i1,i2,i3,i4,i5,i6,i7,i8))   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                i1=self.FindIndexS(d1) 
+                i2=self.FindIndexS(d2) 
+                i3=self.FindIndexS(d3) 
+                i4=self.FindIndexS(d4) 
+                i5=self.FindIndexS(d5) 
+                i6=self.FindIndexS(d6) 
+                i7=self.FindIndexS(d7) 
+                i8=self.FindIndexS(d8) 
+                self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5,i6,i7,i8])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
                 if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0 and len(i6)>0 and len(i7)>0 and len(i8)>0:
-                    self.SPS01[1,i1].device.CmdMoveToVolume(v1) 
-                    self.SPS01[1,i2].device.CmdMoveToVolume(v2) 
-                    self.SPS01[1,i3].device.CmdMoveToVolume(v3) 
-                    self.SPS01[1,i4].device.CmdMoveToVolume(v4) 
-                    self.SPS01[1,i5].device.CmdMoveToVolume(v5) 
-                    self.SPS01[1,i6].device.CmdMoveToVolume(v6) 
-                    self.SPS01[1,i7].device.CmdMoveToVolume(v7) 
-                    self.SPS01[1,i8].device.CmdMoveToVolume(v8) 
-                    self.SPS01[1,i1].FlagReady = False 
-                    self.SPS01[1,i2].FlagReady = False 
-                    self.SPS01[1,i3].FlagReady = False 
-                    self.SPS01[1,i4].FlagReady = False 
-                    self.SPS01[1,i5].FlagReady = False 
-                    self.SPS01[1,i6].FlagReady = False 
-                    self.SPS01[1,i7].FlagReady = False 
-                    self.SPS01[1,i8].FlagReady = False 
-                    displaymovement(self.SPS01[1,i1])
-                    displaymovement(self.SPS01[1,i2]) 
-                    displaymovement(self.SPS01[1,i3])
-                    displaymovement(self.SPS01[1,i4])
-                    displaymovement(self.SPS01[1,i5])
-                    displaymovement(self.SPS01[1,i6])
-                    displaymovement(self.SPS01[1,i7])
-                    displaymovement(self.SPS01[1,i8])
-                    if self.SPS01[1,i1].FlagIsMoving == True and self.SPS01[1,i2].FlagIsMoving == True and self.SPS01[1,i3].FlagIsMoving == True and self.SPS01[1,i4].FlagIsMoving == True and self.SPS01[1,i5].FlagIsMoving == True and self.SPS01[1,i6].FlagIsMoving == True and self.SPS01[1,i7].FlagIsMoving == True and self.SPS01[1,i8].FlagIsMoving == True:
-                        notify(self,'FirstDone')
+                    self.SPS01[0,i1].device.CmdMoveToVolume(v1) 
+                    self.SPS01[0,i2].device.CmdMoveToVolume(v2) 
+                    self.SPS01[0,i3].device.CmdMoveToVolume(v3) 
+                    self.SPS01[0,i4].device.CmdMoveToVolume(v4) 
+                    self.SPS01[0,i5].device.CmdMoveToVolume(v5) 
+                    self.SPS01[0,i6].device.CmdMoveToVolume(v6) 
+                    self.SPS01[0,i7].device.CmdMoveToVolume(v7) 
+                    self.SPS01[0,i8].device.CmdMoveToVolume(v8) 
+                    self.SPS01[0,i1].FlagReady = False 
+                    self.SPS01[0,i2].FlagReady = False 
+                    self.SPS01[0,i3].FlagReady = False 
+                    self.SPS01[0,i4].FlagReady = False 
+                    self.SPS01[0,i5].FlagReady = False 
+                    self.SPS01[0,i6].FlagReady = False 
+                    self.SPS01[0,i7].FlagReady = False 
+                    self.SPS01[0,i8].FlagReady = False 
+                    self.SPS01[0,i1].displaymovement()
+                    self.SPS01[0,i2].displaymovement() 
+                    self.SPS01[0,i3].displaymovement()
+                    self.SPS01[0,i4].displaymovement()
+                    self.SPS01[0,i5].displaymovement()
+                    self.SPS01[0,i6].displaymovement()
+                    self.SPS01[0,i7].displaymovement()
+                    self.SPS01[0,i8].displaymovement()
+                    if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True and self.SPS01[0,i8].FlagIsMoving == True:
+                        self.notify('FirstDone')
             else:
                 print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
+    ## TODO ##
 
-        
+    ## Multiple Movement with stop (at the same time. It allows the stop)
+    def MulMove2(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
+        pass
+    ## TODO ##
 
+    ### Listener Function : Display the first device to be done (called in MulMove)
+    def CheckFirstDone(self, varargin):
+        if nargin == 4:  # # only one syringe in motion (=numb input + self + 2more input (source and event))   
+            i1=varargin[3]   # #vararging doesnt include the self, so its size is nargin-1. The index is the last.
+            if self.SPS01[0,i1].FlagIsMoving == True:
+                while self.SPS01[0,i1].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True:
+                    self.SPS01[0,i1].displaymovementstop()
+        elif nargin == 5:
+            i1=varargin[3]  
+            i2=varargin[4] 
+            i=[i1, i2]  
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True :
+                while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus()
+                    self.SPS01[0,i2].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True:
+                    for j in range(len(i[0])):
+                        if self.SPS01[0,i[j]].FlagIsDone == True:
+                            self.SPS01[0, i[j]].displaymovementstop()
+                            a=i 
+                            a(j)=[]   # # a=[i2] for j=1, a=[i1] for j=2
+                            while self.SPS01[0,a[0]].FlagIsMoving == True:
+                                self.SPS01[0,a[0]].UpdateStatus()                            
+                            if self.SPS01[0,a[0]].FlagIsDone == True:
+                                self.SPS01[0,a[0]].displaymovementstop()                               
+                            break
+        elif nargin == 6:
+            i1=varargin[3]  
+            i2=varargin[4] 
+            i3=varargin[5] 
+            i=[i1, i2, i3]  
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True: 
+                while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus() 
+                    self.SPS01[0,i2].UpdateStatus() 
+                    self.SPS01[0,i3].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True:
+                    for j in range(len(i[0])):
+                        if self.SPS01[0,i[j]].FlagIsDone == True:
+                            self.SPS01[0,i[j]].displaymovementstop()
+                            a=i 
+                            a[j]=[]   # # a=[i2 i3] for j=1, a=[i1 i3] for j=2, a=[i1 i2] for j=3
+                            while self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True:
+                                    self.SPS01[0,a[0]].UpdateStatus() 
+                                    self.SPS01[0,a[1]].UpdateStatus()
+                            if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True:
+                                for k in range(len(a[0])):
+                                    if self.SPS01[0,a[k]].FlagIsDone == True:
+                                        self.SPS01[0,a[k]].displaymovementstop()
+                                        b=a 
+                                        b[k]=[] 
+                                        while self.SPS01[0,b[0]].FlagIsMoving == True:
+                                            self.SPS01[0,b[0]].UpdateStatus()                                  
+                                        if self.SPS01[0,b(1)].FlagIsDone == True:
+                                            self.SPS01[0,b[0]].displaymovementstop()                     
+                                        break
+                            break
+        elif nargin == 7:
+            i1=varargin[3]  
+            i2=varargin[4] 
+            i3=varargin[5] 
+            i4=varargin[6] 
+            i=[i1, i2, i3, i4]  
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
+                while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus() 
+                    self.SPS01[0,i2].UpdateStatus() 
+                    self.SPS01[0,i3].UpdateStatus() 
+                    self.SPS01[0,i4].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True:
+                    for j in range(len(i[0])):
+                        if self.SPS01[0,i[j]].FlagIsDone == True:
+                            self.SPS01[0,i[j]].displaymovementstop()
+                            a=i 
+                            a[j]=[]  
+                            while self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True:
+                                    self.SPS01[0,a[0]].UpdateStatus() 
+                                    self.SPS01[0,a[1]].UpdateStatus() 
+                                    self.SPS01[0,a[2]].UpdateStatus()
+                            if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True:
+                                for k in range(len(a[0])):
+                                    if self.SPS01[0,a[k]].FlagIsDone == True:
+                                        self.SPS01[0,a[k]].displaymovementstop()
+                                        b=a 
+                                        b[k]=[] 
+                                        while self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True:
+                                            self.SPS01[0,b[0]].UpdateStatus() 
+                                            self.SPS01[0,b[1]].UpdateStatus()
+                                        if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True:
+                                            for p in range(len(b[0])):
+                                                if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                    c=b 
+                                                    c[p]=[] 
+                                                    while self.SPS01[0,c[0]].FlagIsMoving == True:
+                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                    if self.SPS01[0,c[0]].FlagIsDone == True:
+                                                        self.SPS01[0,c[0]].displaymovementstop()
+                                                    break
+                                        break
+                            break
+        elif nargin == 8:
+            i1=varargin[3]  
+            i2=varargin[4] 
+            i3=varargin[5] 
+            i4=varargin[6] 
+            i5=varargin[7] 
+            i=[i1, i2, i3, i4, i5]  
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
+                while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus() 
+                    self.SPS01[0,i2].UpdateStatus() 
+                    self.SPS01[0,i3].UpdateStatus() 
+                    self.SPS01[0,i4].UpdateStatus() 
+                    self.SPS01[0,i5].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True:
+                    for j in range(len(i[0])):
+                        if self.SPS01[0,i[j]].FlagIsDone == True:
+                            self.SPS01[0,i[j]].displaymovementstop()
+                            a=i 
+                            a[j]=[]  
+                            while self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True:
+                                    self.SPS01[0,a[0]].UpdateStatus()
+                                    self.SPS01[0,a[1]].UpdateStatus()
+                                    self.SPS01[0,a[2]].UpdateStatus()
+                                    self.SPS01[0,a[3]].UpdateStatus()
+                            if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True:
+                                for k in range(len(a[0])):
+                                    if self.SPS01[0,a[k]].FlagIsDone == True:
+                                        self.SPS01[0,a[k]].displaymovementstop()
+                                        b=a 
+                                        b[k]=[] 
+                                        while self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True:
+                                            self.SPS01[0,b[0]].UpdateStatus()
+                                            self.SPS01[0,b[1]].UpdateStatus()
+                                            self.SPS01[0,b[2]].UpdateStatus()
+                                        if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True:
+                                            for p in range(len(b[0])):
+                                                if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                    c=b 
+                                                    c[p]=[] 
+                                                    while self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving:
+                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                        self.SPS01[0,c[1]].UpdateStatus()
+                                                    if self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True:
+                                                        for q in range(len(c[0])):
+                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                self.SPS01[0,c[q]].displaymovementstop()
+                                                                d=c 
+                                                                d[q]=[] 
+                                                                while self.SPS01[0,d[0]].FlagIsMoving:
+                                                                    self.SPS01[0,d[0]].UpdateStatus()
+                                                                if self.SPS01[0,d[0]].FlagIsDone:
+                                                                    self.SPS01[0,d[0]].displaymovementstop()
+                                                                break
+                                                    break
+                                        break
+                            break
+        elif nargin == 9:
+            i1=varargin[3]  
+            i2=varargin[4] 
+            i3=varargin[5] 
+            i4=varargin[6] 
+            i5=varargin[7] 
+            i6=varargin[8] 
+            i=[i1, i2, i3, i4, i5, i6]  
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
+                while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus() 
+                    self.SPS01[0,i2].UpdateStatus() 
+                    self.SPS01[0,i3].UpdateStatus() 
+                    self.SPS01[0,i4].UpdateStatus() 
+                    self.SPS01[0,i5].UpdateStatus() 
+                    self.SPS01[0,i6].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True:
+                    for j in range(len(i[0])):
+                        if self.SPS01[0,i[j]].FlagIsDone == True:
+                            self.SPS01[0,i[j]].displaymovementstop()
+                            a=i
+                            a[j]=[]
+                            while self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True:
+                                    self.SPS01[0,a[0]].UpdateStatus()
+                                    self.SPS01[0,a[1]].UpdateStatus()
+                                    self.SPS01[0,a[2]].UpdateStatus()
+                                    self.SPS01[0,a[3]].UpdateStatus()
+                                    self.SPS01[0,a[4]].UpdateStatus()
+                            if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True:
+                                for k in range(len(a[0])):
+                                    if self.SPS01[0,a[k]].FlagIsDone == True:
+                                        self.SPS01[0,a[k]].displaymovementstop()
+                                        b=a 
+                                        b[k]=[] 
+                                        while self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[3]].FlagIsMoving == True:
+                                            self.SPS01[0,b[0]].UpdateStatus()
+                                            self.SPS01[0,b[1]].UpdateStatus()
+                                            self.SPS01[0,b[2]].UpdateStatus()
+                                            self.SPS01[0,b[3]].UpdateStatus()
+                                        if self.SPS01[0,b[[0]]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True:
+                                            for p in range(len(b[0])):
+                                                if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                    c=b 
+                                                    c[p]=[] 
+                                                    while self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving:
+                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                        self.SPS01[0,c[1]].UpdateStatus()
+                                                        self.SPS01[0,c[2]].UpdateStatus()
+                                                    if self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True:
+                                                        for q in range(len(c[0])):
+                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                self.SPS01[0,c[q]].displaymovementstop()
+                                                                d=c 
+                                                                d[q]=[] 
+                                                                while self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving:
+                                                                    self.SPS01[0,d[0]].UpdateStatus()
+                                                                    self.SPS01[0,d[1]].UpdateStatus()
+                                                                if self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone:
+                                                                    for r in range(len(d[0])):
+                                                                        if self.SPS01[0,d[r]].FlagIsDone == True:
+                                                                            self.SPS01[0,d[r]].displaymovementstop()
+                                                                            e=d
+                                                                            e[r]=[]
+                                                                            while self.SPS01[0,e[0]].FlagIsMoving:
+                                                                                self.SPS01[0,e[0]].UpdateStatus()
+                                                                            if self.SPS01[0,e[0]].FlagIsDone:
+                                                                                self.SPS01[0,e[1]].displaymovementstop()
+                                                                            break
+                                                                break
+                                                    break
+                                        break
+                            break
+        elif nargin == 10:
+            i1=varargin[3]  
+            i2=varargin[4] 
+            i3=varargin[5] 
+            i4=varargin[6] 
+            i5=varargin[7] 
+            i6=varargin[8] 
+            i7=varargin[9] 
+            i=[i1, i2, i3, i4, i5, i6, i7]  
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
+                while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus() 
+                    self.SPS01[0,i2].UpdateStatus() 
+                    self.SPS01[0,i3].UpdateStatus() 
+                    self.SPS01[0,i4].UpdateStatus() 
+                    self.SPS01[0,i5].UpdateStatus() 
+                    self.SPS01[0,i6].UpdateStatus() 
+                    self.SPS01[0,i7].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True or self.SPS01[0,i7].FlagIsDone == True:
+                    for j in range(len(i[0])):
+                        if self.SPS01[0,i[j]].FlagIsDone == True:
+                            self.SPS01[0,i[j]].displaymovementstop()
+                            a=i 
+                            a[j]=[]  
+                            while self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True and self.SPS01[0,a[5]].FlagIsMoving == True:
+                                    self.SPS01[0,a[0]].UpdateStatus() 
+                                    self.SPS01[0,a[1]].UpdateStatus() 
+                                    self.SPS01[0,a[2]].UpdateStatus() 
+                                    self.SPS01[0,a[3]].UpdateStatus() 
+                                    self.SPS01[0,a[4]].UpdateStatus() 
+                                    self.SPS01[0,a[5]].UpdateStatus()
+                            if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True or self.SPS01[0,a[5]].FlagIsDone == True:
+                                for k in range(len(a[0])):
+                                    if self.SPS01[0,a[k]].FlagIsDone == True:
+                                        self.SPS01[0,a[k]].displaymovementstop()
+                                        b=a 
+                                        b[k]=[] 
+                                        while self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[3]].FlagIsMoving == True and self.SPS01[0,b[4]].FlagIsMoving == True:
+                                            self.SPS01[0,b[0]].UpdateStatus() 
+                                            self.SPS01[0,b[1]].UpdateStatus() 
+                                            self.SPS01[0,b[2]].UpdateStatus() 
+                                            self.SPS01[0,b[3]].UpdateStatus() 
+                                            self.SPS01[0,b[4]].UpdateStatus()
+                                        if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True or self.SPS01[0,b[4]].FlagIsDone == True:
+                                            for p in range(len(b[0])):
+                                                if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                    c=b 
+                                                    c[p]=[] 
+                                                    while self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving and self.SPS01[0,c[3]].FlagIsMoving:
+                                                        self.SPS01[0,c[0]].UpdateStatus() 
+                                                        self.SPS01[0,c[1]].UpdateStatus() 
+                                                        self.SPS01[0,c[2]].UpdateStatus() 
+                                                        self.SPS01[0,c[3]].UpdateStatus()
+                                                    if self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True or self.SPS01[0,c[3]].FlagIsDone == True:
+                                                        for q in range(len(c[0])):
+                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                self.SPS01[0,c[q]].displaymovementstop()
+                                                                d=c 
+                                                                d[q]=[] 
+                                                                while self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving and self.SPS01[0,d[2]].FlagIsMoving:
+                                                                    self.SPS01[0,d[0]].UpdateStatus() 
+                                                                    self.SPS01[0,d[1]].UpdateStatus() 
+                                                                    self.SPS01[0,d[2]].UpdateStatus()
+                                                                if self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone or self.SPS01[0,d[2]].FlagIsDone:
+                                                                    for r in range(len(d[0])):
+                                                                        if self.SPS01[0,d[r]].FlagIsDone == True:
+                                                                            self.SPS01[0,d[r]].displaymovementstop()
+                                                                            e=d 
+                                                                            e[r]=[] 
+                                                                            while self.SPS01[0,e[0]].FlagIsMoving and self.SPS01[0,e[1]].FlagIsMoving:
+                                                                                self.SPS01[0,e[0]].UpdateStatus()
+                                                                                self.SPS01[0,e[1]].UpdateStatus()
+                                                                            if self.SPS01[0,e[0]].FlagIsDone or self.SPS01[0,e[1]].FlagIsDone:
+                                                                                for s in range(len(e[0])):
+                                                                                    if self.SPS01[0,e[s]].FlagIsDone == True:
+                                                                                        self.SPS01[0,e[s]].displaymovementstop()
+                                                                                        f=e 
+                                                                                        f[s]=[] 
+                                                                                        while self.SPS01[0,f[0]].FlagIsMoving:
+                                                                                            self.SPS01[0,f[0]].UpdateStatus()
+                                                                                        if self.SPS01[0,f[0]].FlagIsDone:
+                                                                                            self.SPS01[0,f[0]].displaymovementstop()
+                                                                                        break
+                                                                break
+                                                    break
+                                        break
+                            break
+        elif nargin == 11:
+            i1=varargin[3]  
+            i2=varargin[4] 
+            i3=varargin[5] 
+            i4=varargin[6] 
+            i5=varargin[7] 
+            i6=varargin[8] 
+            i7=varargin[9] 
+            i8=varargin[00] 
+            i=[i1, i2, i3, i4, i5, i6, i7, i8]   # #i=varargin[3:nargin-1]
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True and self.SPS01[0,i8].FlagIsMoving == True:
+                while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True and self.SPS01[0,i8].FlagIsMoving == True:
+                    self.SPS01[0,i1].UpdateStatus() 
+                    self.SPS01[0,i2].UpdateStatus() 
+                    self.SPS01[0,i3].UpdateStatus() 
+                    self.SPS01[0,i4].UpdateStatus() 
+                    self.SPS01[0,i5].UpdateStatus() 
+                    self.SPS01[0,i6].UpdateStatus() 
+                    self.SPS01[0,i7].UpdateStatus() 
+                    self.SPS01[0,i8].UpdateStatus()
+                if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True or self.SPS01[0,i7].FlagIsDone == True or self.SPS01[0,i8].FlagIsDone == True:
+                    for j in range(len(i[0])):
+                        if self.SPS01[0,i(j)].FlagIsDone == True:
+                            self.SPS01[0,i[j]].displaymovementstop()
+                            a=i 
+                            a[j]=[]  
+                            while self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True and self.SPS01[0,a[5]].FlagIsMoving == True and self.SPS01[0,a[6]].FlagIsMoving == True:
+                                    self.SPS01[0,a[0]].UpdateStatus() 
+                                    self.SPS01[0,a[1]].UpdateStatus() 
+                                    self.SPS01[0,a[2]].UpdateStatus() 
+                                    self.SPS01[0,a[3]].UpdateStatus() 
+                                    self.SPS01[0,a[4]].UpdateStatus() 
+                                    self.SPS01[0,a[5]].UpdateStatus() 
+                                    self.SPS01[0,a[6]].UpdateStatus()
+                            if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True or self.SPS01[0,a[5]].FlagIsDone == True or self.SPS01[0,a[6]].FlagIsDone == True:
+                                for k in range(len(a[0])):
+                                    if self.SPS01[0,a[k]].FlagIsDone == True:
+                                        self.SPS01[0,a[k]].displaymovementstop()
+                                        b=a 
+                                        b[k]=[] 
+                                        while self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[3]].FlagIsMoving == True and self.SPS01[0,b[4]].FlagIsMoving == True and self.SPS01[0,b[5]].FlagIsMoving == True:
+                                            self.SPS01[0,b[0]].UpdateStatus() 
+                                            self.SPS01[0,b[1]].UpdateStatus() 
+                                            self.SPS01[0,b[2]].UpdateStatus() 
+                                            self.SPS01[0,b[3]].UpdateStatus() 
+                                            self.SPS01[0,b[4]].UpdateStatus() 
+                                            self.SPS01[0,b[5]].UpdateStatus()
+                                        if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True or self.SPS01[0,b[4]].FlagIsDone == True or self.SPS01[0,b[5]].FlagIsDone == True:
+                                            for p in range(len(b[0])):
+                                                if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                    c=b 
+                                                    c[p]=[] 
+                                                    while self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving and self.SPS01[0,c[3]].FlagIsMoving and self.SPS01[0,c[4]].FlagIsMoving:
+                                                        self.SPS01[0,c[0]].UpdateStatus() 
+                                                        self.SPS01[0,c[1]].UpdateStatus() 
+                                                        self.SPS01[0,c[2]].UpdateStatus() 
+                                                        self.SPS01[0,c[3]].UpdateStatus() 
+                                                        self.SPS01[0,c[4]].UpdateStatus()
+                                                    if self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True or self.SPS01[0,c[3]].FlagIsDone == True or self.SPS01[0,c[4]].FlagIsDone == True:
+                                                        for q in range(len(c[0])):
+                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                self.SPS01[0,c[q]].displaymovementstop()
+                                                                d=c 
+                                                                d[q]=[] 
+                                                                while self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving and self.SPS01[0,d[2]].FlagIsMoving and self.SPS01[0,d[3]].FlagIsMoving:
+                                                                    self.SPS01[0,d[0]].UpdateStatus() 
+                                                                    self.SPS01[0,d[1]].UpdateStatus() 
+                                                                    self.SPS01[0,d[2]].UpdateStatus() 
+                                                                    self.SPS01[0,d[3]].UpdateStatus()
+                                                                if self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone or self.SPS01[0,d[2]].FlagIsDone or self.SPS01[0,d[3]].FlagIsDone:
+                                                                    for r in range(len(d[0])):
+                                                                        if self.SPS01[0,d[r]].FlagIsDone == True:
+                                                                            self.SPS01[0,d[r]].displaymovementstop()
+                                                                            e=d 
+                                                                            e[r]=[] 
+                                                                            while self.SPS01[0,e[0]].FlagIsMoving and self.SPS01[0,e[1]].FlagIsMoving and self.SPS01[0,e[2]].FlagIsMoving:
+                                                                                self.SPS01[0,e[0]].UpdateStatus() 
+                                                                                self.SPS01[0,e[1]].UpdateStatus() 
+                                                                                self.SPS01[0,e[2]].UpdateStatus()
+                                                                            if self.SPS01[0,e[0]].FlagIsDone or self.SPS01[0,e[1]].FlagIsDone or self.SPS01[0,e[2]].FlagIsDone:
+                                                                                for s in range(len(e[0])):
+                                                                                    if self.SPS01[0,e[s]].FlagIsDone == True:
+                                                                                        self.SPS01[0,e[s]].displaymovementstop()
+                                                                                        f=e 
+                                                                                        f[s]=[] 
+                                                                                        while self.SPS01[0,f[0]].FlagIsMoving and self.SPS01[0,f[1]].FlagIsMoving:
+                                                                                            self.SPS01[0,f[0]].UpdateStatus() 
+                                                                                            self.SPS01[0,f[1]].UpdateStatus()
+                                                                                        if self.SPS01[0,f[0]].FlagIsDone or self.SPS01[0,f[1]].FlagIsDone:
+                                                                                            for t in range(len(f[0])):
+                                                                                                if self.SPS01[0,f[t]].FlagIsDone:
+                                                                                                    self.SPS01[0,f[t]].displaymovementstop()
+                                                                                                    g=f 
+                                                                                                    g[t]=[] 
+                                                                                                    while self.SPS01[0,g[0]].FlagIsMoving:
+                                                                                                        self.SPS01[0,g[0]].UpdateStatus()
+                                                                                                    if self.SPS01[0,g[0]].FlagIsDone:
+                                                                                                        self.SPS01[0,g[0]].displaymovementstop()
+                                                                                                    break
+                                                                                        break
+                                                                            break
+                                                                break
+                                                    break
+                                        break
+                            break
 
+    ## TODO ##
 
-            
+    ## Listener Function : Display the first device to be done and Stop (called in MulMove2)
+    def CheckFirstDoneStop(self,varargin):
+        pass
+    ## TODO ##
+
+    ##  Set Valves
+    def SetValves(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24):
+        pass
+    ## TODO ##
+
+    ## Check First Done Stop M
+    def CheckFirstDoneStopM(self,varargin):
+        pass
+    ## TODO ##
+
+    ## Pause : same as stop but with different comment
+    def PauseBoard (self):
+        pass
+    ## TODO ##
+
+    ## Listener Function : Display the first device to be done and Stop and Pause (called in MulMove3)
+    def CheckFirstDoneStopPause(self,varargin):
+        pass
+    ## TODO ##
+
+    ## Multiple Movement with stop (at the same time. It allows the stop and pause)
+    def MulMove3(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
+        pass
+    ## TODO ##
+
+    ## Display movement stopwait
+    def displaymovementstopwait(self,t):
+        pass
+    ## TODO ##
+
+    ## WaitStopBoard
+    def WaitStopBoard(self):
+        pass
+    ## TODO ##
+
+    ## Update
+    def UpdateBoard(self):
+        pass
+    ## TODO ##
+
+    ## Wait Movement
+    def MoveWait(self,time,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
+        pass
+    ## TODO ##
+
+    ## Listener Function : Display the first device to be done and Stop and Pause and chech the WAIT (called in MoveWait)
+    def CheckFirstDoneStopPauseWait(self,varargin):
+        pass
+    ## TODO ##
+
+    ## Set Valves2 It allows the pause too
+    def SetValves2(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24):
+        pass
+    ## TODO ##
+
+    ## Check First Done Stop Pause M
+    def CheckFirstDoneStopPauseM(self,varargin):
+        pass
+    ## TODO ##
