@@ -1,3 +1,5 @@
+import time
+
 class LabsmithBoard:    
     
     ### i think init is equivalent to properties
@@ -279,7 +281,6 @@ class LabsmithBoard:
                         self.notify('FirstDone')
             else:
                 print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
-    ## TODO ##
 
     ## Multiple Movement with stop (at the same time. It allows the stop)
     def MulMove2(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
@@ -287,17 +288,17 @@ class LabsmithBoard:
     ## TODO ##
 
     ### Listener Function : Display the first device to be done (called in MulMove)
-    def CheckFirstDone(self, varargin):
-        if nargin == 4:  # # only one syringe in motion (=numb input + self + 2more input (source and event))   
-            i1=varargin[3]   # #vararging doesnt include the self, so its size is nargin-1. The index is the last.
+    def CheckFirstDone(self, *args):
+        if len(args) == 4:  # # only one syringe in motion (=numb input + self + 2more input (source and event))   
+            i1=args[2]   # #argsg doesnt include the self, so its size is len(args)-1. The index is the last.
             if self.SPS01[0,i1].FlagIsMoving == True:
                 while self.SPS01[0,i1].FlagIsMoving == True:
                     self.SPS01[0,i1].UpdateStatus()
                 if self.SPS01[0,i1].FlagIsDone == True:
                     self.SPS01[0,i1].displaymovementstop()
-        elif nargin == 5:
-            i1=varargin[3]  
-            i2=varargin[4] 
+        elif len(args) == 5:
+            i1=args[2]  
+            i2=args[3] 
             i=[i1, i2]  
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True :
                 while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True:
@@ -314,10 +315,10 @@ class LabsmithBoard:
                             if self.SPS01[0,a[0]].FlagIsDone == True:
                                 self.SPS01[0,a[0]].displaymovementstop()                               
                             break
-        elif nargin == 6:
-            i1=varargin[3]  
-            i2=varargin[4] 
-            i3=varargin[5] 
+        elif len(args) == 6:
+            i1=args[2]  
+            i2=args[3] 
+            i3=args[4] 
             i=[i1, i2, i3]  
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True: 
                 while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True:
@@ -345,11 +346,11 @@ class LabsmithBoard:
                                             self.SPS01[0,b[0]].displaymovementstop()                     
                                         break
                             break
-        elif nargin == 7:
-            i1=varargin[3]  
-            i2=varargin[4] 
-            i3=varargin[5] 
-            i4=varargin[6] 
+        elif len(args) == 7:
+            i1=args[2]  
+            i2=args[3] 
+            i3=args[4] 
+            i4=args[5] 
             i=[i1, i2, i3, i4]  
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
                 while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
@@ -389,12 +390,12 @@ class LabsmithBoard:
                                                     break
                                         break
                             break
-        elif nargin == 8:
-            i1=varargin[3]  
-            i2=varargin[4] 
-            i3=varargin[5] 
-            i4=varargin[6] 
-            i5=varargin[7] 
+        elif len(args) == 8:
+            i1=args[2]  
+            i2=args[3] 
+            i3=args[4] 
+            i4=args[5] 
+            i5=args[6] 
             i=[i1, i2, i3, i4, i5]  
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
                 while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
@@ -447,13 +448,13 @@ class LabsmithBoard:
                                                     break
                                         break
                             break
-        elif nargin == 9:
-            i1=varargin[3]  
-            i2=varargin[4] 
-            i3=varargin[5] 
-            i4=varargin[6] 
-            i5=varargin[7] 
-            i6=varargin[8] 
+        elif len(args) == 9:
+            i1=args[2]  
+            i2=args[3] 
+            i3=args[4] 
+            i4=args[5] 
+            i5=args[6] 
+            i6=args[7] 
             i=[i1, i2, i3, i4, i5, i6]  
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
                 while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
@@ -520,14 +521,14 @@ class LabsmithBoard:
                                                     break
                                         break
                             break
-        elif nargin == 10:
-            i1=varargin[3]  
-            i2=varargin[4] 
-            i3=varargin[5] 
-            i4=varargin[6] 
-            i5=varargin[7] 
-            i6=varargin[8] 
-            i7=varargin[9] 
+        elif len(args) == 10:
+            i1=args[2]  
+            i2=args[3] 
+            i3=args[4] 
+            i4=args[5] 
+            i5=args[6] 
+            i6=args[7] 
+            i7=args[8] 
             i=[i1, i2, i3, i4, i5, i6, i7]  
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
                 while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
@@ -608,16 +609,16 @@ class LabsmithBoard:
                                                     break
                                         break
                             break
-        elif nargin == 11:
-            i1=varargin[3]  
-            i2=varargin[4] 
-            i3=varargin[5] 
-            i4=varargin[6] 
-            i5=varargin[7] 
-            i6=varargin[8] 
-            i7=varargin[9] 
-            i8=varargin[00] 
-            i=[i1, i2, i3, i4, i5, i6, i7, i8]   # #i=varargin[3:nargin-1]
+        elif len(args) == 11:
+            i1=args[2]  
+            i2=args[3] 
+            i3=args[4] 
+            i4=args[5] 
+            i5=args[6] 
+            i6=args[7] 
+            i7=args[8] 
+            i8=args[9] 
+            i=[i1, i2, i3, i4, i5, i6, i7, i8]   # #i=args[2:len(args)-2]
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True and self.SPS01[0,i8].FlagIsMoving == True:
                 while self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True and self.SPS01[0,i8].FlagIsMoving == True:
                     self.SPS01[0,i1].UpdateStatus() 
@@ -715,11 +716,678 @@ class LabsmithBoard:
                                         break
                             break
 
-    ## TODO ##
 
     ## Listener Function : Display the first device to be done and Stop (called in MulMove2)
-    def CheckFirstDoneStop(self,varargin):
-        pass
+    def CheckFirstDoneStop(self,*args):
+        if len(args) == 4: ## only one syringe in motion (=numb input + self + 2more input (source and event))   
+            i1=args[2] ##argsg doesnt include the self, so its size is len(args)-1. The index is the last.
+            if self.SPS01[0,i1].FlagIsMoving == True:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for i in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break
+                    elif self.SPS01[0,i1].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                    if self.SPS01[0,i1].FlagIsDone == True:
+                        self.SPS01[0,i1].displaymovementstop()
+                        break
+                    time.sleep(scan_rate)
+        elif len(args) == 5: ## 2 syringes
+                i1=args[2] 
+                i2=args[3]
+                i=[i1, i2] 
+                if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True:
+                    scan_rate=0.1 ##the scan rate of the counter
+                    target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours        
+                    for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                        if self.Stop == True:
+                            self.StopBoard()
+                            break ## counter 1
+                        elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True:
+                            self.SPS01[0,i1].UpdateStatus()
+                            self.SPS01[0,i2].UpdateStatus()
+                        if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True:
+                            for j in range(len(i[0])): ##search for first device to be done
+                                if self.SPS01[0,i[j]].FlagIsDone == True:
+                                    self.SPS01[0,i[j]].displaymovementstop()
+                                    a=i
+                                    a[j]=[]
+                                    for count2 in range(target):
+                                        if self.Stop == True:
+                                            self.StopBoard()
+                                            break ##counter 2
+                                        elif self.SPS01[0,a[0]].FlagIsMoving == True:
+                                            self.SPS01[0,a[0]].UpdateStatus()
+                                        if self.SPS01[0,a[0]].FlagIsDone == True:
+                                            self.SPS01[0,a[0]].displaymovementstop()
+                                            break ##counter 2
+                                        time.sleep(scan_rate)
+                                    break ## j search of first device to be done 
+                            break ## counter 1
+                        time.sleep(scan_rate)
+        elif len(args) == 6: ## 3 syringes
+            i1=args[2] 
+            i2=args[3]
+            i3=args[4]
+            i=[i1, i2, i3] 
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break ## counter 1
+                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i2].UpdateStatus()
+                        self.SPS01[0,i3].UpdateStatus()
+                    if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True:
+                        for j in range(len(i[0])):
+                            if self.SPS01[0,i(j)].FlagIsDone == True:
+                                self.SPS01[0,i(j)].displaymovementstop()
+                                a=i
+                                a[j]=[] ## a=[i2 i3] for j=1, a=[i1 i3] for j=2, a=[i1 i2] for j=3
+                                for count2 in range(target):
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break ## counter 2
+                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True:
+                                        self.SPS01[0,a[0]].UpdateStatus()
+                                        self.SPS01[0,a[1]].UpdateStatus()
+                                    if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True:
+                                        for k in range(len(a[0])):
+                                            if self.SPS01[0,a[k]].FlagIsDone == True:
+                                                self.SPS01[0,a[k]].displaymovementstop()
+                                                b=a
+                                                b[k]=[]
+                                                for count3 in range(target):
+                                                    if self.Stop == True:
+                                                        self.StopBoard()
+                                                        break ##counter 3
+                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True:
+                                                        self.SPS01[0,b[0]].UpdateStatus()
+                                                    if self.SPS01[0,b[0]].FlagIsDone == True:
+                                                        self.SPS01[0,b[0]].displaymovementstop()
+                                                        break ##counter 3
+                                                    time.sleep(scan_rate)
+                                                break ## k search of first device to be done 
+                                        break ## counter 2
+                                    time.sleep(scan_rate)
+                                break ## j search of first device to be done 
+                        break ## counter 1
+                    time.sleep(scan_rate)
+            
+            
+        elif len(args) == 7: ## 4 syringes
+            i1=args[2] 
+            i2=args[3]
+            i3=args[4]
+            i4=args[5]
+            i=[i1, i2, i3, i4] 
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break ## counter 1
+                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i2].UpdateStatus()
+                        self.SPS01[0,i3].UpdateStatus()
+                        self.SPS01[0,i4].UpdateStatus() 
+                    if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True:
+                        for j in range(len(i[0])):
+                            if self.SPS01[0,i[j]].FlagIsDone == True:
+                                self.SPS01[0,i[j]].displaymovementstop()
+                                a=i
+                                a[j]=[] 
+                                scan_rate=0.1 ##the scan rate of the counter
+                                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours          
+                                for count2 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break ## counter 2
+                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True:
+                                        self.SPS01[0,a[0]].UpdateStatus()
+                                        self.SPS01[0,a[1]].UpdateStatus()
+                                        self.SPS01[0,a[2]].UpdateStatus()    
+                                    if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True:
+                                        for k in range(len(a[0])):
+                                            if self.SPS01[0,a[k]].FlagIsDone == True:
+                                                self.SPS01[0,a[k]].displaymovementstop()
+                                                b=a
+                                                b[k]=[]
+                                                scan_rate=0.1 ##the scan rate of the counter
+                                                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours 
+                                                for count3 in range(target):
+                                                    if self.Stop == True:
+                                                        self.StopBoard()
+                                                        break ## counter 3
+                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True:
+                                                        self.SPS01[0,b[0]].UpdateStatus()
+                                                        self.SPS01[0,b[1]].UpdateStatus()
+                                                    if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True:
+                                                        for p in range(len(b[0])):
+                                                            if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                                self.SPS01[0,b[p]].displaymovementstop()
+                                                                c=b
+                                                                c[p]=[]
+                                                                for count4 in range(target):
+                                                                    if self.Stop == True:
+                                                                        self.StopBoard()
+                                                                        break ## counter 4
+                                                                    elif self.SPS01[0,c[0]].FlagIsMoving == True:
+                                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                                    if self.SPS01[0,c[0]].FlagIsDone == True:
+                                                                        self.SPS01[0,c[0]].displaymovementstop()
+                                                                        break ## counter 4
+                                                                    time.sleep(scan_rate)
+                                                                break ## p search of first device to be done
+                                                        break ##counter 3
+                                                    time.sleep(scan_rate)
+                                                break ## k search of first device to be done
+                                        break ##counter 2
+                                    time.sleep(scan_rate)
+                                break ## j search of first device to be done
+                        break ## counter 1
+                    time.sleep(scan_rate)
+                                                    
+        elif len(args) == 8: ## 5 syringes
+            i1=args[2] 
+            i2=args[3]
+            i3=args[4]
+            i4=args[5]
+            i5=args[6]
+            i=[i1, i2, i3, i4, i5] 
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break ## counter 1
+                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i2].UpdateStatus()
+                        self.SPS01[0,i3].UpdateStatus()
+                        self.SPS01[0,i4].UpdateStatus()
+                        self.SPS01[0,i5].UpdateStatus()                            
+                    if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True:
+                        for j in range(len(i[0])):
+                            if self.SPS01[0,i[j]].FlagIsDone == True:
+                                self.SPS01[0,i[j]].displaymovementstop()
+                                a=i
+                                a[j]=[] 
+                                for count2 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break ## counter 2
+                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True:
+                                        self.SPS01[0,a(0)].UpdateStatus()
+                                        self.SPS01[0,a(1)].UpdateStatus()
+                                        self.SPS01[0,a(2)].UpdateStatus()
+                                        self.SPS01[0,a(3)].UpdateStatus()                                            
+                                    if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True:
+                                        for k in range(len(a[0])):
+                                            if self.SPS01[0,a[k]].FlagIsDone == True:
+                                                self.SPS01[0,a[k]].displaymovementstop()
+                                                b=a
+                                                b[k]=[]
+                                                for count3 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                    if self.Stop == True:
+                                                        self.StopBoard()
+                                                        break ## counter 3
+                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True:
+                                                        self.SPS01[0,b[0]].UpdateStatus()
+                                                        self.SPS01[0,b[1]].UpdateStatus()
+                                                        self.SPS01[0,b[2]].UpdateStatus()                                                            
+                                                    if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[1,b[2]].FlagIsDone == True:
+                                                        for p in range(len(b[0])):
+                                                            if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                                self.SPS01[0,b[p]].displaymovementstop()
+                                                                c=b
+                                                                c[p]=[]
+                                                                for count4 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                    if self.Stop == True:
+                                                                        self.StopBoard()
+                                                                        break ## counter 4
+                                                                    elif self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving:
+                                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                                        self.SPS01[0,c[1]].UpdateStatus()                                                                            
+                                                                    if self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True:
+                                                                        for q in range(len(c[0])):
+                                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                                self.SPS01[0,c[q]].displaymovementstop()
+                                                                                d=c
+                                                                                d[q]=[]
+                                                                                for count5 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                    if self.Stop == True:
+                                                                                        self.StopBoard()
+                                                                                        break ## counter 5
+                                                                                    elif self.SPS01[0,d[0]].FlagIsMoving:
+                                                                                        self.SPS01[0,d[0]].UpdateStatus()                                                                                            
+                                                                                    if self.SPS01[0,d[0]].FlagIsDone:
+                                                                                        self.SPS01[0,d[0]].displaymovementstop()
+                                                                                        break ##counter 5
+                                                                                    time.sleep(scan_rate)
+                                                                                break ## q search of first device to be done
+                                                                        break ## counter 4
+                                                                    time.sleep(scan_rate)
+                                                                break ## p search of first device to be done
+                                                        break ## counter 3
+                                                    time.sleep(scan_rate)
+                                                break ## k search of first device to be done
+                                        break ## counter 2
+                                    time.sleep(scan_rate)
+                                break ## j search of first device to be done
+                        break ## counter 1
+                    time.sleep(scan_rate)
+                                                                
+        elif len(args) == 9: ## 6 syringes
+            i1=args[2] 
+            i2=args[3]
+            i3=args[4]
+            i4=args[5]
+            i5=args[6]
+            i6=args[7]
+            i=[i1, i2, i3, i4, i5, i6] 
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break ## counter 1
+                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i2].UpdateStatus()
+                        self.SPS01[0,i3].UpdateStatus()
+                        self.SPS01[0,i4].UpdateStatus()
+                        self.SPS01[0,i5].UpdateStatus()
+                        self.SPS01[0,i6].UpdateStatus()                            
+                    if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True:
+                        for j in range(len(i[0])):
+                            if self.SPS01[0,i[j]].FlagIsDone == True:
+                                self.SPS01[0,i[j]].displaymovementstop()
+                                a=i
+                                a[j]=[] 
+                                for count2 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break ## counter 2
+                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True:
+                                        self.SPS01[0,a[0]].UpdateStatus()
+                                        self.SPS01[0,a[1]].UpdateStatus()
+                                        self.SPS01[0,a[2]].UpdateStatus()
+                                        self.SPS01[0,a[3]].UpdateStatus()
+                                        self.SPS01[0,a[4]].UpdateStatus()                                            
+                                    if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True:
+                                        for k in range(len(a[0])):
+                                            if self.SPS01[0,a[k]].FlagIsDone == True:
+                                                self.SPS01[0,a[k]].displaymovementstop()
+                                                b=a
+                                                b[k]=[]
+                                                for count3 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                    if self.Stop == True:
+                                                        self.StopBoard()
+                                                        break ## counter 3
+                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[3]].FlagIsMoving == True:
+                                                        self.SPS01[0,b[0]].UpdateStatus()
+                                                        self.SPS01[0,b[1]].UpdateStatus()
+                                                        self.SPS01[0,b[2]].UpdateStatus()
+                                                        self.SPS01[0,b[3]].UpdateStatus()                                                            
+                                                    if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True:
+                                                        for p in range(len(b[0])):
+                                                            if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                                self.SPS01[0,b[p]].displaymovementstop()
+                                                                c=b
+                                                                c[p]=[]
+                                                                for count4 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                    if self.Stop == True:
+                                                                        self.StopBoard()
+                                                                        break ## counter 4
+                                                                    elif self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving:
+                                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                                        self.SPS01[0,c[1]].UpdateStatus()
+                                                                        self.SPS01[0,c[2]].UpdateStatus()                                                                            
+                                                                    if self.SPS01[0,c(1)].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True:
+                                                                        for q in range(len(c[0])):
+                                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                                self.SPS01[1,c(q)].displaymovementstop()
+                                                                                d=c
+                                                                                d[q]=[]
+                                                                                for count5 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                    if self.Stop == True:
+                                                                                        self.StopBoard()
+                                                                                        break ## counter 5
+                                                                                    elif self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving:
+                                                                                        self.SPS01[0,d[0]].UpdateStatus()
+                                                                                        self.SPS01[0,d[1]].UpdateStatus()                                                                                            
+                                                                                    if self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone:
+                                                                                        for r in range(len(d[0])):
+                                                                                            if self.SPS01[0,d[r]].FlagIsDone == True:
+                                                                                                self.SPS01[0,d[r]].displaymovementstop()
+                                                                                                e=d
+                                                                                                e[r]=[]
+                                                                                                for count6 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                                    if self.Stop == True:
+                                                                                                        self.StopBoard()
+                                                                                                        break ## counter 6
+                                                                                                    elif self.SPS01[0,e[0]].FlagIsMoving:
+                                                                                                        self.SPS01[0,e[0]].UpdateStatus()                                                                                                            
+                                                                                                    if self.SPS01[0,e[0]].FlagIsDone:
+                                                                                                        self.SPS01[0,e[0]].displaymovementstop()
+                                                                                                        break ## counter 6
+                                                                                                    time.sleep(scan_rate)
+                                                                                                break ## r search of first device to be done
+                                                                                        break ## counter 5
+                                                                                    time.sleep(scan_rate)
+                                                                                break ## q search of first device to be done
+                                                                        break ##counter 4
+                                                                    time.sleep(scan_rate)
+                                                                break ## p search of first device to be done
+                                                        break ## Counter 3
+                                                    time.sleep(scan_rate)
+                                                break ## k search of first device to be done
+                                        break ## counter 2
+                                    time.sleep(scan_rate)
+                                break ## j search of first device to be done
+                        break ## counter 1
+                    time.sleep(scan_rate)
+                                                        
+        elif len(args) == 10: ##7 syringes
+            i1=args[2] 
+            i2=args[3]
+            i3=args[4]
+            i4=args[5]
+            i5=args[6]
+            i6=args[7]
+            i7=args[8]
+            i=[i1, i2, i3, i4, i5, i6, i7] 
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break ## counter 1
+                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i2].UpdateStatus()
+                        self.SPS01[0,i3].UpdateStatus()
+                        self.SPS01[0,i4].UpdateStatus()
+                        self.SPS01[0,i5].UpdateStatus()
+                        self.SPS01[0,i6].UpdateStatus()
+                        self.SPS01[0,i7].UpdateStatus()
+                    if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True or self.SPS01[0,i7].FlagIsDone == True:
+                        for j in range(len(i[0])):
+                            if self.SPS01[0,i[j]].FlagIsDone == True:
+                                self.SPS01[0,i[j]].displaymovementstop()
+                                a=i
+                                a[j]=[] 
+                                for count2 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break ## counter 2
+                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True and self.SPS01[0,a[5]].FlagIsMoving == True:
+                                        self.SPS01[0,a[0]].UpdateStatus()
+                                        self.SPS01[0,a[1]].UpdateStatus()
+                                        self.SPS01[0,a[2]].UpdateStatus()
+                                        self.SPS01[0,a[3]].UpdateStatus()
+                                        self.SPS01[0,a[4]].UpdateStatus()
+                                        self.SPS01[0,a[5]].UpdateStatus()
+                                    if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True or self.SPS01[0,a[5]].FlagIsDone == True:
+                                        for k in range(len(a[0])):
+                                            if self.SPS01[0,a[k]].FlagIsDone == True:
+                                                self.SPS01[0,a[k]].displaymovementstop()
+                                                b=a
+                                                b[k]=[]
+                                                for count3 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                    if self.Stop == True:
+                                                        self.StopBoard()
+                                                        break ## counter 3
+                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[3]].FlagIsMoving == True and self.SPS01[0,b[4]].FlagIsMoving == True:
+                                                        self.SPS01[0,b[0]].UpdateStatus()
+                                                        self.SPS01[0,b[1]].UpdateStatus()
+                                                        self.SPS01[0,b[2]].UpdateStatus()
+                                                        self.SPS01[0,b[3]].UpdateStatus()
+                                                        self.SPS01[0,b[4]].UpdateStatus()
+                                                    if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True or self.SPS01[0,b[4]].FlagIsDone == True:
+                                                        for p in range(len(b[0])):
+                                                            if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                                self.SPS01[0,b[p]].displaymovementstop()
+                                                                c=b
+                                                                c[p]=[]
+                                                                for count4 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                    if self.Stop == True:
+                                                                        self.StopBoard()
+                                                                        break ## counter 4
+                                                                    elif self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving and self.SPS01[0,c[3]].FlagIsMoving:
+                                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                                        self.SPS01[0,c[1]].UpdateStatus()
+                                                                        self.SPS01[0,c[2]].UpdateStatus()
+                                                                        self.SPS01[0,c[3]].UpdateStatus()
+                                                                    if self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True or self.SPS01[0,c[3]].FlagIsDone == True:
+                                                                        for q in range(len(c[0])):
+                                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                                self.SPS01[0,c[q]].displaymovementstop()
+                                                                                d=c
+                                                                                d[q]=[]
+                                                                                for count5 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                    if self.Stop == True:
+                                                                                        self.StopBoard()
+                                                                                        break ## counter 5
+                                                                                    elif self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving and self.SPS01[0,d[2]].FlagIsMoving:
+                                                                                        self.SPS01[0,d[0]].UpdateStatus()
+                                                                                        self.SPS01[0,d[1]].UpdateStatus()
+                                                                                        self.SPS01[0,d[2]].UpdateStatus()
+                                                                                    if self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone or self.SPS01[0,d[2]].FlagIsDone:
+                                                                                        for r in range(len(d[0])):
+                                                                                            if self.SPS01[0,d[r]].FlagIsDone == True:
+                                                                                                self.SPS01[0,d[r]].displaymovementstop()
+                                                                                                e=d
+                                                                                                e[r]=[]
+                                                                                                for count6 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                                    if self.Stop == True:
+                                                                                                        self.StopBoard()
+                                                                                                        break ## counter 6
+                                                                                                    elif self.SPS01[0,e[0]].FlagIsMoving and self.SPS01[0,e[1]].FlagIsMoving:
+                                                                                                        self.SPS01[0,e[0]].UpdateStatus()
+                                                                                                        self.SPS01[0,e[1]].UpdateStatus()
+                                                                                                    if self.SPS01[0,e[0]].FlagIsDone or self.SPS01[0,e[1]].FlagIsDone:
+                                                                                                        for s in range(len(e[0])):
+                                                                                                            if self.SPS01[0,e[s]].FlagIsDone == True:
+                                                                                                                self.SPS01[0,e[s]].displaymovementstop()
+                                                                                                                f=e
+                                                                                                                f[s]=[]
+                                                                                                                for count7 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                                                    if self.Stop == True:
+                                                                                                                        self.StopBoard()
+                                                                                                                        break ## counter 7
+                                                                                                                    elif self.SPS01[0,f[0]].FlagIsMoving:
+                                                                                                                        self.SPS01[0,f[0]].UpdateStatus()
+                                                                                                                    if self.SPS01[0,f[0]].FlagIsDone:
+                                                                                                                        self.SPS01[0,f[0]].displaymovementstop()
+                                                                                                                        break ## counter 7
+                                                                                                                    time.sleep(scan_rate)
+                                                                                                                break ## s search of first device to be done
+                                                                                                        break ## counter 6
+                                                                                                    time.sleep(scan_rate)
+                                                                                                break ## r search of first device to be done
+                                                                                        break ## counter 5
+                                                                                    time.sleep(scan_rate)
+                                                                                break ## q search of first device to be done
+                                                                        break ## counter 4
+                                                                    time.sleep(scan_rate)
+                                                                break ## p search of first device to be done
+                                                        break ## counter 3
+                                                    time.sleep(scan_rate)
+                                                break ## k search of first device to be done
+                                        break ## counter 2
+                                    time.sleep(scan_rate)
+                                break ## j search of first device to be done
+                        break ## counter 1
+                    time.sleep(scan_rate)
+                        
+        elif len(args) == 11: ##8 syringes (impossible - max is 7)
+            i1=args[2] 
+            i2=args[3]
+            i3=args[4]
+            i4=args[5]
+            i5=args[6]
+            i6=args[7]
+            i7=args[8]
+            i8=args[9]
+            i=[i1, i2, i3, i4, i5, i6, i7, i8] ##i=args[3:len(args)-1]
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True and self.SPS01[0,i8].FlagIsMoving == True:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break ## counter 1
+                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True and self.SPS01[0,i8].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i2].UpdateStatus()
+                        self.SPS01[0,i3].UpdateStatus()
+                        self.SPS01[0,i4].UpdateStatus()
+                        self.SPS01[0,i5].UpdateStatus()
+                        self.SPS01[0,i6].UpdateStatus()
+                        self.SPS01[0,i7].UpdateStatus()
+                        self.SPS01[0,i8].UpdateStatus()
+                    if self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True or self.SPS01[0,i7].FlagIsDone == True or self.SPS01[0,i8].FlagIsDone == True:
+                        for j in range(len(i[0])):
+                            if self.SPS01[0,i[j]].FlagIsDone == True:
+                                self.SPS01[0,i[j]].displaymovementstop()
+                                a=i
+                                a[j]=[] 
+                                for count2 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break ## counter 2
+                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True and self.SPS01[0,a[5]].FlagIsMoving == True and self.SPS01[0,a[6]].FlagIsMoving == True:
+                                        self.SPS01[0,a[0]].UpdateStatus()
+                                        self.SPS01[0,a[1]].UpdateStatus()
+                                        self.SPS01[0,a[2]].UpdateStatus()
+                                        self.SPS01[0,a[3]].UpdateStatus()
+                                        self.SPS01[0,a[4]].UpdateStatus()
+                                        self.SPS01[0,a[5]].UpdateStatus()
+                                        self.SPS01[0,a[6]].UpdateStatus()
+                                    if self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True or self.SPS01[0,a[5]].FlagIsDone == True or self.SPS01[0,a[6]].FlagIsDone == True:
+                                        for k in range(len(a[0])):
+                                            if self.SPS01[0,a[k]].FlagIsDone == True:
+                                                self.SPS01[0,[k]].displaymovementstop()
+                                                b=a
+                                                b[k]=[]
+                                                for count3 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                    if self.Stop == True:
+                                                        self.StopBoard()
+                                                        break ## counter 3
+                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[3]].FlagIsMoving == True and self.SPS01[0,b[4]].FlagIsMoving == True and self.SPS01[0,b[5]].FlagIsMoving == True:
+                                                        self.SPS01[0,b[0]].UpdateStatus()
+                                                        self.SPS01[0,b[1]].UpdateStatus()
+                                                        self.SPS01[0,b[2]].UpdateStatus()
+                                                        self.SPS01[0,b[3]].UpdateStatus()
+                                                        self.SPS01[0,b[4]].UpdateStatus()
+                                                        self.SPS01[0,b[5]].UpdateStatus()
+                                                    if self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True or self.SPS01[0,b[4]].FlagIsDone == True or self.SPS01[0,b[5]].FlagIsDone == True:
+                                                        for p in range(len(b[0])):
+                                                            if self.SPS01[0,b[p]].FlagIsDone == True:
+                                                                self.SPS01[0,b[p]].displaymovementstop()
+                                                                c=b
+                                                                c[p]=[]
+                                                                for count4 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                    if self.Stop == True:
+                                                                        self.StopBoard()
+                                                                        break ## counter 4
+                                                                    elif self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving and self.SPS01[0,c[3]].FlagIsMoving and self.SPS01[0,c[4]].FlagIsMoving:
+                                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                                        self.SPS01[0,c[1]].UpdateStatus()
+                                                                        self.SPS01[0,c[2]].UpdateStatus()
+                                                                        self.SPS01[0,c[3]].UpdateStatus()
+                                                                        self.SPS01[0,c[4]].UpdateStatus()                                                                           
+                                                                    if self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True or self.SPS01[0,c[3]].FlagIsDone == True or self.SPS01[0,c[4]].FlagIsDone == True:
+                                                                        for q in range(len(c[0])):
+                                                                            if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                                self.SPS01[0,c[q]].displaymovementstop()
+                                                                                d=c
+                                                                                d[q]=[]
+                                                                                for count5 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                    if self.Stop == True:
+                                                                                        self.StopBoard()
+                                                                                        break ## counter 5
+                                                                                    elif self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving and self.SPS01[0,d[2]].FlagIsMoving and self.SPS01[0,d[3]].FlagIsMoving:
+                                                                                        self.SPS01[0,d[0]].UpdateStatus()
+                                                                                        self.SPS01[0,d[1]].UpdateStatus()
+                                                                                        self.SPS01[0,d[2]].UpdateStatus()
+                                                                                        self.SPS01[0,d[3]].UpdateStatus()
+                                                                                    if self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone or self.SPS01[0,d[2]].FlagIsDone or self.SPS01[0,d[3]].FlagIsDone:
+                                                                                        for r in range(len(d[0])):
+                                                                                            if self.SPS01[0,d[r]].FlagIsDone == True:
+                                                                                                self.SPS01[0,d[r]].displaymovementstop()
+                                                                                                e=d
+                                                                                                e[r]=[]
+                                                                                                for count6 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                                    if self.Stop == True:
+                                                                                                        self.StopBoard()
+                                                                                                        break ## counter 6
+                                                                                                    elif self.SPS01[0,e[0]].FlagIsMoving and self.SPS01[0,e[1]].FlagIsMoving and self.SPS01[0,e[2]].FlagIsMoving:
+                                                                                                        self.SPS01[0,e[0]].UpdateStatus()
+                                                                                                        self.SPS01[0,e[1]].UpdateStatus()
+                                                                                                        self.SPS01[0,e[2]].UpdateStatus()
+                                                                                                    if self.SPS01[0,e[0]].FlagIsDone or self.SPS01[0,e[1]].FlagIsDone or self.SPS01[0,e[2]].FlagIsDone:
+                                                                                                        for s in range(len(e[0])):
+                                                                                                            if self.SPS01[0,e[s]].FlagIsDone == True:
+                                                                                                                self.SPS01[0,e[s]].displaymovementstop()
+                                                                                                                f=e
+                                                                                                                f[s]=[]
+                                                                                                                for count7 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                                                    if self.Stop == True:
+                                                                                                                        self.StopBoard()
+                                                                                                                        break ## counter 7
+                                                                                                                    elif self.SPS01[0,f[0]].FlagIsMoving and self.SPS01[0,f[1]].FlagIsMoving:
+                                                                                                                        self.SPS01[0,f[0]].UpdateStatus()
+                                                                                                                        self.SPS01[0,f[1]].UpdateStatus()
+                                                                                                                    if self.SPS01[0,f[0]].FlagIsDone or self.SPS01[0,f[1]].FlagIsDone:
+                                                                                                                        for t in range(len(f[0])):
+                                                                                                                            if self.SPS01[0,f[t]].FlagIsDone:
+                                                                                                                                self.SPS01[0,f[t]].displaymovementstop()
+                                                                                                                                g=f
+                                                                                                                                g[t]=[]
+                                                                                                                                for count8 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                                                                                                                                    if self.Stop == True:
+                                                                                                                                        self.StopBoard()
+                                                                                                                                        break ## counter 8
+                                                                                                                                    elif self.SPS01[0,g(0)].FlagIsMoving:
+                                                                                                                                        self.SPS01[0,g[0]].UpdateStatus()
+                                                                                                                                    if self.SPS01[0,g[0]].FlagIsDone:
+                                                                                                                                        self.SPS01[0,g[0]].displaymovementstop()
+                                                                                                                                        break ## counter 8
+                                                                                                                                    time.sleep(scan_rate)
+                                                                                                                                break ## t search of first device to be done
+                                                                                                                        break ##counter 7
+                                                                                                                    time.sleep(scan_rate)
+                                                                                                                break ## s search of first device to be done
+                                                                                                        break ## counter 6
+                                                                                                    time.sleep(scan_rate)
+                                                                                                break ## r search of first device to be done
+                                                                                        break ## counter 5
+                                                                                    time.sleep(scan_rate)
+                                                                                break ## q search of first device to be done
+                                                                        break ## counter 4
+                                                                    time.sleep(scan_rate)
+                                                                break ## p search of first device to be done
+                                                        break ##counter 3
+                                                    time.sleep(scan_rate)
+                                                break ## k search of first device to be done
+                                        break ## counter 2
+                                    time.sleep(scan_rate)
+                                break ## j search of first device to be done
+                        break ##counter 1
+                    time.sleep(scan_rate)
     ## TODO ##
 
     ##  Set Valves
@@ -728,7 +1396,7 @@ class LabsmithBoard:
     ## TODO ##
 
     ## Check First Done Stop M
-    def CheckFirstDoneStopM(self,varargin):
+    def CheckFirstDoneStopM(self,args):
         pass
     ## TODO ##
 
@@ -738,7 +1406,7 @@ class LabsmithBoard:
     ## TODO ##
 
     ## Listener Function : Display the first device to be done and Stop and Pause (called in MulMove3)
-    def CheckFirstDoneStopPause(self,varargin):
+    def CheckFirstDoneStopPause(self,args):
         pass
     ## TODO ##
 
@@ -768,7 +1436,7 @@ class LabsmithBoard:
     ## TODO ##
 
     ## Listener Function : Display the first device to be done and Stop and Pause and chech the WAIT (called in MoveWait)
-    def CheckFirstDoneStopPauseWait(self,varargin):
+    def CheckFirstDoneStopPauseWait(self,args):
         pass
     ## TODO ##
 
@@ -778,6 +1446,6 @@ class LabsmithBoard:
     ## TODO ##
 
     ## Check First Done Stop Pause M
-    def CheckFirstDoneStopPauseM(self,varargin):
+    def CheckFirstDoneStopPauseM(self,args):
         pass
     ## TODO ##
