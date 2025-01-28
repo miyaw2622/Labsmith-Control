@@ -1,9 +1,19 @@
+import numpy as np
 import time
+import uProcess_x64.pyd
+from datetime import datetime
+
+# Get the current date and time
+current_time = datetime.now()
+
+# Create a list equivalent to MATLAB's clock output, with seconds as a float
+clock_vector = [current_time.year, current_time.month, current_time.day,
+                current_time.hour, current_time.minute, 
+                current_time.second + current_time.microsecond / 1e6]
 
 class LabsmithBoard:    
     
-    ### i think init is equivalent to properties
-    def __init__(self):
+    def __init__(self, port): # # com is the comment i show on the Output text area in the app
         ## General info
         self.MaxNumDev = []
         self.TotNumDev = [] 
@@ -23,7 +33,10 @@ class LabsmithBoard:
         self.flag_b = 0   # # flag used in listener of MoveWait function used to print just the initial target waiting time
                    
         ## Clocks
-        ## TODO ##
+        self.ClockStartConnection = None
+        self.ClockStopConnection = None
+        self.ClockStop = None
+        self.ClockResume = None
         
         
         ## Events
@@ -33,8 +46,26 @@ class LabsmithBoard:
             "FirstDoneStopM",
             "FirstDoneStopPause",
             "FirstDoneStopPauseM",
-            "FirstDoneStopPauseWait"]}
+            "FirstDoneStopPauseWait"]}#
         
+        ## Constructor
+        self.eib=uProcess_x64.CEIB()
+        a=self.eib.InitConnection(np.int8(port))
+        if a == 0:
+            self.isConnected = True
+            self.isDisconnected = False
+            self.ClockStartConnection = clock
+            diary OUTPUT
+            comment=['Connected on ' , num2str(self.ClockStartConnection(3)), '/' , num2str(self.ClockStartConnection(2)), '/' , num2str(self.ClockStartConnection(1)), ' at ', num2str(self.ClockStartConnection(4)) , ':' , num2str(self.ClockStartConnection(5)) ,':' ,num2str(self.ClockStartConnection(6))]
+            disp(comment)
+            diary off
+            Load(self)
+        else:
+            diary on
+            comment='Not connected, check the right COM port on Device Manager'
+            print(comment)
+            diary off
+
     ## Add Listeners to Events
     def addlistener(self, event, listener, callback, args):
         if callable(callback):
