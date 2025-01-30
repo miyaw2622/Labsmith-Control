@@ -1438,6 +1438,248 @@ class LabsmithBoard:
 
     ## Listener Function : Display the first device to be done and Stop and Pause (called in MulMove3)
     def CheckFirstDoneStopPause(self,args):
+      if len(args) == 6: #only one syringe in motion (=numb input + obj + 2more input (source and event))   
+            i1=args[2] #vararging doesn't include the obj, so its size is nargin-1. The index is the last.
+            d1=args[3]
+            v1=args[4]
+            if self.SPS01[0,i1].FlagIsMoving == True:  
+                scan_rate=0.1; #the scan rate of the counter
+                target=(48)*60*60/scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        com=self.StopBoard()
+                        break #counter1
+                    elif self.Pause == True:
+                        self.PauseBoard()
+                        for count_pause1 in range(target):
+                            if self.Stop == True:                                                              
+                                break #count_pause1
+                            elif self.Resume == True:
+                                self.ClockResume = clock
+                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
+                                diary on
+                                disp(comment)
+                                diary off 
+                                self.SPS01[0,i1].UpdateStatus()
+                                self.MulMove3[d1,v1]                                 
+                                self.flag_break_countpause = 1
+                                break #count_pause1
+                            time.sleep(scan_rate)
+                    elif self.SPS01{0,i1}.FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                    if self.flag_break_countpause == 1:
+                        break #counter1
+                    elif self.SPS01[0,i1].FlagIsDone == True: 
+                        self.SPS01[0,i1].displaymovementstop()
+                        break #counter1
+                    time.sleep(scan_rate)
+        elif nargin == 9: # 2 syringes
+            i1=args[2] 
+            d1=args[3]
+            v1=args[4]
+            i2=args[5]
+            d2=args[6]
+            v2=args[7]
+            i=[i1 i2]
+            d=[d1 d2]
+            v=[v1 v2]
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True: 
+                scan_rate=0.1 #the scan rate of the counter
+                target=(48)*60*60 #scan_rate; //this is the final time of the counter. It is equal to max 48 hours        
+                for count1 in range (target) #this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break # counter 1
+                    elif self.Pause == True:
+                        self.PauseBoard()
+                        for count_pause1 in range (target):
+                            if self.Stop == True:
+                                break #count_pause1
+                            elif self.Resume == True:
+                                self.ClockResume = clock
+                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
+                                diary on
+                                disp(comment)
+                                diary off  
+                                self.SPS01[0,i1].UpdateStatus() #////////////////////////////
+                                self.SPSO1[0,i2].UpdateStatus() #////////////////////////////
+                                self.MulMove3[d1,v1,d2,v2]                                 
+                                self.flag_break_countpause = 1
+                                break #count_pause1
+                            time.sleep(scan_rate)
+                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True:
+                        self.SPSO1[0,i1].UpdateStatus()
+                        self.SPSO1[0,i2].UpdateStatus()
+                    if self.flag_break_countpause == 1:
+                        break #counter1                        
+                    elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True:
+                        for j in range(len(i[0])): #search for first device to be done
+                            if self.SPS01[0,i[j]].FlagIsDone == True:
+                                self.SPSO1[0,i[j]].displaymovementstop()
+                                a=i
+                                a(j)=[]
+                                ad=d
+                                ad(j)=[]
+                                av=v
+                                av(j)=[]
+                                for count2 in range (target):
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break #counter 2
+                                    elif self.Pause == True:
+                                        self.PauseBoard()
+                                        for count_pause1 in range (target):
+                                            if self.Stop == True:
+                                                break #count_pause1
+                                            elif self.Resume == True:
+                                                self.ClockResume = clock
+                                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.']
+                                                diary on
+                                                disp(comment)
+                                                diary off  
+                                                self.SPSO1[0,a(0)].UpdateStatus() #////////////////////////////
+                                                self.MulMove3[ad[0],av[0]];                                    
+                                                self.flag_break_countpause = 1
+                                                break #count_pause1
+                                            time.sleep(scan_rate)
+                                    elif self.SPS01[0,a(0)].FlagIsMoving == True:
+                                        self.SPSO1[0,a(0)].UpdateStatus()
+                                    if self.flag_break_countpause == 1:
+                                        break #counter1  
+                                    elif self.SPS01[0,a(0)].FlagIsDone == True:
+                                        self.SPSO1[0,a(0)].displaymovementstop()
+                                        break #/counter 2                                          
+                                    time.sleep(scan_rate)                                          
+                                break # j search of first device to be done                                                                        
+                        break # counter 1
+                    time.sleep(scan_rate)            
+                
+        elif nargin == 12: # 3 syringes
+            i1=args[2] 
+            d1=args[3]
+            v1=args[4]
+            i2=args[5]
+            d2=args[6]
+            v2=args[7]
+            i3=args[8]
+            d3=args[9]
+            v3=args[10]
+            i=[i1 i2 i3]
+            d=[d1 d2 d3]
+            v=[v1 v2 v3]
+            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True: 
+                scan_rate=0.1; #the scan rate of the counter
+                target=(48)*60*60 #scan_rate; //this is the final time of the counter. It is equal to max 48 hours
+                for count1 in range(target) #this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break # counter 1                            
+                     elif self.Pause == True:
+                        self.PauseBoard()
+                        for count_pause1 in range(target):
+                            if self.Stop == True:
+                                break #count_pause1
+                            elif self.Resume == True:
+                                self.ClockResume = clock
+                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
+                                diary on
+                                disp(comment)
+                                diary off  
+                                self.SPSO1[0,i1].UpdateStatus() #////////////////////////////
+                                self.SPSO1[0,i2].UpdateStatus() #////////////////////////////
+                                self.SPS01[0,i3].UpdateStatus() #////////////////////////////
+                                self.MulMove3[d1,v1,d2,v2,d3,v3]                                    
+                                self.flag_break_countpause = 1
+                                break #count_pause1
+                            time.sleep(scan_rate)
+                    elif self.SPS01[0],i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True:
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i1].UpdateStatus()
+                        self.SPS01[0,i3].UpdateStatus()
+                    if self.flag_break_countpause == 1:
+                        break #counter1  
+                    elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True:
+                        for j=1 in range(len(i[0])):
+                            if self.SPS01[0,i[j]].FlagIsDone == True:
+                                self.SPS01[0,i[j]].displaymovementstop()
+                                a=i
+                                a[j]=[]; # a=[i2 i3] for j=1, a=[i1 i3] for j=2, a=[i1 i2] for j=3
+                                ad=d
+                                ad[j]=[]
+                                av=v
+                                av[j]=[]
+                                for count2 in range (target):
+                                    if self.Stop == True:
+                                        self.StopBoard()
+                                        break # counter 2                                            
+                                     elif self.Pause == True:
+                                        self.PauseBoard()
+                                        for count_pause1 in range (target):
+                                            if self.Stop == True:
+                                                break #count_pause1
+                                            elif self.Resume == True:
+                                                self.ClockResume = clock
+                                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
+                                                diary on
+                                                disp(comment)
+                                                diary off  
+                                                self.SPS01[0,a[0]].UpdateStatus() #////////////////////////////
+                                                self.SPS01[0,a[1]].UpdateStatus() #////////////////////////////
+                                                self.MulMove3[ad[1],av[1],ad[2],av[2]]                                 
+                                                self.flag_break_countpause = 1
+                                                break #count_pause1
+                                            time.sleep(scan_rate)                                             
+                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True:
+                                        self.SPSO1[0,a[0]].UpdateStatus()
+                                        self.SPSO1[1,a[1]].UpdateStatus()
+                                    if self.flag_break_countpause == 1:
+                                        break #counter1  
+                                    elif self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True:
+                                        for k in range(len(a[0])):
+                                            if self.SPS01[0,a[k]].FlagIsDone == True:
+                                                self.SPS01[0,a[k]].displaymovementstop()
+                                                b=a
+                                                b[k]=[]
+                                                bd=ad
+                                                bd[k]=[]
+                                                bv=av
+                                                bv[k]=[]
+                                                for count3 in range(target):
+                                                    if self.Stop == True:
+                                                        self.StopBoard()
+                                                        break #counter 3                                                            
+                                                    elif self.Pause == True:
+                                                        self.PauseBoard()
+                                                        for count_pause1 in range(target):
+                                                            if self.Stop == True:
+                                                                break #count_pause1
+                                                            elif self.Resume == True:
+                                                                self.ClockResume = clock
+                                                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
+                                                                diary on
+                                                                disp(comment)
+                                                                diary off 
+                                                                self.SPS01[0,b[0]].UpdateStatus() #////////////////////////////
+                                                                self.MulMove3[bd[1],bv[1]]                                  
+                                                                self.flag_break_countpause = 1
+                                                                break #count_pause1
+                                                            time.sleep(scan_rate)                                                           
+                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True:
+                                                        self.SPSO1[0,b[0]].UpdateStatus()
+                                                    if self.flag_break_countpause == 1:
+                                                        break #counter1  
+                                                    elif self.SPS01[0,b[0]].FlagIsDone == True:
+                                                        self.SPS01[0,b[0]].displaymovementstop()
+                                                        break #counter 3
+                                                    time.sleep(scan_rate)
+                                                break # k search of first device to be done 
+                                        break # counter 2                                      
+                                    time.sleep(scan_rate)
+                                break # j search of first device to be done 
+                        break # counter 1
+                    time.sleep(scan_rate)
+
+      ## CONTINUE FROM 4 SYRINGES 
         pass
     ## TODO ##
 
