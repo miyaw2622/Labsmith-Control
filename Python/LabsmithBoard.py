@@ -1,15 +1,9 @@
 import numpy as np
 import time
-import uProcess_x64.pyd
+from uProcess_x64 import uProcess_x64
 from datetime import datetime
+import shutil
 
-# Get the current date and time
-current_time = datetime.now()
-
-# Create a list equivalent to MATLAB's clock output, with seconds as a float
-clock_vector = [current_time.year, current_time.month, current_time.day,
-                current_time.hour, current_time.minute, 
-                current_time.second + current_time.microsecond / 1e6]
 
 class LabsmithBoard:    
     
@@ -20,7 +14,10 @@ class LabsmithBoard:
         self.eib = [] 
         self.C4VM = [] 
         self.SPS01 = [] 
-        
+
+        self.eib=uProcess_x64.CEIB()
+        self.port = port
+
         ## Flags
         self.isConnected = False 
         self.isDisconnected = True 
@@ -48,23 +45,6 @@ class LabsmithBoard:
             "FirstDoneStopPauseM",
             "FirstDoneStopPauseWait"]}#
         
-        ## Constructor
-        self.eib=uProcess_x64.CEIB()
-        a=self.eib.InitConnection(np.int8(port))
-        if a == 0:
-            self.isConnected = True
-            self.isDisconnected = False
-            self.ClockStartConnection = clock
-            diary OUTPUT
-            comment=['Connected on ' , num2str(self.ClockStartConnection(3)), '/' , num2str(self.ClockStartConnection(2)), '/' , num2str(self.ClockStartConnection(1)), ' at ', num2str(self.ClockStartConnection(4)) , ':' , num2str(self.ClockStartConnection(5)) ,':' ,num2str(self.ClockStartConnection(6))]
-            disp(comment)
-            diary off
-            Load(self)
-        else:
-            diary on
-            comment='Not connected, check the right COM port on Device Manager'
-            print(comment)
-            diary off
 
     ## Add Listeners to Events
     def addlistener(self, event, listener, callback, args):
@@ -76,15 +56,43 @@ class LabsmithBoard:
         for listener, [callback, args] in self._listeners[event].items():
             callback(*args)
 
-    
     ### Constructor
-    ## TODO ##
+    def Constructor(self):
+        a=self.eib.InitConnection(np.int8(self.port))
+        with open("OUTPUT.txt", "a") as OUTPUT:
+            if a == 0:
+                self.isConnected = True
+                self.isDisconnected = False
+                self.ClockStartConnection = datetime.now()
+                comment=f"Connected on {self.ClockStartConnection}"
+                self.Load()
+            else:
+                comment='Not connected, check the right COM port on Device Manager'
+        
+        OUTPUT.write(comment + "\n")
+        print(comment)
+
 
     ### Destructor
-    ## TODO ##
+    def Disconnect(self):
+        a=np.int64(self.eib.CloseConnection())
+        with open("OUTPUT.txt", "a") as OUTPUT:
+            if a == 0:
+                self.isConnected = False
+                self.isDisconnected = True
+                self.ClockStopConnection = datetime.now()
+                com= f"Disconnected on {self.ClockStartConnection}"
+                namefile=f"OUTPUT_{self.ClockStartConnection.strftime("%y_%m_%d_%H_%M_%S")}.txt"
+                shutil.copy('OUTPUT.txt', namefile)
+            else:
+                com='Error, still connected'
 
+        OUTPUT.write(com + "\n")
+        print(com)
+        return com
+        
     ### Load
-    def load(self):
+    def Load(self):
         pass
     ## TODO ##
 
