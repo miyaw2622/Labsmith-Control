@@ -1718,6 +1718,33 @@ class LabsmithBoard:
 
     ## Listener Function : Display the first device to be done and Stop and Pause and chech the WAIT (called in MoveWait)
     def CheckFirstDoneStopPauseWait(self,args):
+        if len(args) == 8:
+            t=args[2]
+            i1=args[3]
+            d1=args[4]
+            v1=args[5]
+            ts=args[6]
+            var_not_disp=0;
+            if self.SPS01[0,i1].FlagIsMoving == True:
+                scan_rate=0.1
+                target=(48)*60*60/scan_rate
+                for count1 in range(t):
+                    if self.Stop == True:
+                        StopBoard(self)
+                        self.flag_break_stop = 1
+                        break
+                    elif self.Pause == True:
+                        PauseBoard(self)
+                        te = toc(ts)
+                        difftime = t - te
+                        for count_pause1 in range(target):
+                            if self.Stop == True:
+                                break
+                            elif self.Resume == True:
+                                self.ClockResume = clock
+                                comment=
+                        
+            
         pass
     ## TODO ##
 
