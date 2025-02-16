@@ -112,45 +112,86 @@ class LabsmithBoard:
 
         if StrManifold:
             PAT = r"address (\d+)"
-            add_man = re.findall(PAT, StrManifold) # OUTPUT 2: add_man =["35", "74"]. It is 2x1 vector containg the addresses of the manifolds on the board
+            add_man = [re.findall(PAT, Manifold) for Manifold in StrManifold] # OUTPUT 2: add_man =["35", "74"]. It is 2x1 vector containg the addresses of the manifolds on the board
             self.C4VM=np.zeros(len(add_man))
             for i, add in enumerate(add_man):
-                self.C4VM[i] = CManifold(self, int(add)); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
-                self.C4VM[i].address=int(add)
+                self.C4VM[i] = CManifold(self, int(add[0])); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.C4VM[i].address=int(add[0])
 
         if StrSyringe:
             PAT = r"address (\d+)"
-            add_syr = re.findall(PAT, StrSyringe); ## OUTPUT 4: add_syr =[1,3,8,14,26].  It is 5x1 vector containg the addresses of the syringes on the board
+            add_syr = [re.findall(PAT, Syringe) for Syringe in StrSyringe] ## OUTPUT 4: add_syr =[1,3,8,14,26].  It is 5x1 vector containg the addresses of the syringes on the board
             np.zeros(len(add_syr))
             for i, add in enumerate(add_syr):
-                self.SPS01[i] = CSyringe(self, int(add)); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
-                self.SPS01[i].address=int(add)
- 
+                self.SPS01[i] = CSyringe(self, int(add[0])); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.SPS01[i].address=int(add[0])
 
     ### Stop
-    def StopBoard(sefl):
-        pass
-    ## TODO ##
-    
+    def StopBoard(self):
+        for i in range(self.SPS01.shape[1]):
+            self.SPS01[i].device.CmdStop()
+            self.SPS01[i].FlagReady = True
+            self.SPS01[i].UpdateStatus()
+            for i in range(self.C4VM.shape[1]):
+                self.C4VM[i].device.CmdStop()
+                self.C4VM[i].UpdateStatus()
+            self.ClockStop = datetime.now()
+            comment = f"{self.ClockStop.strftime('%X')} Interface stopped by the user."
+            with open("OUTPUT.txt", "a") as OUTPUT:
+                OUTPUT.write(comment + "\n")
+                print(comment)
+
     ### Move
     def Move(self, namedevice, flowrate, volume):
-        pass
-    ## TODO ##
-    
+        k=[]
+        for i in range(self.SPS01.shape[1]):
+            k.append(self.SPS01[i].name == namedevice)           
+        i=np.where(k == 1)[0]
+        if i:
+            self.SPS01[i].MoveTo(flowrate,volume)
+        else:
+            with open("OUTPUT.txt", "a") as OUTPUT:
+                comment='ERROR: Name syringe not correct'
+                OUTPUT.write(comment + "\n")
+                print(comment) 
+
     ### Move2
     def Move2(self, namedevice, flowrate, volume):
-        pass
-    ## TODO ##
+        k=[]
+        for i in range(self.SPS01.shape[1]):
+            k.append(self.SPS01[i].name == namedevice)             
+        i=np.where(k == 1)[0]
+        if i:
+            self.SPS01[i].MoveTo(flowrate,volume)
+        else:
+            with open("OUTPUT.txt", "a") as OUTPUT:
+                comment='ERROR: Name syringe not correct'
+                OUTPUT.write(comment + "\n")
+                print(comment) 
     
     ### FindIndexS (find index of Syringe from name of device)
     def FindIndexS(self, n):
-        pass
-    ## TODO ##
+        k=[]
+        for i in range(self.SPS01.shape[1]):
+            k.append(self.SPS01[i].name == n)               
+        out = np.where(k == 1)[0]
+        if not out:
+            comment=['Error : ' ,n, ' does not exist. Check name again.']
+            print(comment)
     
     ### FindIndexM (find index of Manifold from name of device)
     def FindIndexM(self, n):
+        k=[]
+        for i in range(self.C4VM.shape[1]):
+            k.append(self.C4VM[i].name == n)              
+        out = np.where(k == 1)[0]
+        if not out:
+            with open("OUTPUT.txt", "a") as OUTPUT:
+                comment=f"Error : {n} does not exist. Check name again."
+                OUTPUT.write(comment + "\n")
+                print(comment) 
+            com=comment
         return [out, com]
-    ## TODO ##
 
     ### Set Multiple FlowRates (at the same time)
     def SetFlowRate(self, d1,f1,d2,f2,d3,f3,d4,f4,d5,f5,d6,f6,d7,f7,d8,f8):
