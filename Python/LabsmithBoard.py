@@ -1461,7 +1461,7 @@ class LabsmithBoard:
     ## TODO ##
 
     ##  Set Valves
-    def SetValves(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24):
+    def SetValves(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24): 
         pass
     ## TODO ##
 
