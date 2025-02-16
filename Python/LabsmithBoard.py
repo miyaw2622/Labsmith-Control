@@ -46,7 +46,9 @@ class LabsmithBoard:
             "FirstDoneStopM",
             "FirstDoneStopPause",
             "FirstDoneStopPauseM",
-            "FirstDoneStopPauseWait"]}#
+            "FirstDoneStopPauseWait"]}
+        
+        self.Constructor()
         
 
     ## Add Listeners to Events
