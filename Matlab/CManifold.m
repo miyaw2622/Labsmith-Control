@@ -1,24 +1,24 @@
 classdef CManifold < handle    
     properties (GetAccess = 'public', SetAccess = 'public', SetObservable)
-        % General info
+        // General info
         device = [];
         name = [];
         address = [];
         
-        % Flags
-%         FlagIsMoving = false;
+        // Flags
+//         FlagIsMoving = false;
         FlagIsDone = true;
         FlagIsOnline = false; 
         FlagReady = true;
         
-        % Clocks
+        // Clocks
         ClockStartCmd
         ClockStopCmd
     end
     
      methods(Access = public)
          
-        %% Constructor
+        // Constructor
         function obj = CManifold(Lboard,add_syr)
             obj.device=Lboard.eib.New4VM(int8(add_syr));
             obj.name=char(obj.device.GetName);
@@ -31,14 +31,14 @@ classdef CManifold < handle
             diary off
         end
         
-                %% UpdateStaus
+        // UpdateStaus
         function UpdateStatus(obj)
             obj.device.CmdGetStatus();
             obj.FlagIsDone=obj.device.IsDone();
             obj.FlagIsOnline=obj.device.IsOnline();                  
         end
         
-                %% Switch Valves
+                // Switch Valves
         function SwitchValves(obj,v1,v2,v3,v4)
             obj.device.CmdSetValves(int8(v1),int8(v2),int8(v3),int8(v4));
             obj.FlagReady = false;
@@ -51,7 +51,7 @@ classdef CManifold < handle
             end
         end
         
-        %% Display switch start
+        // Display switch start
         function displayswitch(obj,v1,v2,v3,v4)
             obj.ClockStartCmd=clock;
             UpdateStatus(obj);
@@ -61,10 +61,10 @@ classdef CManifold < handle
             diary off
         end
         
-        %% Display switch stop
+        // Display switch stop
         function displayswitchstop(obj)
             obj.ClockStopCmd=clock;
-%             UpdateStatus(obj);
+/             UpdateStatus(obj);
             diary on
             comment=[num2str(obj.ClockStopCmd(4)) , ':' , num2str(obj.ClockStopCmd(5)) ,':' ,num2str(obj.ClockStopCmd(6)), ' 4VM ' , obj.name, ' is done.']; 
             disp(comment);
