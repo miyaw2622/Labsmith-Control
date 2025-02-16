@@ -1751,6 +1751,139 @@ class LabsmithBoard:
 
     ## Listener Function : Display the first device to be done and Stop and Pause and chech the WAIT (called in MoveWait)
     def CheckFirstDoneStopPauseWait(self,args):
+        if len(args) == 8:
+            t=args[2]
+            i1=args[3]
+            d1=args[4]
+            v1=args[5]
+            ts=args[6]
+            var_not_disp=0;
+            if self.SPS01[0,i1].FlagIsMoving == True:
+                scan_rate=0.1
+                target=(48)*60*60/scan_rate
+                for count1 in range(t):
+                    if self.Stop == True:
+                        StopBoard(self)
+                        self.flag_break_stop = 1
+                        break
+                    elif self.Pause == True:
+                        PauseBoard(self)
+                        te = toc(ts)
+                        difftime = t - te
+                        for count_pause1 in range(target):
+                            if self.Stop == True:
+                                break
+                            elif self.Resume == True:
+                                self.ClockResume = clock
+                                comment=[num2str(self.ClockResume(4)), ':', num2str(self.ClockResume(5)), ':', num2str(self.ClockResume(6)), 'Interface resumed by the user.']
+                                diary on
+                                disp(comment);
+                                diary off
+                                UpdateStatus(self.SPS01[0, i1])
+                                self.flag_a +=1
+                                self.MoveWait(diff_time, d1, v1)
+                                self.flag_break_countpause = 1
+                                self.flag_b +=1
+                                break
+                            pause(scan_rate)
+                    elif self.SPS01[0, i1].FlagIsMoving == True:
+                        UpdateStatus(self.SPS01[0, i1])
+                    if self.flag_break_countpause == 1:
+                        break
+                    elif self.SPS01[0, i1].FlagIsDone == True:
+                        displaymovementstop(self.SPS01[0, i1])
+                        var_not_disp = 1
+                        break
+                    pause(0)
+                if self.flag_break_stop == 0 and var_not_disp == 0:
+                    self.WaitStopBoard
+                    self.UpdateBoard
+                    if self.flag_b == self.flag_a:
+                        self.displaymovementstopwait(t)
+                        self.flag_a = 0
+                        self.flag_b = 0
+
+        elif len(args) == 11:
+            t=args[2]
+            i1=args[3]
+            d1=args[4]
+            v1=args[5]
+            i2=args[6]
+            d2=args[7]
+            v2=args[8]
+            i=[i1, i2]
+            d=[d1, d2]
+            v=[v1, v2]
+            ts=args[9]
+            var_not_disp = 0
+            if self.SPS01[0, i1].FlagIsMoving == True and self.SPS01[0, i2].FlagIsMoving == True:
+                scan_rate=0.1
+                target=(48)*60*60/scan_rate
+                for count1 in range(t):
+                    if self.Stop == True:
+                        self.StopBoard
+                        self.flag_break_stop = 1
+                        break
+                    elif self.Pause == True:
+                        self.PauseBoard
+                        te=toc(ts)
+                        diff_time=t-te
+                        for count_pause1 in range(target):
+                            if self.Stop == True:
+                                break
+                            elif self.Resume == True:
+                                self.ClockResume = clock
+                                comment=[num2str(self.ClockResume(3)) , ':' , num2str(self.ClockResume(4)) ,':' ,num2str(self.ClockResume(5)), ' Interface resumed by the user.']; 
+                                diary on
+                                disp(comment);
+                                diary off 
+                                UpdateStatus(self.SPS01[0, i1])
+                                UpdateStatus(self.SPS01[0, i2])
+                                self.flag_a +=1 
+                                self.MoveWait(diff_time, d1, v1, d2, v2)
+                                self.flag_break_countpause = 1
+                                self.flag_b += 1
+                                break
+                            pause(scan_rate)
+                    elif self.SPS01[0, i1].FlagIsMoving == True and self.SPS01[0, i2].FlagIsMoving == True:
+                        UpdateStatus(self.SPS01[0,i1]);
+                        UpdateStatus(self.SPS01[0,i2]);
+                    if self.flag_break_countpause == 1:
+                        break
+                    elif self.SPS01[0, i1].FlagIsDone == True or self.SPS01[0, i2].FlagIsDone == True:
+                        for j in size(i, 2):
+                            if self.SPS01[0, i(j)].FlagIsDone == True:
+                                displaymovementstop(self.SPS01[0, i(j)])
+                                te=toc(ts)
+                                t1=(t-te)
+                                ts=tic
+                                a=i
+                                a(j)=[]
+                                ad=d
+                                ad(j)=[]
+                                av=v
+                                av(j)=[]
+                                for count2 in range(t1)
+                                if self.Stop == True:
+                                    self.StopBoard
+                                    self.flag_break_stop = 1
+                                    break
+                                elif self.Pause == True:
+                                    self.PauseBoard
+                                    te=toc(ts)
+                                    diff_time=t-te
+                                    for count_pause1 in range(target):
+                                        if self.Stop == True:
+                                            break
+                                        elif self.Resume == True:
+                                            self.ClockResume = clock
+                                            
+                        
+                    
+                    
+            
+                        
+            
         pass
     ## TODO ##
 
