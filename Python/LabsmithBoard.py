@@ -93,7 +93,40 @@ class LabsmithBoard:
         
     ### Load
     def Load(self):
-        pass
+        dev_list=str(self.eib.CmdCreateDeviceList())
+        expression = '\,'; ##i first split the string into multiple strings
+        splitStr = dev_list.split(expression)##divide all the different devices. It is a cell array. Each cell is a segment of the dev_list char vector containing info about each device
+        NumDev=len(splitStr)
+        self.TotNumDev=NumDev
+
+        PAT_S=" <uProcess.CSyringe>"
+        PAT_M=" <uProcess.C4VM>"
+
+        StrSyringe= [syringe for syringe in splitStr if PAT_S in syringe]
+        StrManifold= [manifold for manifold in splitStr if PAT_M in manifold]
+
+        if StrManifold:
+            PAT="address " + d0igitsPattern
+            add_man=extract(StrManifold,PAT); ##add_man ={'address 35'}{'address 74'} 2×1 cell array
+            PAT=digitsPattern;
+            add_man=str2double(extract(add_man,PAT)); ## OUTPUT 2: add_man =[35;74]. It is 2x1 vector containg the addresses of the manifolds on the board 
+            self.C4VM=cell(1,length(add_man));
+            for i=1:length(add_man)
+                self.C4VM{1,i} = CManifold(self,add_man(i)); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.C4VM{1,i}.address=add_man(i);
+            end
+        end
+
+        if ~isempty(StrSyringe)
+            PAT="address " + digitsPattern;
+            add_syr=extract(StrSyringe,PAT); ## add_syr = 5×1 cell array {'address 1' }{'address 3' }{'address 8' }{'address 14'}{'address 26'}
+            PAT=digitsPattern;
+            add_syr=str2double(extract(add_syr,PAT));## OUTPUT 4: add_syr =[1;3;8;14;26].  It is 5x1 vector containg the addresses of the syringes on the board                                
+            self.SPS01=cell(1,length(add_syr));
+            for i=1:length(add_syr)
+                self.SPS01{1,i} = CSyringe(self,add_syr(i)); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.SPS01{1,i}.address=add_syr(i);
+
     ## TODO ##
 
     ### Stop
@@ -1446,13 +1479,13 @@ class LabsmithBoard:
 
     ## Listener Function : Display the first device to be done and Stop and Pause (called in MulMove3)
     def CheckFirstDoneStopPause(self,args):
-      if len(args) == 6: #only one syringe in motion (=numb input + obj + 2more input (source and event))   
-            i1=args[2] #vararging doesn't include the obj, so its size is nargin-1. The index is the last.
+      if len(args) == 6: #only one syringe in motion (=numb input + self + 2more input (source and event))   
+            i1=args[2] #vararging doesn't include the self, so its size is nargin-1. The index is the last.
             d1=args[3]
             v1=args[4]
             if self.SPS01[0,i1].FlagIsMoving == True:  
                 scan_rate=0.1; #the scan rate of the counter
-                target=(48)*60*60/scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
+                target=(48)*60*60#scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
                 for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
                     if self.Stop == True:
                         com=self.StopBoard()
@@ -1493,7 +1526,7 @@ class LabsmithBoard:
             v=[v1 v2]
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True: 
                 scan_rate=0.1 #the scan rate of the counter
-                target=(48)*60*60 #scan_rate; //this is the final time of the counter. It is equal to max 48 hours        
+                target=(48)*60*60 #scan_rate; ##this is the final time of the counter. It is equal to max 48 hours        
                 for count1 in range (target) #this is a counter clock to check if the stop_status variable has changed
                     if self.Stop == True:
                         self.StopBoard()
@@ -1509,8 +1542,8 @@ class LabsmithBoard:
                                 diary on
                                 disp(comment)
                                 diary off  
-                                self.SPS01[0,i1].UpdateStatus() #////////////////////////////
-                                self.SPSO1[0,i2].UpdateStatus() #////////////////////////////
+                                self.SPS01[0,i1].UpdateStatus() #############################
+                                self.SPSO1[0,i2].UpdateStatus() #############################
                                 self.MulMove3[d1,v1,d2,v2]                                 
                                 self.flag_break_countpause = 1
                                 break #count_pause1
@@ -1545,7 +1578,7 @@ class LabsmithBoard:
                                                 diary on
                                                 disp(comment)
                                                 diary off  
-                                                self.SPSO1[0,a(0)].UpdateStatus() #////////////////////////////
+                                                self.SPSO1[0,a(0)].UpdateStatus() #############################
                                                 self.MulMove3[ad[0],av[0]];                                    
                                                 self.flag_break_countpause = 1
                                                 break #count_pause1
@@ -1556,7 +1589,7 @@ class LabsmithBoard:
                                         break #counter1  
                                     elif self.SPS01[0,a(0)].FlagIsDone == True:
                                         self.SPSO1[0,a(0)].displaymovementstop()
-                                        break #/counter 2                                          
+                                        break ##counter 2                                          
                                     time.sleep(scan_rate)                                          
                                 break # j search of first device to be done                                                                        
                         break # counter 1
@@ -1577,7 +1610,7 @@ class LabsmithBoard:
             v=[v1 v2 v3]
             if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True: 
                 scan_rate=0.1; #the scan rate of the counter
-                target=(48)*60*60 #scan_rate; //this is the final time of the counter. It is equal to max 48 hours
+                target=(48)*60*60 #scan_rate; ##this is the final time of the counter. It is equal to max 48 hours
                 for count1 in range(target) #this is a counter clock to check if the stop_status variable has changed
                     if self.Stop == True:
                         self.StopBoard()
@@ -1593,9 +1626,9 @@ class LabsmithBoard:
                                 diary on
                                 disp(comment)
                                 diary off  
-                                self.SPSO1[0,i1].UpdateStatus() #////////////////////////////
-                                self.SPSO1[0,i2].UpdateStatus() #////////////////////////////
-                                self.SPS01[0,i3].UpdateStatus() #////////////////////////////
+                                self.SPSO1[0,i1].UpdateStatus() #############################
+                                self.SPSO1[0,i2].UpdateStatus() #############################
+                                self.SPS01[0,i3].UpdateStatus() #############################
                                 self.MulMove3[d1,v1,d2,v2,d3,v3]                                    
                                 self.flag_break_countpause = 1
                                 break #count_pause1
@@ -1631,8 +1664,8 @@ class LabsmithBoard:
                                                 diary on
                                                 disp(comment)
                                                 diary off  
-                                                self.SPS01[0,a[0]].UpdateStatus() #////////////////////////////
-                                                self.SPS01[0,a[1]].UpdateStatus() #////////////////////////////
+                                                self.SPS01[0,a[0]].UpdateStatus() #############################
+                                                self.SPS01[0,a[1]].UpdateStatus() #############################
                                                 self.MulMove3[ad[1],av[1],ad[2],av[2]]                                 
                                                 self.flag_break_countpause = 1
                                                 break #count_pause1
@@ -1667,7 +1700,7 @@ class LabsmithBoard:
                                                                 diary on
                                                                 disp(comment)
                                                                 diary off 
-                                                                self.SPS01[0,b[0]].UpdateStatus() #////////////////////////////
+                                                                self.SPS01[0,b[0]].UpdateStatus() #############################
                                                                 self.MulMove3[bd[1],bv[1]]                                  
                                                                 self.flag_break_countpause = 1
                                                                 break #count_pause1
