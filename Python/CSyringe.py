@@ -78,7 +78,6 @@ class CSyringe:
         self.FlagIsMovingOut = self.device.IsMovingOut()
         if self.FlagIsStalled == True:
             with open("OUTPUT.txt", "a") as OUTPUT:
-                self.device.CmdStop()
                 comment = f"ERROR: Syringe {self.name} is stalled."
                 OUTPUT.write(comment + "\n")
                 print(comment)
@@ -100,13 +99,11 @@ class CSyringe:
         self.UpdateStatus(self)
         if self.FlagIsMovingIn == True:
             with open("OUTPUT.txt", "a") as OUTPUT:
-                self.device.CmdStop()
                 comment = f"{self.ClockStartCmd.strftime('%X')} Syringe {self.name} is pulling at {self.Flowrate} ul/min."
                 OUTPUT.write(comment + "\n")
                 print(comment)
         elif self.FlagIsMovingOut == True:
             with open("OUTPUT.txt", "a") as OUTPUT:
-                self.device.CmdStop()
                 comment = f"{self.ClockStartCmd.strftime('%X')} Syringe {self.name} is pushing at {self.Flowrate} ul/min."
                 OUTPUT.write(comment + "\n")
                 print(comment)
@@ -115,7 +112,6 @@ class CSyringe:
     def displaymovementstop(self):
         self.ClockStopCmd = datetime.now()
         with open("OUTPUT.txt", "a") as OUTPUT:
-                self.device.CmdStop()
                 comment = f"{self.ClockStartCmd.strftime('%X')} Syringe {self.name} is done."
                 OUTPUT.write(comment + "\n")
                 print(comment)

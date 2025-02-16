@@ -1517,56 +1517,56 @@ class LabsmithBoard:
     ## TODO ##
 
     ## Listener Function : Display the first device to be done and Stop and Pause (called in MulMove3)
-    def CheckFirstDoneStopPause(self,args):
-      if len(args) == 6: #only one syringe in motion (=numb input + self + 2more input (source and event))   
-            i1=args[2] #vararging doesn't include the self, so its size is nargin-1. The index is the last.
-            d1=args[3]
-            v1=args[4]
-            if self.SPS01[i1].FlagIsMoving == True:  
-                scan_rate=0.1; #the scan rate of the counter
-                target=(48)*60*60#scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
-                for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
-                    if self.Stop == True:
-                        com=self.StopBoard()
-                        break #counter1
-                    elif self.Pause == True:
-                        self.PauseBoard()
-                        for count_pause1 in range(target):
-                            if self.Stop == True:                                                              
-                                break #count_pause1
-                            elif self.Resume == True:
-                                self.ClockResume = clock
-                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
-                                diary on
-                                disp(comment)
-                                diary off 
-                                self.SPS01[i1].UpdateStatus()
-                                self.MulMove3[d1,v1]                                 
-                                self.flag_break_countpause = 1
-                                break #count_pause1
-                            time.sleep(scan_rate)
-                    elif self.SPS01{0,i1}.FlagIsMoving == True:
-                        self.SPS01[i1].UpdateStatus()
-                    if self.flag_break_countpause == 1:
-                        break #counter1
-                    elif self.SPS01[i1].FlagIsDone == True: 
-                        self.SPS01[i1].displaymovementstop()
-                        break #counter1
-                    time.sleep(scan_rate)
-        elif nargin == 9: # 2 syringes
+    def CheckFirstDoneStopPause(self, *args):
+        if len(args) == 6: #only one syringe in motion (=numb input + self + 2more input (source and event))   
+                i1=args[2] #vararging doesn't include the self, so its size is nargin-1. The index is the last.
+                d1=args[3]
+                v1=args[4]
+                if self.SPS01[i1].FlagIsMoving == True:  
+                    scan_rate=0.1; #the scan rate of the counter
+                    target=(48)*60*60#scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
+                    for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
+                        if self.Stop == True:
+                            com=self.StopBoard()
+                            break #counter1
+                        elif self.Pause == True:
+                            self.PauseBoard()
+                            for count_pause1 in range(target):
+                                if self.Stop == True:                                                              
+                                    break #count_pause1
+                                elif self.Resume == True:
+                                    self.ClockResume = datetime.now()
+                                    with open("OUTPUT.txt", "a") as OUTPUT:
+                                        comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                        OUTPUT.write(comment + "\n")
+                                        print(comment)
+                                    self.SPS01[i1].UpdateStatus()
+                                    self.MulMove3[d1,v1]                                 
+                                    self.flag_break_countpause = 1
+                                    break #count_pause1
+                                time.sleep(scan_rate)
+                        elif self.SPS01[i1].FlagIsMoving == True:
+                            self.SPS01[i1].UpdateStatus()
+                        if self.flag_break_countpause == 1:
+                            break #counter1
+                        elif self.SPS01[i1].FlagIsDone == True: 
+                            self.SPS01[i1].displaymovementstop()
+                            break #counter1
+                        time.sleep(scan_rate)
+        elif len(args) == 9: # 2 syringes
             i1=args[2] 
             d1=args[3]
             v1=args[4]
             i2=args[5]
             d2=args[6]
             v2=args[7]
-            i=[i1 i2]
-            d=[d1 d2]
-            v=[v1 v2]
+            i=[i1, i2]
+            d=[d1, d2]
+            v=[v1, v2]
             if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True: 
                 scan_rate=0.1 #the scan rate of the counter
                 target=(48)*60*60 #scan_rate; ##this is the final time of the counter. It is equal to max 48 hours        
-                for count1 in range (target) #this is a counter clock to check if the stop_status variable has changed
+                for count1 in range (target): #this is a counter clock to check if the stop_status variable has changed
                     if self.Stop == True:
                         self.StopBoard()
                         break # counter 1
@@ -1576,13 +1576,13 @@ class LabsmithBoard:
                             if self.Stop == True:
                                 break #count_pause1
                             elif self.Resume == True:
-                                self.ClockResume = clock
-                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
-                                diary on
-                                disp(comment)
-                                diary off  
-                                self.SPS01[i1].UpdateStatus() #############################
-                                self.SPSO1[0,i2].UpdateStatus() #############################
+                                self.ClockResume = datetime.now()
+                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                    comment = f"{self.ClockStartCmd.strftime('%X')} Syringe {self.name} Interface resumed by the user."
+                                    OUTPUT.write(comment + "\n")
+                                    print(comment)
+                                self.SPS01[i1].UpdateStatus()
+                                self.SPS01[i2].UpdateStatus()
                                 self.MulMove3[d1,v1,d2,v2]                                 
                                 self.flag_break_countpause = 1
                                 break #count_pause1
@@ -1612,11 +1612,11 @@ class LabsmithBoard:
                                             if self.Stop == True:
                                                 break #count_pause1
                                             elif self.Resume == True:
-                                                self.ClockResume = clock
-                                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.']
-                                                diary on
-                                                disp(comment)
-                                                diary off  
+                                                self.ClockResume = datetime.now()
+                                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                    OUTPUT.write(comment + "\n")
+                                                    print(comment)
                                                 self.SPSO1[0,a(0)].UpdateStatus() #############################
                                                 self.MulMove3[ad[0],av[0]];                                    
                                                 self.flag_break_countpause = 1
@@ -1634,7 +1634,7 @@ class LabsmithBoard:
                         break # counter 1
                     time.sleep(scan_rate)            
                 
-        elif nargin == 12: # 3 syringes
+        elif len(args) == 12: # 3 syringes
             i1=args[2] 
             d1=args[3]
             v1=args[4]
@@ -1644,42 +1644,42 @@ class LabsmithBoard:
             i3=args[8]
             d3=args[9]
             v3=args[10]
-            i=[i1 i2 i3]
-            d=[d1 d2 d3]
-            v=[v1 v2 v3]
+            i=[i1, i2, i3]
+            d=[d1, d2, d3]
+            v=[v1, v2, v3]
             if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True: 
                 scan_rate=0.1; #the scan rate of the counter
                 target=(48)*60*60 #scan_rate; ##this is the final time of the counter. It is equal to max 48 hours
-                for count1 in range(target) #this is a counter clock to check if the stop_status variable has changed
+                for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
                     if self.Stop == True:
                         self.StopBoard()
                         break # counter 1                            
-                     elif self.Pause == True:
+                    elif self.Pause == True:
                         self.PauseBoard()
                         for count_pause1 in range(target):
                             if self.Stop == True:
                                 break #count_pause1
                             elif self.Resume == True:
-                                self.ClockResume = clock
-                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
-                                diary on
-                                disp(comment)
-                                diary off  
-                                self.SPSO1[0,i1].UpdateStatus() #############################
-                                self.SPSO1[0,i2].UpdateStatus() #############################
-                                self.SPS01[i3].UpdateStatus() #############################
+                                self.ClockResume = datetime.now()
+                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    OUTPUT.write(comment + "\n")
+                                    print(comment) 
+                                self.SPS01[i1].UpdateStatus()
+                                self.SPS01[i2].UpdateStatus()
+                                self.SPS01[i3].UpdateStatus()
                                 self.MulMove3[d1,v1,d2,v2,d3,v3]                                    
                                 self.flag_break_countpause = 1
                                 break #count_pause1
                             time.sleep(scan_rate)
-                    elif self.SPS01[0],i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True:
+                    elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True:
                         self.SPS01[i1].UpdateStatus()
                         self.SPS01[i1].UpdateStatus()
                         self.SPS01[i3].UpdateStatus()
                     if self.flag_break_countpause == 1:
                         break #counter1  
                     elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True:
-                        for j=1 in range(len(i[0])):
+                        for j in range(len(i[0])):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
                                 a=i
@@ -1692,17 +1692,17 @@ class LabsmithBoard:
                                     if self.Stop == True:
                                         self.StopBoard()
                                         break # counter 2                                            
-                                     elif self.Pause == True:
+                                    elif self.Pause == True:
                                         self.PauseBoard()
                                         for count_pause1 in range (target):
                                             if self.Stop == True:
                                                 break #count_pause1
                                             elif self.Resume == True:
-                                                self.ClockResume = clock
-                                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
-                                                diary on
-                                                disp(comment)
-                                                diary off  
+                                                self.ClockResume = datetime.now()
+                                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                    OUTPUT.write(comment + "\n")
+                                                    print(comment)
                                                 self.SPS01[a[0]].UpdateStatus() #############################
                                                 self.SPS01[a[1]].UpdateStatus() #############################
                                                 self.MulMove3[ad[1],av[1],ad[2],av[2]]                                 
@@ -1734,11 +1734,11 @@ class LabsmithBoard:
                                                             if self.Stop == True:
                                                                 break #count_pause1
                                                             elif self.Resume == True:
-                                                                self.ClockResume = clock
-                                                                comment=[num2str(self.ClockResume(4)) , ':' , num2str(self.ClockResume(5)) ,':' ,num2str(self.ClockResume(6)), ' Interface resumed by the user.'] 
-                                                                diary on
-                                                                disp(comment)
-                                                                diary off 
+                                                                self.ClockResume = datetime.now()
+                                                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                    OUTPUT.write(comment + "\n")
+                                                                    print(comment)
                                                                 self.SPS01[b[0]].UpdateStatus() #############################
                                                                 self.MulMove3[bd[1],bv[1]]                                  
                                                                 self.flag_break_countpause = 1
@@ -1796,44 +1796,44 @@ class LabsmithBoard:
             d1=args[4]
             v1=args[5]
             ts=args[6]
-            var_not_disp=0;
+            var_not_disp=0
             if self.SPS01[i1].FlagIsMoving == True:
                 scan_rate=0.1
                 target=(48)*60*60/scan_rate
                 for count1 in range(t):
                     if self.Stop == True:
-                        StopBoard(self)
+                        self.StopBoard()
                         self.flag_break_stop = 1
                         break
                     elif self.Pause == True:
-                        PauseBoard(self)
+                        self.PauseBoard()
                         te = toc(ts)
                         difftime = t - te
                         for count_pause1 in range(target):
                             if self.Stop == True:
                                 break
                             elif self.Resume == True:
-                                self.ClockResume = clock
-                                comment=[num2str(self.ClockResume(4)), ':', num2str(self.ClockResume(5)), ':', num2str(self.ClockResume(6)), 'Interface resumed by the user.']
-                                diary on
-                                disp(comment);
-                                diary off
-                                UpdateStatus(self.SPS01[ i1])
+                                self.ClockResume = datetime.now()
+                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    OUTPUT.write(comment + "\n")
+                                    print(comment)
+                                self.SPS01[i1].UpdateStatus()
                                 self.flag_a +=1
                                 self.MoveWait(diff_time, d1, v1)
                                 self.flag_break_countpause = 1
                                 self.flag_b +=1
                                 break
-                            pause(scan_rate)
-                    elif self.SPS01[ i1].FlagIsMoving == True:
-                        UpdateStatus(self.SPS01[ i1])
+                            time.sleep(scan_rate)
+                    elif self.SPS01[i1].FlagIsMoving == True:
+                        self.SPS01[i1].UpdateStatus()
                     if self.flag_break_countpause == 1:
                         break
-                    elif self.SPS01[ i1].FlagIsDone == True:
-                        displaymovementstop(self.SPS01[ i1])
+                    elif self.SPS01[i1].FlagIsDone == True:
+                        self.SPS01[i1].displaymovementstop()
                         var_not_disp = 1
                         break
-                    pause(0)
+                    time.sleep(0)
                 if self.flag_break_stop == 0 and var_not_disp == 0:
                     self.WaitStopBoard
                     self.UpdateBoard
@@ -1871,51 +1871,51 @@ class LabsmithBoard:
                             if self.Stop == True:
                                 break
                             elif self.Resume == True:
-                                self.ClockResume = clock
-                                comment=[num2str(self.ClockResume(3)) , ':' , num2str(self.ClockResume(4)) ,':' ,num2str(self.ClockResume(5)), ' Interface resumed by the user.']; 
-                                diary on
-                                disp(comment);
-                                diary off 
-                                UpdateStatus(self.SPS01[ i1])
-                                UpdateStatus(self.SPS01[ i2])
+                                self.ClockResume = datetime.now()
+                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    OUTPUT.write(comment + "\n")
+                                    print(comment)
+                                self.SPS01[i1].UpdateStatus()
+                                self.SPS01[i2].UpdateStatus()
                                 self.flag_a +=1 
                                 self.MoveWait(diff_time, d1, v1, d2, v2)
                                 self.flag_break_countpause = 1
                                 self.flag_b += 1
                                 break
-                            pause(scan_rate)
-                    elif self.SPS01[ i1].FlagIsMoving == True and self.SPS01[ i2].FlagIsMoving == True:
-                        UpdateStatus(self.SPS01[i1]);
-                        UpdateStatus(self.SPS01[i2]);
+                            time.sleep(scan_rate)
+                    elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[ i2].FlagIsMoving == True:
+                        self.SPS01[i1].UpdateStatus()
+                        self.SPS01[i2].UpdateStatus()
                     if self.flag_break_countpause == 1:
                         break
-                    elif self.SPS01[ i1].FlagIsDone == True or self.SPS01[ i2].FlagIsDone == True:
-                        for j in size(i, 2):
-                            if self.SPS01[ i(j)].FlagIsDone == True:
-                                displaymovementstop(self.SPS01[ i(j)])
+                    elif self.SPS01[ i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True:
+                        for j in len(i):
+                            if self.SPS01[i[j]].FlagIsDone == True:
+                                self.SPS01[i[j]].displaymovementstop()
                                 te=toc(ts)
                                 t1=(t-te)
                                 ts=tic
                                 a=i
-                                a(j)=[]
+                                a[j]=[]
                                 ad=d
-                                ad(j)=[]
+                                ad[j]=[]
                                 av=v
-                                av(j)=[]
-                                for count2 in range(t1)
-                                if self.Stop == True:
-                                    self.StopBoard
-                                    self.flag_break_stop = 1
-                                    break
-                                elif self.Pause == True:
-                                    self.PauseBoard
-                                    te=toc(ts)
-                                    diff_time=t-te
-                                    for count_pause1 in range(target):
-                                        if self.Stop == True:
-                                            break
-                                        elif self.Resume == True:
-                                            self.ClockResume = clock
+                                av[j]=[]
+                                for count2 in range(t1):
+                                    if self.Stop == True:
+                                        self.StopBoard
+                                        self.flag_break_stop = 1
+                                        break
+                                    elif self.Pause == True:
+                                        self.PauseBoard
+                                        te=toc(ts)
+                                        diff_time=t-te
+                                        for count_pause1 in range(target):
+                                            if self.Stop == True:
+                                                break
+                                            elif self.Resume == True:
+                                                self.ClockResume = datetime.now()
                                             
                         
                     

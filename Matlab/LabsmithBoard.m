@@ -3791,7 +3791,7 @@ classdef LabsmithBoard < handle
                     elseif nargin == 5 // 2 syringes as input
                         i1=FindIndexS(obj,d1);
                         i2=FindIndexS(obj,d2); 
-                        obj.listener_firstdonepause = addlistener(obj, 'FirstDoneStopPause',@(src,evnt)obj.CheckFirstDoneStopPause(src,evnt,i1,d1,v1,i2,d2,v2)); //it listens for the syringes FlagIsMoving == true, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = true again.
+                        obj.listener_firstdonepause = addf(obj, 'FirstDoneStopPause',@(src,evnt)obj.CheckFirstDoneStopPause(src,evnt,i1,d1,v1,i2,d2,v2)); //it listens for the syringes FlagIsMoving == true, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = true again.
                         if ~isempty(i1) && ~isempty(i2)
                             if obj.SPS01{1,i1}.FlagIsDone == true && obj.SPS01{1,i2}.FlagIsDone == true
                                 obj.SPS01{1,i1}.device.CmdMoveToVolume(v1);
