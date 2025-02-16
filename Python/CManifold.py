@@ -23,6 +23,7 @@ class CManifold:
         self.ClockStartCmd = None
         self.ClockStopCmd = None
 
+        ### Constructor
         self.device = self.Lboard.eib.New4VM(np.int8(self.add_syr))
         self.name= self.device.GetName
         

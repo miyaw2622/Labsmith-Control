@@ -1,18 +1,18 @@
 classdef CSyringe < handle    
     properties (GetAccess = 'public', SetAccess = 'public', SetObservable)
-        % General info
+        / General info
         device = [];
         name = [];
         address = [];
         
-        % Syringes info
+        / Syringes info
         maxFlowrate = [];
         minFlowrate = [];
         Flowrate = [];
         diameter = [];
         maxVolume = [];
         
-        % Flags
+        / Flags
         FlagIsMoving = false;
         FlagIsDone = true;
         FlagIsOnline = false;
@@ -22,11 +22,11 @@ classdef CSyringe < handle
         FlagReady = true;
         FlagStop = false;
                 
-        % Clocks
+        / Clocks
         ClockStartCmd
         ClockStopCmd
         
-        %Listener
+        /Listener
         listener
         listener_stop
         
@@ -38,7 +38,7 @@ classdef CSyringe < handle
     
      methods(Access = public)
          
-        %% Constructor
+        // Constructor
         function obj = CSyringe(Lboard,add_syr)
             obj.device=Lboard.eib.NewSPS01(int8(add_syr));
             obj.name=char(obj.device.GetName);
@@ -47,8 +47,8 @@ classdef CSyringe < handle
             obj.minFlowrate=obj.device.GetMinFlowrate();
             obj.maxVolume=obj.device.GetMaxVolume();
             
-            obj.listener = addlistener(obj, 'MovingState',@(src,evnt)obj.Updating()); %it listens for the obj.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. obj.Ready = true again.
-            obj.listener_stop = addlistener(obj, 'FlagStop', 'PostSet' , @(src,evnt)obj.StopSyr()); %it listens for the obj.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. obj.Ready = true again.
+            obj.listener = addlistener(obj, 'MovingState',@(src,evnt)obj.Updating()); /it listens for the obj.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. obj.Ready = true again.
+            obj.listener_stop = addlistener(obj, 'FlagStop', 'PostSet' , @(src,evnt)obj.StopSyr()); /it listens for the obj.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. obj.Ready = true again.
             
             UpdateStatus(obj);
             
@@ -58,7 +58,7 @@ classdef CSyringe < handle
             diary off
         end
         
-        %% UpdateStaus
+        // UpdateStaus
         function UpdateStatus(obj)
             obj.device.CmdGetStatus();
             obj.FlagIsDone=obj.device.IsDone();
@@ -76,8 +76,7 @@ classdef CSyringe < handle
             end                    
         end
         
-        %% MoveTo 
-                
+        // MoveTo        
         function MoveTo(obj,flowrate,volume)
             if obj.FlagIsDone == true
                 obj.device.CmdSetFlowrate(flowrate);
@@ -91,7 +90,7 @@ classdef CSyringe < handle
             end
         end
         
-        %% Display movement In and Out on cmdwindow              
+        // Display movement In and Out on cmdwindow              
         function displaymovement(obj)
             obj.ClockStartCmd=clock;
             UpdateStatus(obj);
@@ -108,7 +107,7 @@ classdef CSyringe < handle
             end 
         end          
              
-        %% Display stop movement on cmdwindow             
+        // Display stop movement on cmdwindow             
         function displaymovementstop(obj)
             obj.ClockStopCmd=clock;
             diary on
@@ -118,7 +117,7 @@ classdef CSyringe < handle
             obj.FlagReady = true;
         end
         
-         %% Listener function
+         // Listener function
         function Updating(obj)
             if obj.FlagIsMoving == true
                 while obj.FlagIsMoving == true
@@ -137,14 +136,14 @@ classdef CSyringe < handle
             end
         end
         
-         %% Stop
+         // Stop
         function Stop(obj)        
             obj.device.CmdStop();
             UpdateStatus(obj);
             obj.FlagReady = true;
         end  
         
-         %% Wait
+         // Wait
         function Wait(obj,time_sec) 
             pause(time_sec)
             Stop(obj)
