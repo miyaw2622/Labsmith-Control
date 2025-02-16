@@ -74,8 +74,8 @@ class LabsmithBoard:
             else:
                 comment='Not connected, check the right COM port on Device Manager'
         
-        OUTPUT.write(comment + "\n")
-        print(comment)
+            OUTPUT.write(comment + "\n")
+            print(comment)
 
 
     ### Destructor
@@ -92,9 +92,9 @@ class LabsmithBoard:
             else:
                 com='Error, still connected'
 
-        OUTPUT.write(com + "\n")
-        print(com)
-        return com
+            OUTPUT.write(com + "\n")
+            print(com)
+            return com
         
     ### Load
     def Load(self):
@@ -125,9 +125,7 @@ class LabsmithBoard:
             for i, add in enumerate(add_syr):
                 self.SPS01[i] = CSyringe(self, int(add)); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
                 self.SPS01[i].address=int(add)
-
-
-    ## TODO ##
+ 
 
     ### Stop
     def StopBoard(sefl):
