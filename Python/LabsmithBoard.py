@@ -99,7 +99,7 @@ class LabsmithBoard:
     ### Load
     def Load(self):
         dev_list=str(self.eib.CmdCreateDeviceList())
-        expression = '\,'; ##i first split the string into multiple strings
+        expression = '\,' ##i first split the string into multiple strings
         splitStr = dev_list.split(expression)##divide all the different devices. It is a cell array. Each cell is a segment of the dev_list char vector containing info about each device
         NumDev=len(splitStr)
         self.TotNumDev=NumDev
@@ -115,7 +115,7 @@ class LabsmithBoard:
             add_man = [re.findall(PAT, Manifold) for Manifold in StrManifold] # OUTPUT 2: add_man =["35", "74"]. It is 2x1 vector containg the addresses of the manifolds on the board
             self.C4VM=np.zeros(len(add_man))
             for i, add in enumerate(add_man):
-                self.C4VM[i] = CManifold(self, int(add[0])); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.C4VM[i] = CManifold(self, int(add[0])) ## it constructs a SPS01 selfect on the specified address. We will use this for the command
                 self.C4VM[i].address=int(add[0])
 
         if StrSyringe:
@@ -123,7 +123,7 @@ class LabsmithBoard:
             add_syr = [re.findall(PAT, Syringe) for Syringe in StrSyringe] ## OUTPUT 4: add_syr =[1,3,8,14,26].  It is 5x1 vector containg the addresses of the syringes on the board
             np.zeros(len(add_syr))
             for i, add in enumerate(add_syr):
-                self.SPS01[i] = CSyringe(self, int(add[0])); ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.SPS01[i] = CSyringe(self, int(add[0])) ## it constructs a SPS01 selfect on the specified address. We will use this for the command
                 self.SPS01[i].address=int(add[0])
 
     ### Stop
@@ -194,16 +194,141 @@ class LabsmithBoard:
         return [out, com]
 
     ### Set Multiple FlowRates (at the same time)
-    def SetFlowRate(self, d1,f1,d2,f2,d3,f3,d4,f4,d5,f5,d6,f6,d7,f7,d8,f8):
-        pass
-    ## TODO ##
+    def SetFlowRate(self, d1 = None, f1 = None, d2 = None, f2 = None, d3 = None, f3 = None, d4 = None, f4 = None, d5 = None, f5 = None, d6 = None, f6 = None, d7 = None, f7 = None, d8 = None, f8 = None):
+        if [d1, f1, d2, f2, d3, f3, d4, f4, d5, f5, d6, f6, d7, f7, d8, f8].count(None)%2 ==0:
+                print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
+        else:
+            if f1 != None and d2 == None:
+                i1=self.FindIndexS(d1)
+                if i1:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)                        
+                    self.SPS01[i1].Flowrate = f1
+            elif f2 != None and d3 == None:
+                i1=self.FindIndexS(d1)
+                i2=self.FindIndexS(d2)
+                if i1 and i2:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)
+                    self.SPS01[i1].Flowrate = f1
+                    self.SPS01[i2].device.CmdSetFlowrate(f2)
+                    self.SPS01[i2].Flowrate = f2                        
+            elif f3 != None and d4 == None:
+                i1=self.FindIndexS(d1)
+                i2=self.FindIndexS(d2)
+                i3=self.FindIndexS(d3)
+                if i1 and i2 and i3:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)
+                    self.SPS01[i1].Flowrate = f1
+                    self.SPS01[i2].device.CmdSetFlowrate(f2)
+                    self.SPS01[i2].Flowrate = f2 
+                    self.SPS01[i3].device.CmdSetFlowrate(f3)
+                    self.SPS01[i3].Flowrate = f3
+            elif f4 != None and d5 == None:
+                i1=self.FindIndexS(d1)
+                i2=self.FindIndexS(d2)
+                i3=self.FindIndexS(d3)
+                i4=self.FindIndexS(d4)
+                if i1 and i2 and i3 and i4:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)
+                    self.SPS01[i1].Flowrate = f1
+                    self.SPS01[i2].device.CmdSetFlowrate(f2)
+                    self.SPS01[i2].Flowrate = f2 
+                    self.SPS01[i3].device.CmdSetFlowrate(f3)
+                    self.SPS01[i3].Flowrate = f3
+                    self.SPS01[i4].device.CmdSetFlowrate(f4)
+                    self.SPS01[i4].Flowrate = f4
+            elif f5 != None and d6 == None:
+                i1=self.FindIndexS(d1)
+                i2=self.FindIndexS(d2)
+                i3=self.FindIndexS(d3)
+                i4=self.FindIndexS(d4)
+                i5=self.FindIndexS(d5)
+                if i1 and i2 and i3 and i4 and i5:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)
+                    self.SPS01[i1].Flowrate = f1
+                    self.SPS01[i2].device.CmdSetFlowrate(f2)
+                    self.SPS01[i2].Flowrate = f2 
+                    self.SPS01[i3].device.CmdSetFlowrate(f3)
+                    self.SPS01[i3].Flowrate = f3
+                    self.SPS01[i4].device.CmdSetFlowrate(f4)
+                    self.SPS01[i4].Flowrate = f4
+                    self.SPS01[i5].device.CmdSetFlowrate(f5)
+                    self.SPS01[i5].Flowrate = f5
+            elif f6 != None and d7 == None:
+                i1=self.FindIndexS(d1)
+                i2=self.FindIndexS(d2)
+                i3=self.FindIndexS(d3)
+                i4=self.FindIndexS(d4)
+                i5=self.FindIndexS(d5)
+                i6=self.FindIndexS(d6)
+                if i1 and i2 and i3 and i4 and i5 and i6:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)
+                    self.SPS01[i1].Flowrate = f1
+                    self.SPS01[i2].device.CmdSetFlowrate(f2)
+                    self.SPS01[i2].Flowrate = f2 
+                    self.SPS01[i3].device.CmdSetFlowrate(f3)
+                    self.SPS01[i3].Flowrate = f3
+                    self.SPS01[i4].device.CmdSetFlowrate(f4)
+                    self.SPS01[i4].Flowrate = f4
+                    self.SPS01[i5].device.CmdSetFlowrate(f5)
+                    self.SPS01[i5].Flowrate = f5
+                    self.SPS01[i6].device.CmdSetFlowrate(f6)
+                    self.SPS01[i6].Flowrate = f6
+            elif f7 != None and d8 == None:
+                i1=self.FindIndexS(d1)
+                i2=self.FindIndexS(d2)
+                i3=self.FindIndexS(d3)
+                i4=self.FindIndexS(d4)
+                i5=self.FindIndexS(d5)
+                i6=self.FindIndexS(d6)
+                i7=self.FindIndexS(d7)
+                if i1 and i2 and i3 and i4 and i5 and i6 and i7:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)
+                    self.SPS01[i1].Flowrate = f1
+                    self.SPS01[i2].device.CmdSetFlowrate(f2)
+                    self.SPS01[i2].Flowrate = f2 
+                    self.SPS01[i3].device.CmdSetFlowrate(f3)
+                    self.SPS01[i3].Flowrate = f3
+                    self.SPS01[i4].device.CmdSetFlowrate(f4)
+                    self.SPS01[i4].Flowrate = f4
+                    self.SPS01[i5].device.CmdSetFlowrate(f5)
+                    self.SPS01[i5].Flowrate = f5
+                    self.SPS01[i6].device.CmdSetFlowrate(f6)
+                    self.SPS01[i6].Flowrate = f6
+                    self.SPS01[i7].device.CmdSetFlowrate(f7)
+                    self.SPS01[i7].Flowrate = f7
+            elif f8 != None:
+                i1=self.FindIndexS(d1)
+                i2=self.FindIndexS(d2)
+                i3=self.FindIndexS(d3)
+                i4=self.FindIndexS(d4)
+                i5=self.FindIndexS(d5)
+                i6=self.FindIndexS(d6)
+                i7=self.FindIndexS(d7)
+                i8=self.FindIndexS(d8)
+                if i1 and i2 and i3 and i4 and i5 and i6 and i7 and i8:
+                    self.SPS01[i1].device.CmdSetFlowrate(f1)
+                    self.SPS01[i1].Flowrate = f1
+                    self.SPS01[i2].device.CmdSetFlowrate(f2)
+                    self.SPS01[i2].Flowrate = f2 
+                    self.SPS01[i3].device.CmdSetFlowrate(f3)
+                    self.SPS01[i3].Flowrate = f3
+                    self.SPS01[i4].device.CmdSetFlowrate(f4)
+                    self.SPS01[i4].Flowrate = f4
+                    self.SPS01[i5].device.CmdSetFlowrate(f5)
+                    self.SPS01[i5].Flowrate = f5
+                    self.SPS01[i6].device.CmdSetFlowrate(f6)
+                    self.SPS01[i6].Flowrate = f6
+                    self.SPS01[i7].device.CmdSetFlowrate(f7)
+                    self.SPS01[i7].Flowrate = f7
+                    self.SPS01[i8].device.CmdSetFlowrate(f8)
+                    self.SPS01[i8].Flowrate = f8
 
     ### Multiple Movement (at the same time)
     def MulMove(self, d1 = None, v1 = None, d2  = None, v2 = None, d3 = None, v3 = None, d4 = None, v4 = None, d5 = None, v5 = None, d6 = None, v6 = None, d7 = None, v7 = None, d8 = None, v8 = None):
         if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 !=0:
             print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
         else:
-            if d1 != None and v1 != None:  # # 1 syringe as input
+            if v1 != None and d2 == None:  # # 1 syringe as input
                 i1=self.FindIndexS(d1) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1])   # #it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
                 if len(i1)>0:
@@ -395,8 +520,196 @@ class LabsmithBoard:
 
     ## Multiple Movement with stop (at the same time. It allows the stop)
     def MulMove2(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
-        pass
-    ## TODO ##
+        if self.Stop == False:
+            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 ==0:
+                print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
+            else:
+                if v1 != None and d2 == None: ## 1 syringe as input
+                    i1=self.FindIndexS(d1)
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1])   ##it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
+                    if i1:
+                        if self.SPS01[i1].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i1].displaymovement()
+                            if self.SPS01[i1].FlagIsMoving == True:
+                                self.notify('FirstDoneStop')
+                elif v2 != None and d3 == None: ## 2 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1, i2]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.  
+                    if i1 and i2:
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i1].displaymovement()
+                            self.SPS01[i2].device.CmdMoveToVolume(v2) 
+                            self.SPS01[i2].FlagReady = False
+                            self.SPS01[i2].displaymovement() 
+                            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True:
+                                self.notify('FirstDoneStop')
+                elif v3 != None and d4 == None: ## 3 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    i3=self.FindIndexS(d3)
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1, i2, i3]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].device.CmdMoveToVolume(v2) 
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i2].displaymovement()
+                        self.SPS01[i3].device.CmdMoveToVolume(v3) 
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i3].displaymovement()
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsMoving == True:
+                            self.notify('FirstDoneStop')                   
+                elif v4 != None and d5 == None: ## 4 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1, i2, i3, i4]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].device.CmdMoveToVolume(v2) 
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i2].displaymovement()
+                        self.SPS01[i3].device.CmdMoveToVolume(v3) 
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].device.CmdMoveToVolume(v4) 
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i4].displaymovement()
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True:
+                            self.notify('FirstDoneStop')
+                elif v5 != None and d6 == None: ## 5 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    i5=self.FindIndexS(d5)
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1, i2, i3, i4, i5]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4 and i5:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].device.CmdMoveToVolume(v2) 
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i2].displaymovement()
+                        self.SPS01[i3].device.CmdMoveToVolume(v3) 
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].device.CmdMoveToVolume(v4) 
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i4].displaymovement()
+                        self.SPS01[i5].device.CmdMoveToVolume(v5) 
+                        self.SPS01[i5].FlagReady = False
+                        self.SPS01[i5].displaymovement()
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True:
+                            self.notify('FirstDoneStop')
+                elif v6 != None and d7 == None: ## 6 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    i5=self.FindIndexS(d5)
+                    i6=self.FindIndexS(d6)
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1, i2, i3, i4, i5, i6]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4 and i5 and i6:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].device.CmdMoveToVolume(v2) 
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i2].displaymovement()
+                        self.SPS01[i3].device.CmdMoveToVolume(v3) 
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].device.CmdMoveToVolume(v4) 
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i4].displaymovement()
+                        self.SPS01[i5].device.CmdMoveToVolume(v5) 
+                        self.SPS01[i5].FlagReady = False
+                        self.SPS01[i5].displaymovement()
+                        self.SPS01[i6].device.CmdMoveToVolume(v6) 
+                        self.SPS01[i6].FlagReady = False
+                        self.SPS01[i6].displaymovement()
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True:
+                            self.notify('FirstDoneStop')
+                elif v7 != None and d8 == None: ## 7 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    i5=self.FindIndexS(d5)
+                    i6=self.FindIndexS(d6)
+                    i7=self.FindIndexS(d7)
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1, i2, i3, i4, i5, i6, i7]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4 and i5 and i6 and i7:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].device.CmdMoveToVolume(v2) 
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i2].displaymovement()
+                        self.SPS01[i3].device.CmdMoveToVolume(v3) 
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].device.CmdMoveToVolume(v4) 
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i4].displaymovement()
+                        self.SPS01[i5].device.CmdMoveToVolume(v5) 
+                        self.SPS01[i5].FlagReady = False
+                        self.SPS01[i5].displaymovement()
+                        self.SPS01[i6].device.CmdMoveToVolume(v6) 
+                        self.SPS01[i6].FlagReady = False
+                        self.SPS01[i6].displaymovement()
+                        self.SPS01[i7].device.CmdMoveToVolume(v7) 
+                        self.SPS01[i7].FlagReady = False
+                        self.SPS01[i7].displaymovement()
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True and self.SPS01[i7].FlagIsMoving == True:
+                            self.notify('FirstDoneStop')
+                elif v7 != None: ## 8 syringes as input (impossible - max numb of syringes is 7)
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    i5=self.FindIndexS(d5)
+                    i6=self.FindIndexS(d6)
+                    i7=self.FindIndexS(d7)
+                    i8=self.FindIndexS(d8)
+                    self.addlistener('FirstDoneStop', "listener_firstdone", self.CheckFirstDoneStop, [i1, i2, i3, i4, i5, i6, i7, i8]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4 and i5 and i6 and i7 and i8:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].device.CmdMoveToVolume(v2) 
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i2].displaymovement()
+                        self.SPS01[i3].device.CmdMoveToVolume(v3) 
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].device.CmdMoveToVolume(v4) 
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i4].displaymovement()
+                        self.SPS01[i5].device.CmdMoveToVolume(v5) 
+                        self.SPS01[i5].FlagReady = False
+                        self.SPS01[i5].displaymovement()
+                        self.SPS01[i6].device.CmdMoveToVolume(v6) 
+                        self.SPS01[i6].FlagReady = False
+                        self.SPS01[i6].displaymovement()
+                        self.SPS01[i7].device.CmdMoveToVolume(v7) 
+                        self.SPS01[i7].FlagReady = False
+                        self.SPS01[i7].displaymovement()
+                        self.SPS01[i8].device.CmdMoveToVolume(v8) 
+                        self.SPS01[i8].FlagReady = False
+                        self.SPS01[i8].displaymovement()
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True and self.SPS01[i7].FlagIsMoving == True and self.SPS01[i8].FlagIsMoving == True:
+                            self.notify('FirstDoneStop')
 
     ### Listener Function : Display the first device to be done (called in MulMove)
     def CheckFirstDone(self, *args):
@@ -416,7 +729,7 @@ class LabsmithBoard:
                     self.SPS01[i1].UpdateStatus()
                     self.SPS01[i2].UpdateStatus()
                 if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True:
-                    for j in range(len(i[0])):
+                    for j in range(i[0]):
                         if self.SPS01[i[j]].FlagIsDone == True:
                             self.SPS01[ i[j]].displaymovementstop()
                             a=i 
@@ -437,7 +750,7 @@ class LabsmithBoard:
                     self.SPS01[i2].UpdateStatus() 
                     self.SPS01[i3].UpdateStatus()
                 if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True:
-                    for j in range(len(i[0])):
+                    for j in range(i[0]):
                         if self.SPS01[i[j]].FlagIsDone == True:
                             self.SPS01[i[j]].displaymovementstop()
                             a=i 
@@ -446,7 +759,7 @@ class LabsmithBoard:
                                     self.SPS01[a[0]].UpdateStatus() 
                                     self.SPS01[a[1]].UpdateStatus()
                             if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True:
-                                for k in range(len(a[0])):
+                                for k in range(a[0]):
                                     if self.SPS01[a[k]].FlagIsDone == True:
                                         self.SPS01[a[k]].displaymovementstop()
                                         b=a 
@@ -470,7 +783,7 @@ class LabsmithBoard:
                     self.SPS01[i3].UpdateStatus() 
                     self.SPS01[i4].UpdateStatus()
                 if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True:
-                    for j in range(len(i[0])):
+                    for j in range(i[0]):
                         if self.SPS01[i[j]].FlagIsDone == True:
                             self.SPS01[i[j]].displaymovementstop()
                             a=i 
@@ -480,7 +793,7 @@ class LabsmithBoard:
                                     self.SPS01[a[1]].UpdateStatus() 
                                     self.SPS01[a[2]].UpdateStatus()
                             if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True:
-                                for k in range(len(a[0])):
+                                for k in range(a[0]):
                                     if self.SPS01[a[k]].FlagIsDone == True:
                                         self.SPS01[a[k]].displaymovementstop()
                                         b=a 
@@ -489,7 +802,7 @@ class LabsmithBoard:
                                             self.SPS01[b[0]].UpdateStatus() 
                                             self.SPS01[b[1]].UpdateStatus()
                                         if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True:
-                                            for p in range(len(b[0])):
+                                            for p in range(b[0]):
                                                 if self.SPS01[b[p]].FlagIsDone == True:
                                                     self.SPS01[b[p]].displaymovementstop()
                                                     c=b 
@@ -516,7 +829,7 @@ class LabsmithBoard:
                     self.SPS01[i4].UpdateStatus() 
                     self.SPS01[i5].UpdateStatus()
                 if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True:
-                    for j in range(len(i[0])):
+                    for j in range(i[0]):
                         if self.SPS01[i[j]].FlagIsDone == True:
                             self.SPS01[i[j]].displaymovementstop()
                             a=i 
@@ -527,7 +840,7 @@ class LabsmithBoard:
                                     self.SPS01[a[2]].UpdateStatus()
                                     self.SPS01[a[3]].UpdateStatus()
                             if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True:
-                                for k in range(len(a[0])):
+                                for k in range(a[0]):
                                     if self.SPS01[a[k]].FlagIsDone == True:
                                         self.SPS01[a[k]].displaymovementstop()
                                         b=a 
@@ -537,7 +850,7 @@ class LabsmithBoard:
                                             self.SPS01[b[1]].UpdateStatus()
                                             self.SPS01[b[2]].UpdateStatus()
                                         if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True:
-                                            for p in range(len(b[0])):
+                                            for p in range(b[0]):
                                                 if self.SPS01[b[p]].FlagIsDone == True:
                                                     self.SPS01[b[p]].displaymovementstop()
                                                     c=b 
@@ -546,7 +859,7 @@ class LabsmithBoard:
                                                         self.SPS01[c[0]].UpdateStatus()
                                                         self.SPS01[c[1]].UpdateStatus()
                                                     if self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True:
-                                                        for q in range(len(c[0])):
+                                                        for q in range(c[0]):
                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                 self.SPS01[c[q]].displaymovementstop()
                                                                 d=c 
@@ -576,7 +889,7 @@ class LabsmithBoard:
                     self.SPS01[i5].UpdateStatus() 
                     self.SPS01[i6].UpdateStatus()
                 if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True:
-                    for j in range(len(i[0])):
+                    for j in range(i[0]):
                         if self.SPS01[i[j]].FlagIsDone == True:
                             self.SPS01[i[j]].displaymovementstop()
                             a=i
@@ -588,7 +901,7 @@ class LabsmithBoard:
                                     self.SPS01[a[3]].UpdateStatus()
                                     self.SPS01[a[4]].UpdateStatus()
                             if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True:
-                                for k in range(len(a[0])):
+                                for k in range(a[0]):
                                     if self.SPS01[a[k]].FlagIsDone == True:
                                         self.SPS01[a[k]].displaymovementstop()
                                         b=a 
@@ -599,7 +912,7 @@ class LabsmithBoard:
                                             self.SPS01[b[2]].UpdateStatus()
                                             self.SPS01[b[3]].UpdateStatus()
                                         if self.SPS01[b[[0]]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True:
-                                            for p in range(len(b[0])):
+                                            for p in range(b[0]):
                                                 if self.SPS01[b[p]].FlagIsDone == True:
                                                     self.SPS01[b[p]].displaymovementstop()
                                                     c=b 
@@ -609,7 +922,7 @@ class LabsmithBoard:
                                                         self.SPS01[c[1]].UpdateStatus()
                                                         self.SPS01[c[2]].UpdateStatus()
                                                     if self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True:
-                                                        for q in range(len(c[0])):
+                                                        for q in range(c[0]):
                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                 self.SPS01[c[q]].displaymovementstop()
                                                                 d=c 
@@ -618,7 +931,7 @@ class LabsmithBoard:
                                                                     self.SPS01[d[0]].UpdateStatus()
                                                                     self.SPS01[d[1]].UpdateStatus()
                                                                 if self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone:
-                                                                    for r in range(len(d[0])):
+                                                                    for r in range(d[0]):
                                                                         if self.SPS01[d[r]].FlagIsDone == True:
                                                                             self.SPS01[d[r]].displaymovementstop()
                                                                             e=d
@@ -651,7 +964,7 @@ class LabsmithBoard:
                     self.SPS01[i6].UpdateStatus() 
                     self.SPS01[i7].UpdateStatus()
                 if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True or self.SPS01[i7].FlagIsDone == True:
-                    for j in range(len(i[0])):
+                    for j in range(i[0]):
                         if self.SPS01[i[j]].FlagIsDone == True:
                             self.SPS01[i[j]].displaymovementstop()
                             a=i 
@@ -664,7 +977,7 @@ class LabsmithBoard:
                                     self.SPS01[a[4]].UpdateStatus() 
                                     self.SPS01[a[5]].UpdateStatus()
                             if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True or self.SPS01[a[5]].FlagIsDone == True:
-                                for k in range(len(a[0])):
+                                for k in range(a[0]):
                                     if self.SPS01[a[k]].FlagIsDone == True:
                                         self.SPS01[a[k]].displaymovementstop()
                                         b=a 
@@ -676,7 +989,7 @@ class LabsmithBoard:
                                             self.SPS01[b[3]].UpdateStatus() 
                                             self.SPS01[b[4]].UpdateStatus()
                                         if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True or self.SPS01[b[4]].FlagIsDone == True:
-                                            for p in range(len(b[0])):
+                                            for p in range(b[0]):
                                                 if self.SPS01[b[p]].FlagIsDone == True:
                                                     self.SPS01[b[p]].displaymovementstop()
                                                     c=b 
@@ -687,7 +1000,7 @@ class LabsmithBoard:
                                                         self.SPS01[c[2]].UpdateStatus() 
                                                         self.SPS01[c[3]].UpdateStatus()
                                                     if self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True or self.SPS01[c[3]].FlagIsDone == True:
-                                                        for q in range(len(c[0])):
+                                                        for q in range(c[0]):
                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                 self.SPS01[c[q]].displaymovementstop()
                                                                 d=c 
@@ -697,7 +1010,7 @@ class LabsmithBoard:
                                                                     self.SPS01[d[1]].UpdateStatus() 
                                                                     self.SPS01[d[2]].UpdateStatus()
                                                                 if self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone or self.SPS01[d[2]].FlagIsDone:
-                                                                    for r in range(len(d[0])):
+                                                                    for r in range(d[0]):
                                                                         if self.SPS01[d[r]].FlagIsDone == True:
                                                                             self.SPS01[d[r]].displaymovementstop()
                                                                             e=d 
@@ -706,7 +1019,7 @@ class LabsmithBoard:
                                                                                 self.SPS01[e[0]].UpdateStatus()
                                                                                 self.SPS01[e[1]].UpdateStatus()
                                                                             if self.SPS01[e[0]].FlagIsDone or self.SPS01[e[1]].FlagIsDone:
-                                                                                for s in range(len(e[0])):
+                                                                                for s in range(e[0]):
                                                                                     if self.SPS01[e[s]].FlagIsDone == True:
                                                                                         self.SPS01[e[s]].displaymovementstop()
                                                                                         f=e 
@@ -741,7 +1054,7 @@ class LabsmithBoard:
                     self.SPS01[i7].UpdateStatus() 
                     self.SPS01[i8].UpdateStatus()
                 if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True or self.SPS01[i7].FlagIsDone == True or self.SPS01[i8].FlagIsDone == True:
-                    for j in range(len(i[0])):
+                    for j in range(i[0]):
                         if self.SPS01[i(j)].FlagIsDone == True:
                             self.SPS01[i[j]].displaymovementstop()
                             a=i 
@@ -755,7 +1068,7 @@ class LabsmithBoard:
                                     self.SPS01[a[5]].UpdateStatus() 
                                     self.SPS01[a[6]].UpdateStatus()
                             if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True or self.SPS01[a[5]].FlagIsDone == True or self.SPS01[a[6]].FlagIsDone == True:
-                                for k in range(len(a[0])):
+                                for k in range(a[0]):
                                     if self.SPS01[a[k]].FlagIsDone == True:
                                         self.SPS01[a[k]].displaymovementstop()
                                         b=a 
@@ -768,7 +1081,7 @@ class LabsmithBoard:
                                             self.SPS01[b[4]].UpdateStatus() 
                                             self.SPS01[b[5]].UpdateStatus()
                                         if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True or self.SPS01[b[4]].FlagIsDone == True or self.SPS01[b[5]].FlagIsDone == True:
-                                            for p in range(len(b[0])):
+                                            for p in range(b[0]):
                                                 if self.SPS01[b[p]].FlagIsDone == True:
                                                     self.SPS01[b[p]].displaymovementstop()
                                                     c=b 
@@ -780,7 +1093,7 @@ class LabsmithBoard:
                                                         self.SPS01[c[3]].UpdateStatus() 
                                                         self.SPS01[c[4]].UpdateStatus()
                                                     if self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True or self.SPS01[c[3]].FlagIsDone == True or self.SPS01[c[4]].FlagIsDone == True:
-                                                        for q in range(len(c[0])):
+                                                        for q in range(c[0]):
                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                 self.SPS01[c[q]].displaymovementstop()
                                                                 d=c 
@@ -791,7 +1104,7 @@ class LabsmithBoard:
                                                                     self.SPS01[d[2]].UpdateStatus() 
                                                                     self.SPS01[d[3]].UpdateStatus()
                                                                 if self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone or self.SPS01[d[2]].FlagIsDone or self.SPS01[d[3]].FlagIsDone:
-                                                                    for r in range(len(d[0])):
+                                                                    for r in range(d[0]):
                                                                         if self.SPS01[d[r]].FlagIsDone == True:
                                                                             self.SPS01[d[r]].displaymovementstop()
                                                                             e=d 
@@ -801,7 +1114,7 @@ class LabsmithBoard:
                                                                                 self.SPS01[e[1]].UpdateStatus() 
                                                                                 self.SPS01[e[2]].UpdateStatus()
                                                                             if self.SPS01[e[0]].FlagIsDone or self.SPS01[e[1]].FlagIsDone or self.SPS01[e[2]].FlagIsDone:
-                                                                                for s in range(len(e[0])):
+                                                                                for s in range(e[0]):
                                                                                     if self.SPS01[e[s]].FlagIsDone == True:
                                                                                         self.SPS01[e[s]].displaymovementstop()
                                                                                         f=e 
@@ -810,7 +1123,7 @@ class LabsmithBoard:
                                                                                             self.SPS01[f[0]].UpdateStatus() 
                                                                                             self.SPS01[f[1]].UpdateStatus()
                                                                                         if self.SPS01[f[0]].FlagIsDone or self.SPS01[f[1]].FlagIsDone:
-                                                                                            for t in range(len(f[0])):
+                                                                                            for t in range(f[0]):
                                                                                                 if self.SPS01[f[t]].FlagIsDone:
                                                                                                     self.SPS01[f[t]].displaymovementstop()
                                                                                                     g=f 
@@ -860,7 +1173,7 @@ class LabsmithBoard:
                             self.SPS01[i1].UpdateStatus()
                             self.SPS01[i2].UpdateStatus()
                         if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True:
-                            for j in range(len(i[0])): ##search for first device to be done
+                            for j in range(i[0]): ##search for first device to be done
                                 if self.SPS01[i[j]].FlagIsDone == True:
                                     self.SPS01[i[j]].displaymovementstop()
                                     a=i
@@ -895,7 +1208,7 @@ class LabsmithBoard:
                         self.SPS01[i2].UpdateStatus()
                         self.SPS01[i3].UpdateStatus()
                     if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True:
-                        for j in range(len(i[0])):
+                        for j in range(i[0]):
                             if self.SPS01[i(j)].FlagIsDone == True:
                                 self.SPS01[i(j)].displaymovementstop()
                                 a=i
@@ -908,7 +1221,7 @@ class LabsmithBoard:
                                         self.SPS01[a[0]].UpdateStatus()
                                         self.SPS01[a[1]].UpdateStatus()
                                     if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True:
-                                        for k in range(len(a[0])):
+                                        for k in range(a[0]):
                                             if self.SPS01[a[k]].FlagIsDone == True:
                                                 self.SPS01[a[k]].displaymovementstop()
                                                 b=a
@@ -950,7 +1263,7 @@ class LabsmithBoard:
                         self.SPS01[i3].UpdateStatus()
                         self.SPS01[i4].UpdateStatus() 
                     if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True:
-                        for j in range(len(i[0])):
+                        for j in range(i[0]):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
                                 a=i
@@ -966,7 +1279,7 @@ class LabsmithBoard:
                                         self.SPS01[a[1]].UpdateStatus()
                                         self.SPS01[a[2]].UpdateStatus()    
                                     if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True:
-                                        for k in range(len(a[0])):
+                                        for k in range(a[0]):
                                             if self.SPS01[a[k]].FlagIsDone == True:
                                                 self.SPS01[a[k]].displaymovementstop()
                                                 b=a
@@ -981,7 +1294,7 @@ class LabsmithBoard:
                                                         self.SPS01[b[0]].UpdateStatus()
                                                         self.SPS01[b[1]].UpdateStatus()
                                                     if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True:
-                                                        for p in range(len(b[0])):
+                                                        for p in range(b[0]):
                                                             if self.SPS01[b[p]].FlagIsDone == True:
                                                                 self.SPS01[b[p]].displaymovementstop()
                                                                 c=b
@@ -1027,7 +1340,7 @@ class LabsmithBoard:
                         self.SPS01[i4].UpdateStatus()
                         self.SPS01[i5].UpdateStatus()                            
                     if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True:
-                        for j in range(len(i[0])):
+                        for j in range(i[0]):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
                                 a=i
@@ -1042,7 +1355,7 @@ class LabsmithBoard:
                                         self.SPS01[a(2)].UpdateStatus()
                                         self.SPS01[a(3)].UpdateStatus()                                            
                                     if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True:
-                                        for k in range(len(a[0])):
+                                        for k in range(a[0]):
                                             if self.SPS01[a[k]].FlagIsDone == True:
                                                 self.SPS01[a[k]].displaymovementstop()
                                                 b=a
@@ -1056,7 +1369,7 @@ class LabsmithBoard:
                                                         self.SPS01[b[1]].UpdateStatus()
                                                         self.SPS01[b[2]].UpdateStatus()                                                            
                                                     if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[1,b[2]].FlagIsDone == True:
-                                                        for p in range(len(b[0])):
+                                                        for p in range(b[0]):
                                                             if self.SPS01[b[p]].FlagIsDone == True:
                                                                 self.SPS01[b[p]].displaymovementstop()
                                                                 c=b
@@ -1069,7 +1382,7 @@ class LabsmithBoard:
                                                                         self.SPS01[c[0]].UpdateStatus()
                                                                         self.SPS01[c[1]].UpdateStatus()                                                                            
                                                                     if self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True:
-                                                                        for q in range(len(c[0])):
+                                                                        for q in range(c[0]):
                                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                                 self.SPS01[c[q]].displaymovementstop()
                                                                                 d=c
@@ -1120,7 +1433,7 @@ class LabsmithBoard:
                         self.SPS01[i5].UpdateStatus()
                         self.SPS01[i6].UpdateStatus()                            
                     if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True:
-                        for j in range(len(i[0])):
+                        for j in range(i[0]):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
                                 a=i
@@ -1136,7 +1449,7 @@ class LabsmithBoard:
                                         self.SPS01[a[3]].UpdateStatus()
                                         self.SPS01[a[4]].UpdateStatus()                                            
                                     if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True:
-                                        for k in range(len(a[0])):
+                                        for k in range(a[0]):
                                             if self.SPS01[a[k]].FlagIsDone == True:
                                                 self.SPS01[a[k]].displaymovementstop()
                                                 b=a
@@ -1151,7 +1464,7 @@ class LabsmithBoard:
                                                         self.SPS01[b[2]].UpdateStatus()
                                                         self.SPS01[b[3]].UpdateStatus()                                                            
                                                     if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True:
-                                                        for p in range(len(b[0])):
+                                                        for p in range(b[0]):
                                                             if self.SPS01[b[p]].FlagIsDone == True:
                                                                 self.SPS01[b[p]].displaymovementstop()
                                                                 c=b
@@ -1165,7 +1478,7 @@ class LabsmithBoard:
                                                                         self.SPS01[c[1]].UpdateStatus()
                                                                         self.SPS01[c[2]].UpdateStatus()                                                                            
                                                                     if self.SPS01[c(1)].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True:
-                                                                        for q in range(len(c[0])):
+                                                                        for q in range(c[0]):
                                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                                 self.SPS01[1,c(q)].displaymovementstop()
                                                                                 d=c
@@ -1178,7 +1491,7 @@ class LabsmithBoard:
                                                                                         self.SPS01[d[0]].UpdateStatus()
                                                                                         self.SPS01[d[1]].UpdateStatus()                                                                                            
                                                                                     if self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone:
-                                                                                        for r in range(len(d[0])):
+                                                                                        for r in range(d[0]):
                                                                                             if self.SPS01[d[r]].FlagIsDone == True:
                                                                                                 self.SPS01[d[r]].displaymovementstop()
                                                                                                 e=d
@@ -1234,7 +1547,7 @@ class LabsmithBoard:
                         self.SPS01[i6].UpdateStatus()
                         self.SPS01[i7].UpdateStatus()
                     if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True or self.SPS01[i7].FlagIsDone == True:
-                        for j in range(len(i[0])):
+                        for j in range(i[0]):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
                                 a=i
@@ -1251,7 +1564,7 @@ class LabsmithBoard:
                                         self.SPS01[a[4]].UpdateStatus()
                                         self.SPS01[a[5]].UpdateStatus()
                                     if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True or self.SPS01[a[5]].FlagIsDone == True:
-                                        for k in range(len(a[0])):
+                                        for k in range(a[0]):
                                             if self.SPS01[a[k]].FlagIsDone == True:
                                                 self.SPS01[a[k]].displaymovementstop()
                                                 b=a
@@ -1267,7 +1580,7 @@ class LabsmithBoard:
                                                         self.SPS01[b[3]].UpdateStatus()
                                                         self.SPS01[b[4]].UpdateStatus()
                                                     if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True or self.SPS01[b[4]].FlagIsDone == True:
-                                                        for p in range(len(b[0])):
+                                                        for p in range(b[0]):
                                                             if self.SPS01[b[p]].FlagIsDone == True:
                                                                 self.SPS01[b[p]].displaymovementstop()
                                                                 c=b
@@ -1282,7 +1595,7 @@ class LabsmithBoard:
                                                                         self.SPS01[c[2]].UpdateStatus()
                                                                         self.SPS01[c[3]].UpdateStatus()
                                                                     if self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True or self.SPS01[c[3]].FlagIsDone == True:
-                                                                        for q in range(len(c[0])):
+                                                                        for q in range(c[0]):
                                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                                 self.SPS01[c[q]].displaymovementstop()
                                                                                 d=c
@@ -1296,7 +1609,7 @@ class LabsmithBoard:
                                                                                         self.SPS01[d[1]].UpdateStatus()
                                                                                         self.SPS01[d[2]].UpdateStatus()
                                                                                     if self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone or self.SPS01[d[2]].FlagIsDone:
-                                                                                        for r in range(len(d[0])):
+                                                                                        for r in range(d[0]):
                                                                                             if self.SPS01[d[r]].FlagIsDone == True:
                                                                                                 self.SPS01[d[r]].displaymovementstop()
                                                                                                 e=d
@@ -1309,7 +1622,7 @@ class LabsmithBoard:
                                                                                                         self.SPS01[e[0]].UpdateStatus()
                                                                                                         self.SPS01[e[1]].UpdateStatus()
                                                                                                     if self.SPS01[e[0]].FlagIsDone or self.SPS01[e[1]].FlagIsDone:
-                                                                                                        for s in range(len(e[0])):
+                                                                                                        for s in range(e[0]):
                                                                                                             if self.SPS01[e[s]].FlagIsDone == True:
                                                                                                                 self.SPS01[e[s]].displaymovementstop()
                                                                                                                 f=e
@@ -1370,7 +1683,7 @@ class LabsmithBoard:
                         self.SPS01[i7].UpdateStatus()
                         self.SPS01[i8].UpdateStatus()
                     if self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True or self.SPS01[i7].FlagIsDone == True or self.SPS01[i8].FlagIsDone == True:
-                        for j in range(len(i[0])):
+                        for j in range(i[0]):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
                                 a=i
@@ -1388,7 +1701,7 @@ class LabsmithBoard:
                                         self.SPS01[a[5]].UpdateStatus()
                                         self.SPS01[a[6]].UpdateStatus()
                                     if self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True or self.SPS01[a[5]].FlagIsDone == True or self.SPS01[a[6]].FlagIsDone == True:
-                                        for k in range(len(a[0])):
+                                        for k in range(a[0]):
                                             if self.SPS01[a[k]].FlagIsDone == True:
                                                 self.SPS01[[k]].displaymovementstop()
                                                 b=a
@@ -1405,7 +1718,7 @@ class LabsmithBoard:
                                                         self.SPS01[b[4]].UpdateStatus()
                                                         self.SPS01[b[5]].UpdateStatus()
                                                     if self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True or self.SPS01[b[4]].FlagIsDone == True or self.SPS01[b[5]].FlagIsDone == True:
-                                                        for p in range(len(b[0])):
+                                                        for p in range(b[0]):
                                                             if self.SPS01[b[p]].FlagIsDone == True:
                                                                 self.SPS01[b[p]].displaymovementstop()
                                                                 c=b
@@ -1421,7 +1734,7 @@ class LabsmithBoard:
                                                                         self.SPS01[c[3]].UpdateStatus()
                                                                         self.SPS01[c[4]].UpdateStatus()                                                                           
                                                                     if self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True or self.SPS01[c[3]].FlagIsDone == True or self.SPS01[c[4]].FlagIsDone == True:
-                                                                        for q in range(len(c[0])):
+                                                                        for q in range(c[0]):
                                                                             if self.SPS01[c[q]].FlagIsDone == True:
                                                                                 self.SPS01[c[q]].displaymovementstop()
                                                                                 d=c
@@ -1436,7 +1749,7 @@ class LabsmithBoard:
                                                                                         self.SPS01[d[2]].UpdateStatus()
                                                                                         self.SPS01[d[3]].UpdateStatus()
                                                                                     if self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone or self.SPS01[d[2]].FlagIsDone or self.SPS01[d[3]].FlagIsDone:
-                                                                                        for r in range(len(d[0])):
+                                                                                        for r in range(d[0]):
                                                                                             if self.SPS01[d[r]].FlagIsDone == True:
                                                                                                 self.SPS01[d[r]].displaymovementstop()
                                                                                                 e=d
@@ -1450,7 +1763,7 @@ class LabsmithBoard:
                                                                                                         self.SPS01[e[1]].UpdateStatus()
                                                                                                         self.SPS01[e[2]].UpdateStatus()
                                                                                                     if self.SPS01[e[0]].FlagIsDone or self.SPS01[e[1]].FlagIsDone or self.SPS01[e[2]].FlagIsDone:
-                                                                                                        for s in range(len(e[0])):
+                                                                                                        for s in range(e[0]):
                                                                                                             if self.SPS01[e[s]].FlagIsDone == True:
                                                                                                                 self.SPS01[e[s]].displaymovementstop()
                                                                                                                 f=e
@@ -1463,7 +1776,7 @@ class LabsmithBoard:
                                                                                                                         self.SPS01[f[0]].UpdateStatus()
                                                                                                                         self.SPS01[f[1]].UpdateStatus()
                                                                                                                     if self.SPS01[f[0]].FlagIsDone or self.SPS01[f[1]].FlagIsDone:
-                                                                                                                        for t in range(len(f[0])):
+                                                                                                                        for t in range(f[0]):
                                                                                                                             if self.SPS01[f[t]].FlagIsDone:
                                                                                                                                 self.SPS01[f[t]].displaymovementstop()
                                                                                                                                 g=f
@@ -1499,22 +1812,100 @@ class LabsmithBoard:
                                 break ## j search of first device to be done
                         break ##counter 1
                     time.sleep(scan_rate)
-    ## TODO ##
 
     ##  Set Valves
     def SetValves(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24): 
-        pass
-    ## TODO ##
+        if self.Stop == False:
+            if [d1,v11,v12,v13,v14,d2,v21,v22,v23,v24].count(None)%2 !=0:
+                print('Error, missing input. Number of inputs has to be even (interface, name of manifold and the four corresponding valve entries).')
+            else:
+                if v14 != None and d2 == None: ## 1 manifold as input
+                    i1=self.FindIndexM(d1)
+                    self.addlistener('FirstDoneStopM', "listener_firstdoneM", self.CheckFirstDoneStopM, [i1]) ##it listens for the manifold FlagIsDone, so it updtades continuously the state to determine the end of the command. 
+                    if i1:
+                        if self.C4VM[i1].FlagIsDone == True:
+                            self.C4VM[i1].device.CmdSetValves(np.int8(v11),np.int8(v12),np.int8(v13),np.int8(v14))                              
+                            self.C4VM[i1].displayswitch(v11,v12,v13,v14)
+                            if self.C4VM[i1].FlagIsDone == False: 
+                                self.notify('FirstDoneStopM')
+                elif  v24 != None: ## 2 manifolds as input
+                    i1=self.FindIndexM(d1)
+                    i2=self.FindIndexM(d2) 
+                    self.addlistener('FirstDoneStopM', "listener_firstdoneM", self.CheckFirstDoneStopM, [i1, i2]) ##it listens for the manifold FlagIsDone, so it updtades continuously the state to determine the end of the command. 
+                    if i1 and i2:
+                        if self.C4VM[i1].FlagIsDone == True and self.C4VM[i2].FlagIsDone == True:
+                            self.C4VM[i1].device.CmdSetValves(np.int8(v11),np.int8(v12),np.int8(v13),np.int8(v14))
+                            self.C4VM[i2].device.CmdSetValves(np.int8(v21),np.int8(v22),np.int8(v23),np.int8(v24))
+                            self.C4VM[i1].displayswitch(v11,v12,v13,v14)
+                            self.C4VM[i2].displayswitch(v21,v22,v23,v24)  
+                            if self.C4VM[i1].FlagIsDone == False and self.C4VM[i2].FlagIsDone == False:
+                                self.notify('FirstDoneStopM')
 
     ## Check First Done Stop M
-    def CheckFirstDoneStopM(self,args):
-        pass
-    ## TODO ##
+    def CheckFirstDoneStopM(self, *args):
+        if len(args) == 3: ## only one manifold in motion (=numb input + self + 2more input (source and event))  
+            i1=args[2] ## The index is the last.
+            if self.C4VM[i1].FlagIsDone == False:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break
+                    elif self.C4VM[i1].FlagIsDone == False:
+                        self.C4VM[i1].UpdateStatus()
+                    if self.C4VM[i1].FlagIsDone == True:
+                        self.C4VM[i1].displayswitchstop()
+                        break
+                    time.sleep(scan_rate)
+            elif len(args) == 4: ## only two manifolds
+                i1=args[2]
+                i2=args[3]
+                i=[i1, i2] 
+                if self.C4VM[i1].FlagIsDone == False and self.C4VM[i2].FlagIsDone == False:
+                    scan_rate=0.1 ##the scan rate of the counter
+                    target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours        
+                    for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                        if self.Stop == True:
+                            self.StopBoard()
+                            break ## counter 1
+                        elif self.C4VM[i1].FlagIsDone == False and self.C4VM[i2].FlagIsDone == False:
+                            self.C4VM[i1].UpdateStatus()
+                            self.C4V[i2].UpdateStatus()
+                        if self.C4VM[i1].FlagIsDone == True or self.C4VM[i2].FlagIsDone == True:
+                            for j in range(len(i)): ##search for first device to be done
+                                if self.C4VM[i[j]].FlagIsDone == True:
+                                    self.C4VM[i[j]].displayswitchstop()
+                                    a=i
+                                    a[j]=[]
+                                    for count2 in range(target):
+                                        if self.Stop == True:
+                                            self.StopBoard()
+                                            break ##counter 2
+                                        elif self.C4VM[a[1]].FlagIsDone == False:
+                                            self.C4VM[a[1]].UpdateStatus()
+                                        if self.C4VM[a[1]].FlagIsDone == True:
+                                            self.C4VM[a[1]].displayswitchstop()
+                                            break ##counter 2
+                                        time.sleep(scan_rate)
+                                    break ## j search of first device to be done 
+                            break ## counter 1
+                        time.sleep(scan_rate)
 
     ## Pause : same as stop but with different comment
     def PauseBoard (self):
-        pass
-    ## TODO ##
+        for i in range(self.SPS01.shape[1]):
+            self.SPS01[i].device.CmdStop()
+            self.SPS01[i].FlagReady = True
+            # UpdateStatus(self.SPS01{1,i}) ## i update the status in the listener function CheckFirstDoneStopPause before i recall the MulMove3 in the pause               
+        for i in range(self.C4VM.shape[1]):
+            self.C4VM[i].device.CmdStop()
+            self.C4VM[i].UpdateStatus()
+        self.ClockStop = datetime.now()
+        comment=f"{self.ClockStop.strftime('%X')} Interface paused by the user."
+        with open("OUTPUT.txt", "a") as OUTPUT:
+            OUTPUT.write(comment + "\n")
+            print(comment)
 
     ## Listener Function : Display the first device to be done and Stop and Pause (called in MulMove3)
     def CheckFirstDoneStopPause(self, *args):
@@ -1523,8 +1914,8 @@ class LabsmithBoard:
                 d1=args[3]
                 v1=args[4]
                 if self.SPS01[i1].FlagIsMoving == True:  
-                    scan_rate=0.1; #the scan rate of the counter
-                    target=(48)*60*60#scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
+                    scan_rate=0.1 #the scan rate of the counter
+                    target=(48)*60*60#scan_rate #this is the final time of the counter. It is equal to max 48 hours                   
                     for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
                         if self.Stop == True:
                             com=self.StopBoard()
@@ -1565,7 +1956,7 @@ class LabsmithBoard:
             v=[v1, v2]
             if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True: 
                 scan_rate=0.1 #the scan rate of the counter
-                target=(48)*60*60 #scan_rate; ##this is the final time of the counter. It is equal to max 48 hours        
+                target=(48)*60*60 #scan_rate ##this is the final time of the counter. It is equal to max 48 hours        
                 for count1 in range (target): #this is a counter clock to check if the stop_status variable has changed
                     if self.Stop == True:
                         self.StopBoard()
@@ -1593,7 +1984,7 @@ class LabsmithBoard:
                     if self.flag_break_countpause == 1:
                         break #counter1                        
                     elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True:
-                        for j in range(len(i[0])): #search for first device to be done
+                        for j in range(i[0]): #search for first device to be done
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPSO1[0,i[j]].displaymovementstop()
                                 a=i
@@ -1618,7 +2009,7 @@ class LabsmithBoard:
                                                     OUTPUT.write(comment + "\n")
                                                     print(comment)
                                                 self.SPSO1[0,a(0)].UpdateStatus() #############################
-                                                self.MulMove3[ad[0],av[0]];                                    
+                                                self.MulMove3[ad[0],av[0]]                                    
                                                 self.flag_break_countpause = 1
                                                 break #count_pause1
                                             time.sleep(scan_rate)
@@ -1648,8 +2039,8 @@ class LabsmithBoard:
             d=[d1, d2, d3]
             v=[v1, v2, v3]
             if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True: 
-                scan_rate=0.1; #the scan rate of the counter
-                target=(48)*60*60 #scan_rate; ##this is the final time of the counter. It is equal to max 48 hours
+                scan_rate=0.1 #the scan rate of the counter
+                target=(48)*60*60 #scan_rate ##this is the final time of the counter. It is equal to max 48 hours
                 for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
                     if self.Stop == True:
                         self.StopBoard()
@@ -1679,11 +2070,11 @@ class LabsmithBoard:
                     if self.flag_break_countpause == 1:
                         break #counter1  
                     elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True:
-                        for j in range(len(i[0])):
+                        for j in range(i[0]):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
                                 a=i
-                                a[j]=[]; # a=[i2 i3] for j=1, a=[i1 i3] for j=2, a=[i1 i2] for j=3
+                                a[j]=[] # a=[i2 i3] for j=1, a=[i1 i3] for j=2, a=[i1 i2] for j=3
                                 ad=d
                                 ad[j]=[]
                                 av=v
@@ -1715,7 +2106,7 @@ class LabsmithBoard:
                                     if self.flag_break_countpause == 1:
                                         break #counter1  
                                     elif self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True:
-                                        for k in range(len(a[0])):
+                                        for k in range(a[0]):
                                             if self.SPS01[a[k]].FlagIsDone == True:
                                                 self.SPS01[a[k]].displaymovementstop()
                                                 b=a
@@ -1765,23 +2156,189 @@ class LabsmithBoard:
 
     ## Multiple Movement with stop (at the same time. It allows the stop and pause)
     def MulMove3(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
-        pass
+        self.flag_break_countpause = 0
+        if self.Stop == False:
+            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 ==0:
+                comment='Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).'
+                with open("OUTPUT.txt", "a") as OUTPUT:
+                    OUTPUT.write(comment + "\n")
+                    print(comment)
+            else:
+                if v1 != None and d2 == None: ## 1 syringe as input
+                    i1=self.FindIndexS(d1)
+                    self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1]) ##it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
+                    if i1:
+                        if self.SPS01[i1].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i1].displaymovement()
+                            if self.SPS01[i1].FlagIsMoving == True:
+                                self.notify('FirstDoneStopPause')
+                elif v2 != None and d3 == None: ## 2 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2) 
+                    self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2:
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1)
+                            self.SPS01[i2].device.CmdMoveToVolume(v2)
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i2].FlagReady = False
+                            self.SPS01[i1].displaymovement()
+                            self.SPS01[i2].displaymovement()  
+                            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True:
+                                self.notify('FirstDoneStopPause')                                              
+                elif v3 != None and d4 == None: ## 3 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    i3=self.FindIndexS(d3)
+                    self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1)
+                        self.SPS01[i2].device.CmdMoveToVolume(v2)
+                        self.SPS01[i3].device.CmdMoveToVolume(v3)
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].displaymovement() 
+                        self.SPS01[i3].displaymovement()
+                        if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True:
+                            self.notify('FirstDoneStopPause')
+                elif v4 != None and d5 == None: ## 4 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1)
+                        self.SPS01[i2].device.CmdMoveToVolume(v2)
+                        self.SPS01[i3].device.CmdMoveToVolume(v3)
+                        self.SPS01[i4].device.CmdMoveToVolume(v4)
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].displaymovement() 
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].displaymovement()
+                        if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True:
+                            self.notify('FirstDoneStopPause')
+                elif v5 != None and d6 == None: ## 5 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    i5=self.FindIndexS(d5)
+                    self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4,i5,d5,v5]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4 and i5:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1)
+                        self.SPS01[i2].device.CmdMoveToVolume(v2)
+                        self.SPS01[i3].device.CmdMoveToVolume(v3)
+                        self.SPS01[i4].device.CmdMoveToVolume(v4)
+                        self.SPS01[i5].device.CmdMoveToVolume(v5)
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i5].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].displaymovement() 
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].displaymovement()
+                        self.SPS01[i5].displaymovement()
+                        if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True:
+                            self.notify('FirstDoneStopPause')
+                elif v6 != None and d7 == None: ## 6 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    i5=self.FindIndexS(d5)
+                    i6=self.FindIndexS(d6)
+                    self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4,i5,d5,v5,i6,d6,v6]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4 and i5 and i6:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1)
+                        self.SPS01[i2].device.CmdMoveToVolume(v2)
+                        self.SPS01[i3].device.CmdMoveToVolume(v3)
+                        self.SPS01[i4].device.CmdMoveToVolume(v4)
+                        self.SPS01[i5].device.CmdMoveToVolume(v5)
+                        self.SPS01[i6].device.CmdMoveToVolume(v6)
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i5].FlagReady = False
+                        self.SPS01[i6].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].displaymovement() 
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].displaymovement()
+                        self.SPS01[i5].displaymovement()
+                        self.SPS01[i6].displaymovement()
+                        if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True:
+                            self.notify('FirstDoneStopPause')
+                elif v7 != None and d8 == None: ## 7 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    i5=self.FindIndexS(d5)
+                    i6=self.FindIndexS(d6)
+                    i7=self.FindIndexS(d7)
+                    self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4,i5,d5,v5,i6,d6,v6,i7,d7,v7]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
+                    if i1 and i2 and i3 and i4 and i5 and i6 and i7:
+                        self.SPS01[i1].device.CmdMoveToVolume(v1)
+                        self.SPS01[i2].device.CmdMoveToVolume(v2)
+                        self.SPS01[i3].device.CmdMoveToVolume(v3)
+                        self.SPS01[i4].device.CmdMoveToVolume(v4)
+                        self.SPS01[i5].device.CmdMoveToVolume(v5)
+                        self.SPS01[i6].device.CmdMoveToVolume(v6)
+                        self.SPS01[i7].device.CmdMoveToVolume(v7)
+                        self.SPS01[i1].FlagReady = False
+                        self.SPS01[i2].FlagReady = False
+                        self.SPS01[i3].FlagReady = False
+                        self.SPS01[i4].FlagReady = False
+                        self.SPS01[i5].FlagReady = False
+                        self.SPS01[i6].FlagReady = False
+                        self.SPS01[i7].FlagReady = False
+                        self.SPS01[i1].displaymovement()
+                        self.SPS01[i2].displaymovement() 
+                        self.SPS01[i3].displaymovement()
+                        self.SPS01[i4].displaymovement()
+                        self.SPS01[i5].displaymovement()
+                        self.SPS01[i6].displaymovement()
+                        self.SPS01[i7].displaymovement()
+                        if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True and self.SPS01[i7].FlagIsMoving == True:
+                            self.notify('FirstDoneStopPause')
     ## TODO ##
 
     ## Display movement stopwait
     def displaymovementstopwait(self,t):
-        pass
-    ## TODO ##
+        self.ClockStop = datetime.now()
+        with open("OUTPUT.txt", "a") as OUTPUT:
+            comment = f"{self.ClockStop.strftime('%X')} Step done after waiting for {t} seconds."
+            OUTPUT.write(comment + "\n")
+            print(comment)
 
     ## WaitStopBoard
     def WaitStopBoard(self):
-        pass
-    ## TODO ##
+        for i in range(self.SPS01.shape[1]):
+            self.SPS01[i].device.CmdStop()
+            self.SPS01[i].FlagReady = True           
+        for i in range(self.C4VM[1]):
+            self.C4VM[i].device.CmdStop()
+            self.C4VM[i].UpdateStatus()
 
     ## Update
     def UpdateBoard(self):
-        pass
-    ## TODO ##
+        for i in range(self.SPS01.shape[1]):
+            self.SPS01[i].FlagReady = True
+            self.SPS01[i].UpdateStatus()
+        for i in range(self.C4VM.shape[1]):
+            self.C4VM[i].UpdateStatus()
 
     ## Wait Movement
     def MoveWait(self,time,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
@@ -1799,7 +2356,7 @@ class LabsmithBoard:
             var_not_disp=0
             if self.SPS01[i1].FlagIsMoving == True:
                 scan_rate=0.1
-                target=(48)*60*60/scan_rate
+                target=(48)*60*60#scan_rate
                 for count1 in range(t):
                     if self.Stop == True:
                         self.StopBoard()
@@ -1857,7 +2414,7 @@ class LabsmithBoard:
             var_not_disp = 0
             if self.SPS01[ i1].FlagIsMoving == True and self.SPS01[ i2].FlagIsMoving == True:
                 scan_rate=0.1
-                target=(48)*60*60/scan_rate
+                target=(48)*60*60#scan_rate
                 for count1 in range(t):
                     if self.Stop == True:
                         self.StopBoard
@@ -1928,10 +2485,53 @@ class LabsmithBoard:
 
     ## Set Valves2 It allows the pause too
     def SetValves2(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24):
-        pass
-    ## TODO ##
+        self.flag_break_countpause = 0
+        if self.Stop == False:
+            if v14 != None and d2 == None:## 1 manifold as input
+                i1=self.FindIndexM(d1)
+                self.addlistener('FirstDoneStopPauseM', "listener_firstdoneM", self.CheckFirstDoneStopPauseM, [i1,d1,v11,v12,v13,v14]) ##it listens for the manifold FlagIsDone, so it updtades continuously the state to determine the end of the command. 
+                if i1:
+                    if self.C4VM[i1].FlagIsDone == True:
+                        self.C4VM[i1].device.CmdSetValves(np.int8(v11),np.int8(v12),np.int8(v13),np.int8(v14))                              
+                        self.C4VM[i1].displayswitch(v11,v12,v13,v14)
+                        if self.C4VM[i1].FlagIsDone == False:
+                            self.notify('FirstDoneStopPauseM')
 
     ## Check First Done Stop Pause M
-    def CheckFirstDoneStopPauseM(self,args):
-        pass
-    ## TODO ##
+    def CheckFirstDoneStopPauseM(self, *args):
+        if len(args) == 7 ## only one manifold in motion (=numb input + self + 2more input (source and event))  
+            i1=args[2] ##vararging doesn't include the self, so its size is nargin-1. The index is the third.
+            d1=args[3]
+            v11=args[4]
+            v12=args[5]
+            v13=args[6]
+            v14=args[7]
+            if self.C4VM[i1].FlagIsDone == False:
+                scan_rate=0.1 ##the scan rate of the counter
+                target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
+                for count1 in range(target): ##this is a counter clock to check if the stop_status variable has changed
+                    if self.Stop == True:
+                        self.StopBoard()
+                        break
+                    elif self.Pause == True:
+                        self.PauseBoard()
+                        for count_pause1 in range(target):
+                            if self.Stop == True:
+                                break
+                            elif self.Resume == True:
+                                with open("OUTPUT.txt", "a") as OUTPUT:
+                                    comment = f"{self.ClockStop.strftime('%X')}  Interface resumed by the user."
+                                    OUTPUT.write(comment + "\n")
+                                    print(comment)
+                                self.SetValves2(d1,v11,v12,v13,v14)                                    
+                                self.flag_break_countpause = 1
+                                break
+                            time.sleep(scan_rate)
+                    elif self.C4VM[i1].FlagIsDone == False:
+                        self.C4VM[i1].UpdateStatus()
+                    if self.flag_break_countpause == 1:
+                        break
+                    elif self.C4VM[i1].FlagIsDone == True:
+                        self.C4VM[i1].displayswitchstop()
+                        break
+                    time.sleep(scan_rate)

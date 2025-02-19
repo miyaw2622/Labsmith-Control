@@ -2223,9 +2223,9 @@ classdef LabsmithBoard < handle
         //// Set Valves
         function SetValves(obj,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24)
             if obj.Stop == false
-//                 if rem(nargin,2) == 1
-//                     disp('Error, missing input. Number of inputs has to be even (interface, name of manifold and the four corresponding valve entries).');
-//                 else
+                // if rem(nargin,2) == 1
+                //     disp('Error, missing input. Number of inputs has to be even (interface, name of manifold and the four corresponding valve entries).');
+                // else
                     if nargin == 6 // 1 manifold as input
                         i1=FindIndexM(obj,d1);
                         obj.listener_firstdoneM = addlistener(obj, 'FirstDoneStopM',@(src,evnt)obj.CheckFirstDoneStopM(src,evnt,i1)); //it listens for the manifold FlagIsDone, so it updtades continuously the state to determine the end of the command. 
