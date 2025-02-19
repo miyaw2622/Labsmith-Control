@@ -2499,7 +2499,7 @@ class LabsmithBoard:
 
     ## Check First Done Stop Pause M
     def CheckFirstDoneStopPauseM(self, *args):
-        if len(args) == 7 ## only one manifold in motion (=numb input + self + 2more input (source and event))  
+        if len(args) == 7: ## only one manifold in motion (=numb input + self + 2more input (source and event))  
             i1=args[2] ##vararging doesn't include the self, so its size is nargin-1. The index is the third.
             d1=args[3]
             v11=args[4]
