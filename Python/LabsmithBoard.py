@@ -93,19 +93,19 @@ class LabsmithBoard:
                 com='Error, still connected'
 
             OUTPUT.write(com + "\n")
-            print(com)
-            return com
+        print(com)
+        return com
         
     ### Load
     def Load(self):
         dev_list=str(self.eib.CmdCreateDeviceList())
-        expression = '\,' ##i first split the string into multiple strings
+        expression = ', ' ##i first split the string into multiple strings
         splitStr = dev_list.split(expression)##divide all the different devices. It is a cell array. Each cell is a segment of the dev_list char vector containing info about each device
         NumDev=len(splitStr)
         self.TotNumDev=NumDev
 
-        PAT_S=" <uProcess.CSyringe>"
-        PAT_M=" <uProcess.C4VM>"
+        PAT_S="<uProcess.CSyringe>"
+        PAT_M="<uProcess.C4VM>"
 
         StrSyringe= [syringe for syringe in splitStr if PAT_S in syringe]
         StrManifold= [manifold for manifold in splitStr if PAT_M in manifold]
@@ -113,18 +113,20 @@ class LabsmithBoard:
         if StrManifold:
             PAT = r"address (\d+)"
             add_man = [re.findall(PAT, Manifold) for Manifold in StrManifold] # OUTPUT 2: add_man =["35", "74"]. It is 2x1 vector containg the addresses of the manifolds on the board
-            self.C4VM=np.zeros(len(add_man))
+            add_man = add_man[0]
+            self.C4VM = np.empty(len(add_man), dtype=object)
             for i, add in enumerate(add_man):
-                self.C4VM[i] = CManifold(self, int(add[0])) ## it constructs a SPS01 selfect on the specified address. We will use this for the command
-                self.C4VM[i].address=int(add[0])
+                self.C4VM[i] = CManifold(self, int(add)) ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.C4VM[i].address=int(add)
 
         if StrSyringe:
             PAT = r"address (\d+)"
             add_syr = [re.findall(PAT, Syringe) for Syringe in StrSyringe] ## OUTPUT 4: add_syr =[1,3,8,14,26].  It is 5x1 vector containg the addresses of the syringes on the board
-            np.zeros(len(add_syr))
+            add_syr = add_syr[0]
+            self.SPS01 = np.empty(len(add_syr), dtype=object)
             for i, add in enumerate(add_syr):
-                self.SPS01[i] = CSyringe(self, int(add[0])) ## it constructs a SPS01 selfect on the specified address. We will use this for the command
-                self.SPS01[i].address=int(add[0])
+                self.SPS01[i] = CSyringe(self, int(add)) ## it constructs a SPS01 selfect on the specified address. We will use this for the command
+                self.SPS01[i].address=int(add)
 
     ### Stop
     def StopBoard(self):
@@ -1988,11 +1990,11 @@ class LabsmithBoard:
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPSO1[0,i[j]].displaymovementstop()
                                 a=i
-                                a(j)=[]
+                                a[j]=[]
                                 ad=d
-                                ad(j)=[]
+                                ad[j]=[]
                                 av=v
-                                av(j)=[]
+                                av[j]=[]
                                 for count2 in range (target):
                                     if self.Stop == True:
                                         self.StopBoard()
