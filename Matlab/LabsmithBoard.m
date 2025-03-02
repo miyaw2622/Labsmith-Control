@@ -379,7 +379,7 @@ classdef LabsmithBoard < handle
         
         
         function MulMove(obj,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8)
-            if rnargin,2) == 0
+            if rem(nargin,2) == 0
                 disp('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).');
             else
                 if nargin == 3 // 1 syringe as input
