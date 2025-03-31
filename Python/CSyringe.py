@@ -42,9 +42,7 @@ class CSyringe:
         self.minFlowrate = self.device.GetMinFlowrate()
         self.maxVolume = self.device.GetMaxVolume()
         
-        self.addlistener('MovingState', 'listener', self.Updating(), []) #it listens for the self.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. self.Ready = true again.
-        self.addlistener('FlagStop', 'listener_stop', self.StopSyr(), []) #it listens for the self.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. self.Ready = true again.
-        
+
         self.UpdateStatus()
         
         with open("OUTPUT.txt", "a") as OUTPUT:
@@ -54,7 +52,11 @@ class CSyringe:
 
 
         ## Events
-        self._listeners = {event: dict() for event in ["MovingState"]}
+        self._listeners = {event: dict() for event in ["MovingState", "FlagStop"]}
+
+        self.addlistener('MovingState', 'listener', self.Updating, []) #it listens for the self.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. self.Ready = true again.
+        self.addlistener('FlagStop', 'listener_stop', self.StopSyr, []) #it listens for the self.FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. self.Ready = true again.
+        
         
         
     ## Add Listeners to Events
