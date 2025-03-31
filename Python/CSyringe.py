@@ -96,7 +96,7 @@ class CSyringe:
     ### Display movement In and Out on cmdwindow              
     def displaymovement(self):
         self.ClockStartCmd = datetime.now()
-        self.UpdateStatus(self)
+        self.UpdateStatus()
         if self.FlagIsMovingIn == True:
             with open("OUTPUT.txt", "a") as OUTPUT:
                 comment = f"{self.ClockStartCmd.strftime('%X')} Syringe {self.name} is pulling at {self.Flowrate} ul/min."
