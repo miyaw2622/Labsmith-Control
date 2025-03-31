@@ -36,7 +36,7 @@ class CSyringe:
 
         ### Constructor
         self.device = self. Lboard.eib.NewSPS01(np.int8(add_syr))
-        self.name = self.device.GetName
+        self.name = self.device.GetName()
         self.diameter = self.device.CmdGetDiameter()
         self.maxFlowrate = self.device.GetMaxFlowrate()
         self.minFlowrate = self.device.GetMinFlowrate()

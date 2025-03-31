@@ -25,7 +25,7 @@ class CManifold:
 
         ### Constructor
         self.device = self.Lboard.eib.New4VM(np.int8(self.add_syr))
-        self.name= self.device.GetName
+        self.name= self.device.GetName()
         
         self.UpdateStatus()
 
