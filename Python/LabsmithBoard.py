@@ -170,8 +170,8 @@ class LabsmithBoard:
         k=[]
         for i in range(len(self.SPS01)):
             k.append(self.SPS01[i].name == n)               
-        out = np.where(k == 1)[0]
-        if not out:
+        out = np.nonzero(k)[0]
+        if not k:
             comment=['Error : ' ,n, ' does not exist. Check name again.']
             print(comment)
     
@@ -180,14 +180,13 @@ class LabsmithBoard:
         k=[]
         for i in range(len(self.C4VM)):
             k.append(self.C4VM[i].name == n)              
-        out = np.where(k == 1)[0]
-        if not out:
+        out = np.nonzero(k)[0]
+        if not k:
             with open("OUTPUT.txt", "a") as OUTPUT:
                 comment=f"Error : {n} does not exist. Check name again."
                 OUTPUT.write(comment + "\n")
                 print(comment) 
-            com=comment
-        return [out, com]
+        return out
 
     ### Set Multiple FlowRates (at the same time)
     def SetFlowRate(self, d1 = None, f1 = None, d2 = None, f2 = None, d3 = None, f3 = None, d4 = None, f4 = None, d5 = None, f5 = None, d6 = None, f6 = None, d7 = None, f7 = None, d8 = None, f8 = None):
