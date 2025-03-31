@@ -130,11 +130,11 @@ class LabsmithBoard:
 
     ### Stop
     def StopBoard(self):
-        for i in range(self.SPS01.shape[1]):
+        for i in range(len(self.SPS01)):
             self.SPS01[i].device.CmdStop()
             self.SPS01[i].FlagReady = True
             self.SPS01[i].UpdateStatus()
-            for i in range(self.C4VM.shape[1]):
+            for i in range(len(self.C4VM)):
                 self.C4VM[i].device.CmdStop()
                 self.C4VM[i].UpdateStatus()
             self.ClockStop = datetime.now()
@@ -146,7 +146,7 @@ class LabsmithBoard:
     ### Move
     def Move(self, namedevice, flowrate, volume):
         k=[]
-        for i in range(self.SPS01.shape[1]):
+        for i in range(len(self.SPS01)):
             k.append(self.SPS01[i].name == namedevice)           
         i=np.where(k == 1)[0]
         if i:
@@ -160,7 +160,7 @@ class LabsmithBoard:
     ### Move2
     def Move2(self, namedevice, flowrate, volume):
         k=[]
-        for i in range(self.SPS01.shape[1]):
+        for i in range(len(self.SPS01)):
             k.append(self.SPS01[i].name == namedevice)             
         i=np.where(k == 1)[0]
         if i:
@@ -174,7 +174,7 @@ class LabsmithBoard:
     ### FindIndexS (find index of Syringe from name of device)
     def FindIndexS(self, n):
         k=[]
-        for i in range(self.SPS01.shape[1]):
+        for i in range(len(self.SPS01)):
             k.append(self.SPS01[i].name == n)               
         out = np.where(k == 1)[0]
         if not out:
@@ -184,7 +184,7 @@ class LabsmithBoard:
     ### FindIndexM (find index of Manifold from name of device)
     def FindIndexM(self, n):
         k=[]
-        for i in range(self.C4VM.shape[1]):
+        for i in range(len(self.C4VM)):
             k.append(self.C4VM[i].name == n)              
         out = np.where(k == 1)[0]
         if not out:
@@ -1896,11 +1896,11 @@ class LabsmithBoard:
 
     ## Pause : same as stop but with different comment
     def PauseBoard (self):
-        for i in range(self.SPS01.shape[1]):
+        for i in range(len(self.SPS01)):
             self.SPS01[i].device.CmdStop()
             self.SPS01[i].FlagReady = True
             # UpdateStatus(self.SPS01{1,i}) ## i update the status in the listener function CheckFirstDoneStopPause before i recall the MulMove3 in the pause               
-        for i in range(self.C4VM.shape[1]):
+        for i in range(len(self.C4VM)):
             self.C4VM[i].device.CmdStop()
             self.C4VM[i].UpdateStatus()
         self.ClockStop = datetime.now()
@@ -2327,7 +2327,7 @@ class LabsmithBoard:
 
     ## WaitStopBoard
     def WaitStopBoard(self):
-        for i in range(self.SPS01.shape[1]):
+        for i in range(len(self.SPS01)):
             self.SPS01[i].device.CmdStop()
             self.SPS01[i].FlagReady = True           
         for i in range(self.C4VM[1]):
@@ -2336,10 +2336,10 @@ class LabsmithBoard:
 
     ## Update
     def UpdateBoard(self):
-        for i in range(self.SPS01.shape[1]):
+        for i in range(len(self.SPS01)):
             self.SPS01[i].FlagReady = True
             self.SPS01[i].UpdateStatus()
-        for i in range(self.C4VM.shape[1]):
+        for i in range(len(self.C4VM)):
             self.C4VM[i].UpdateStatus()
 
     ## Wait Movement
