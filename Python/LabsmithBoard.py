@@ -317,6 +317,9 @@ class LabsmithBoard:
                     self.SPS01[i7].Flowrate = f7
                     self.SPS01[i8].device.CmdSetFlowrate(f8)
                     self.SPS01[i8].Flowrate = f8
+            else:
+                print('Error, wrong number of inputs.')
+
 
     ### Multiple Movement (at the same time)
     def MulMove(self, d1 = None, v1 = None, d2  = None, v2 = None, d3 = None, v3 = None, d4 = None, v4 = None, d5 = None, v5 = None, d6 = None, v6 = None, d7 = None, v7 = None, d8 = None, v8 = None):
@@ -326,7 +329,7 @@ class LabsmithBoard:
             if v1 != None and d2 == None:  # # 1 syringe as input
                 i1=self.FindIndexS(d1) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1])   # #it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
-                if len(i1)>0:
+                if len(self.SPS01) == 1:
                     if self.SPS01[i1].FlagIsDone == True:
                         self.SPS01[i1].device.CmdMoveToVolume(v1)                             
                         self.SPS01[i1].FlagReady = False 
@@ -337,7 +340,7 @@ class LabsmithBoard:
                 i1=self.FindIndexS(d1) 
                 i2=self.FindIndexS(d2)  
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                if len(i1)>0 and len(i2)>0:
+                if len(self.SPS01) == 2:
                     if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True:
                         self.SPS01[i1].device.CmdMoveToVolume(v1) 
                         self.SPS01[i2].device.CmdMoveToVolume(v2) 
@@ -353,7 +356,7 @@ class LabsmithBoard:
                 i2=self.FindIndexS(d2) 
                 i3=self.FindIndexS(d3) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                if len(i1)>0 and len(i2)>0 and len(i3)>0:
+                if len(self.SPS01) == 3:
                     self.SPS01[i1].device.CmdMoveToVolume(v1) 
                     self.SPS01[i2].device.CmdMoveToVolume(v2) 
                     self.SPS01[i3].device.CmdMoveToVolume(v3) 
@@ -371,7 +374,7 @@ class LabsmithBoard:
                 i3=self.FindIndexS(d3) 
                 i4=self.FindIndexS(d4) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0:
+                if len(self.SPS01) == 4:
                     self.SPS01[i1].device.CmdMoveToVolume(v1) 
                     self.SPS01[i2].device.CmdMoveToVolume(v2) 
                     self.SPS01[i3].device.CmdMoveToVolume(v3) 
@@ -393,7 +396,7 @@ class LabsmithBoard:
                 i4=self.FindIndexS(d4) 
                 i5=self.FindIndexS(d5) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0:
+                if len(self.SPS01) == 5:
                     self.SPS01[i1].device.CmdMoveToVolume(v1) 
                     self.SPS01[i2].device.CmdMoveToVolume(v2) 
                     self.SPS01[i3].device.CmdMoveToVolume(v3) 
@@ -419,7 +422,7 @@ class LabsmithBoard:
                 i5=self.FindIndexS(d5) 
                 i6=self.FindIndexS(d6) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5,i6])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0 and len(i6)>0:
+                if len(self.SPS01) == 6:
                     self.SPS01[i1].device.CmdMoveToVolume(v1) 
                     self.SPS01[i2].device.CmdMoveToVolume(v2) 
                     self.SPS01[i3].device.CmdMoveToVolume(v3) 
@@ -449,7 +452,7 @@ class LabsmithBoard:
                 i6=self.FindIndexS(d6) 
                 i7=self.FindIndexS(d7) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5,i6,i7])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0 and len(i6)>0 and len(i7)>0:
+                if len(self.SPS01) == 7:
                     self.SPS01[i1].device.CmdMoveToVolume(v1) 
                     self.SPS01[i2].device.CmdMoveToVolume(v2) 
                     self.SPS01[i3].device.CmdMoveToVolume(v3) 
@@ -483,7 +486,7 @@ class LabsmithBoard:
                 i7=self.FindIndexS(d7) 
                 i8=self.FindIndexS(d8) 
                 self.addlistener('FirstDone', "listener_firstdone", self.CheckFirstDone, [i1,i2,i3,i4,i5,i6,i7,i8])   # #it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                if len(i1)>0 and len(i2)>0 and len(i3)>0 and len(i4)>0 and len(i5)>0 and len(i6)>0 and len(i7)>0 and len(i8)>0:
+                if len(self.SPS01) == 8:
                     self.SPS01[i1].device.CmdMoveToVolume(v1) 
                     self.SPS01[i2].device.CmdMoveToVolume(v2) 
                     self.SPS01[i3].device.CmdMoveToVolume(v3) 
@@ -511,13 +514,13 @@ class LabsmithBoard:
                     if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True and self.SPS01[i7].FlagIsMoving == True and self.SPS01[i8].FlagIsMoving == True:
                         self.notify('FirstDone')
             else:
-                print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
+                print('Error, wrong number of inputs.')
 
     ## Multiple Movement with stop (at the same time. It allows the stop)
     def MulMove2(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
         if self.Stop == False:
-            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 ==0:
-                print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
+            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 !=0:
+                print('Error, missing input. Number of inputs has to be even (name of syringes and corresponding flow rates).')
             else:
                 if v1 != None and d2 == None: ## 1 syringe as input
                     i1=self.FindIndexS(d1)
