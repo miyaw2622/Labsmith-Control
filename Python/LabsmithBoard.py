@@ -145,31 +145,25 @@ class LabsmithBoard:
 
     ### Move
     def Move(self, namedevice, flowrate, volume):
-        k=[]
         for i in range(len(self.SPS01)):
-            k.append(self.SPS01[i].name == namedevice)           
-        i=np.where(k == 1)[0]
-        if i:
-            self.SPS01[i].MoveTo(flowrate,volume)
-        else:
-            with open("OUTPUT.txt", "a") as OUTPUT:
-                comment='ERROR: Name syringe not correct'
-                OUTPUT.write(comment + "\n")
-                print(comment) 
+            if self.SPS01[i].name == namedevice:
+                self.SPS01[i].MoveTo(flowrate,volume)
+            else:
+                with open("OUTPUT.txt", "a") as OUTPUT:
+                    comment='ERROR: Name syringe not correct'
+                    OUTPUT.write(comment + "\n")
+                    print(comment) 
 
     ### Move2
     def Move2(self, namedevice, flowrate, volume):
-        k=[]
         for i in range(len(self.SPS01)):
-            k.append(self.SPS01[i].name == namedevice)             
-        i=np.where(k == 1)[0]
-        if i:
-            self.SPS01[i].MoveTo(flowrate,volume)
-        else:
-            with open("OUTPUT.txt", "a") as OUTPUT:
-                comment='ERROR: Name syringe not correct'
-                OUTPUT.write(comment + "\n")
-                print(comment) 
+            if self.SPS01[i].name == namedevice:
+                self.SPS01[i].MoveTo(flowrate,volume)
+            else:
+                with open("OUTPUT.txt", "a") as OUTPUT:
+                    comment='ERROR: Name syringe not correct'
+                    OUTPUT.write(comment + "\n")
+                    print(comment) 
     
     ### FindIndexS (find index of Syringe from name of device)
     def FindIndexS(self, n):
