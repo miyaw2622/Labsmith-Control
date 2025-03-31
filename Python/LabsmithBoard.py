@@ -170,7 +170,7 @@ class LabsmithBoard:
         k=[]
         for i in range(len(self.SPS01)):
             k.append(self.SPS01[i].name == n)               
-        out = np.nonzero(k)[0]
+        out = np.nonzero(k)[0][0]
         if not k:
             comment=['Error : ' ,n, ' does not exist. Check name again.']
             print(comment)
@@ -180,7 +180,7 @@ class LabsmithBoard:
         k=[]
         for i in range(len(self.C4VM)):
             k.append(self.C4VM[i].name == n)              
-        out = np.nonzero(k)[0]
+        out = np.nonzero(k)[0][0]
         if not k:
             with open("OUTPUT.txt", "a") as OUTPUT:
                 comment=f"Error : {n} does not exist. Check name again."
@@ -195,13 +195,13 @@ class LabsmithBoard:
         else:
             if f1 != None and d2 == None:
                 i1=self.FindIndexS(d1)
-                if i1:
+                if len(self.SPS01) == 1:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)                        
                     self.SPS01[i1].Flowrate = f1
             elif f2 != None and d3 == None:
                 i1=self.FindIndexS(d1)
                 i2=self.FindIndexS(d2)
-                if i1 and i2:
+                if len(self.SPS01) == 2:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)
                     self.SPS01[i1].Flowrate = f1
                     self.SPS01[i2].device.CmdSetFlowrate(f2)
@@ -210,7 +210,7 @@ class LabsmithBoard:
                 i1=self.FindIndexS(d1)
                 i2=self.FindIndexS(d2)
                 i3=self.FindIndexS(d3)
-                if i1 and i2 and i3:
+                if len(self.SPS01) == 3:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)
                     self.SPS01[i1].Flowrate = f1
                     self.SPS01[i2].device.CmdSetFlowrate(f2)
@@ -222,7 +222,7 @@ class LabsmithBoard:
                 i2=self.FindIndexS(d2)
                 i3=self.FindIndexS(d3)
                 i4=self.FindIndexS(d4)
-                if i1 and i2 and i3 and i4:
+                if len(self.SPS01) == 4:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)
                     self.SPS01[i1].Flowrate = f1
                     self.SPS01[i2].device.CmdSetFlowrate(f2)
@@ -237,7 +237,7 @@ class LabsmithBoard:
                 i3=self.FindIndexS(d3)
                 i4=self.FindIndexS(d4)
                 i5=self.FindIndexS(d5)
-                if i1 and i2 and i3 and i4 and i5:
+                if len(self.SPS01) == 5:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)
                     self.SPS01[i1].Flowrate = f1
                     self.SPS01[i2].device.CmdSetFlowrate(f2)
@@ -255,7 +255,7 @@ class LabsmithBoard:
                 i4=self.FindIndexS(d4)
                 i5=self.FindIndexS(d5)
                 i6=self.FindIndexS(d6)
-                if i1 and i2 and i3 and i4 and i5 and i6:
+                if len(self.SPS01) == 6:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)
                     self.SPS01[i1].Flowrate = f1
                     self.SPS01[i2].device.CmdSetFlowrate(f2)
@@ -276,7 +276,7 @@ class LabsmithBoard:
                 i5=self.FindIndexS(d5)
                 i6=self.FindIndexS(d6)
                 i7=self.FindIndexS(d7)
-                if i1 and i2 and i3 and i4 and i5 and i6 and i7:
+                if len(self.SPS01) == 7:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)
                     self.SPS01[i1].Flowrate = f1
                     self.SPS01[i2].device.CmdSetFlowrate(f2)
@@ -300,7 +300,7 @@ class LabsmithBoard:
                 i6=self.FindIndexS(d6)
                 i7=self.FindIndexS(d7)
                 i8=self.FindIndexS(d8)
-                if i1 and i2 and i3 and i4 and i5 and i6 and i7 and i8:
+                if len(self.SPS01) == 8:
                     self.SPS01[i1].device.CmdSetFlowrate(f1)
                     self.SPS01[i1].Flowrate = f1
                     self.SPS01[i2].device.CmdSetFlowrate(f2)
