@@ -3407,7 +3407,7 @@ class LabsmithBoard:
                                 self.notify('FirstDoneStopPauseWait')
 
     ## Listener Function : Display the first device to be done and Stop and Pause and chech the WAIT (called in MoveWait)
-    def CheckFirstDoneStopPauseWait(self,args):
+    def CheckFirstDoneStopPauseWait(self,*args):
         if len(args) == 5:
             t=args[0]
             i1=args[1]
