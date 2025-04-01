@@ -1817,7 +1817,7 @@ class LabsmithBoard:
                     time.sleep(scan_rate)
 
     ##  Set Valves
-    def SetValves(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24): 
+    def SetValves(self, d1 = None,v11 = None,v12 = None,v13 = None, v14 = None, d2 = None, v21 = None, v22 = None, v23 = None, v24 = None): 
         if self.Stop == False:
             if [d1,v11,v12,v13,v14,d2,v21,v22,v23,v24].count(None)%2 ==0:
                 print('Error, missing input. Number of inputs has to be odd (name of manifold and the four corresponding valve entries).')
@@ -1907,7 +1907,7 @@ class LabsmithBoard:
             self.C4VM[i].device.CmdStop()
             self.C4VM[i].UpdateStatus()
         self.ClockStop = datetime.now()
-        comment=f"{self.ClockStop.strftime('#X')} Interface paused by the user."
+        comment=f"{self.ClockStop.strftime('%X')} Interface paused by the user."
         with open("OUTPUT.txt", "a") as OUTPUT:
             OUTPUT.write(comment + "\n")
             print(comment)
@@ -1918,7 +1918,7 @@ class LabsmithBoard:
             i1=args[0] #vararging doesn't include the obj, so its size is nargin-1. The index is the last.
             d1=args[1]
             v1=args[2]
-            if self.SPS01[0,i1].FlagIsMoving == True:  
+            if self.SPS01[i1].FlagIsMoving == True:  
                 scan_rate=0.1 #the scan rate of the counter
                 target=(48)*60*60 #/scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
                 for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
@@ -1936,17 +1936,17 @@ class LabsmithBoard:
                                 with open("OUTPUT.txt","a") as OUTPUT:
                                     OUTPUT.write(comment +"\n")
                                     print(comment) 
-                                self.SPS01[0,i1].UpdateStatus()
+                                self.SPS01[i1].UpdateStatus()
                                 self.MulMove3(d1,v1)                               
                                 self.flag_break_countpause = 1
                                 break #count_pause1
                             time.sleep(scan_rate)
-                    elif self.SPS01[0,i1].FlagIsMoving == True:
-                        self.SPS01[0,i1].UpdateStatus()
+                    elif self.SPS01[i1].FlagIsMoving == True:
+                        self.SPS01[i1].UpdateStatus()
                     if self.flag_break_countpause == 1:
                         break #counter1
-                    elif self.SPS01[0,i1].FlagIsDone == True: 
-                        self.SPS01[0,i1].displaymovementstop()
+                    elif self.SPS01[i1].FlagIsDone == True: 
+                        self.SPS01[i1].displaymovementstop()
                         break #counter1
                     time.sleep(scan_rate)
         elif len(args) == 6: # 2 syringes
@@ -1959,7 +1959,7 @@ class LabsmithBoard:
             i=[i1, i2]
             d=[d1, d2]
             v=[v1, v2]
-            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True: 
+            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True: 
                 scan_rate=0.1 #the scan rate of the counter
                 target=(48)*60*60 #scan_rate; //this is the final time of the counter. It is equal to max 48 hours        
                 for count1 in range (target): #this is a counter clock to check if the stop_status variable has changed
@@ -1977,21 +1977,21 @@ class LabsmithBoard:
                                 with open("OUTPUT.txt","a") as OUTPUT:
                                     OUTPUT.write(comment + "\n")
                                 print(comment)
-                                self.SPS01[0,i1].UpdateStatus() #////////////////////////////
-                                self.SPSO1[0,i2].UpdateStatus() #////////////////////////////
+                                self.SPS01[i1].UpdateStatus() #////////////////////////////
+                                self.SPS01[i2].UpdateStatus() #////////////////////////////
                                 self.MulMove3(d1,v1,d2,v2)                              
                                 self.flag_break_countpause = 1
                                 break #count_pause1
                             time.sleep(scan_rate)
-                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True:
-                        self.SPSO1[0,i1].UpdateStatus()
-                        self.SPSO1[0,i2].UpdateStatus()
+                    elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True:
+                        self.SPS01[i1].UpdateStatus()
+                        self.SPS01[i2].UpdateStatus()
                     if self.flag_break_countpause == 1:
                         break #counter1                        
-                    elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True:
+                    elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True:
                         for j in range(len(i[0])): #search for first device to be done
-                            if self.SPS01[0,i[j]].FlagIsDone == True:
-                                self.SPSO1[0,i[j]].displaymovementstop()
+                            if self.SPS01[i[j]].FlagIsDone == True:
+                                self.SPS01[i[j]].displaymovementstop()
                                 a=i
                                 a[j]=[]
                                 ad=d
@@ -2013,17 +2013,17 @@ class LabsmithBoard:
                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                     OUTPUT.write(comment + "\n")
                                                 print(comment)
-                                                self.SPSO1[0,a(0)].UpdateStatus() #////////////////////////////
+                                                self.SPS01[a(0)].UpdateStatus() #////////////////////////////
                                                 self.MulMove3(ad[0],av[0])                                    
                                                 self.flag_break_countpause = 1
                                                 break #count_pause1
                                             time.sleep(scan_rate)
-                                    elif self.SPS01[0,a(0)].FlagIsMoving == True:
-                                        self.SPSO1[0,a(0)].UpdateStatus()
+                                    elif self.SPS01[a(0)].FlagIsMoving == True:
+                                        self.SPS01[a(0)].UpdateStatus()
                                     if self.flag_break_countpause == 1:
                                         break #counter1  
-                                    elif self.SPS01[0,a(0)].FlagIsDone == True:
-                                        self.SPS01[0,a(0)].displaymovementstop()
+                                    elif self.SPS01[a(0)].FlagIsDone == True:
+                                        self.SPS01[a(0)].displaymovementstop()
                                         break #/counter 2                                          
                                     time.sleep(scan_rate)                                          
                                 break # j search of first device to be done                                                                        
@@ -2043,7 +2043,7 @@ class LabsmithBoard:
             i=[i1, i2, i3]
             d=[d1, d2, d3]
             v=[v1, v2, v3]
-            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True: 
+            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True: 
                 scan_rate=0.1; #the scan rate of the counter
                 target=(48)*60*60 #scan_rate; //this is the final time of the counter. It is equal to max 48 hours
                 for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
@@ -2061,23 +2061,23 @@ class LabsmithBoard:
                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                     OUTPUT.write(comment + "\n")
                                 print(comment) 
-                                self.SPSO1[0,i1].UpdateStatus() #////////////////////////////
-                                self.SPSO1[0,i2].UpdateStatus() #////////////////////////////
-                                self.SPS01[0,i3].UpdateStatus() #////////////////////////////
+                                self.SPS01[i1].UpdateStatus() #////////////////////////////
+                                self.SPS01[i2].UpdateStatus() #////////////////////////////
+                                self.SPS01[i3].UpdateStatus() #////////////////////////////
                                 self.MulMove3(d1,v1,d2,v2,d3,v3)                                  
                                 self.flag_break_countpause = 1
                                 break #count_pause1
                             time.sleep(scan_rate)
-                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True:
-                        self.SPS01[0,i1].UpdateStatus()
-                        self.SPS01[0,i2].UpdateStatus()
-                        self.SPS01[0,i3].UpdateStatus()
+                    elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True:
+                        self.SPS01[i1].UpdateStatus()
+                        self.SPS01[i2].UpdateStatus()
+                        self.SPS01[i3].UpdateStatus()
                     if self.flag_break_countpause == 1:
                         break #counter1  
-                    elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True:
+                    elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True:
                         for j in range(len(i[0])):
-                            if self.SPS01[0,i[j]].FlagIsDone == True:
-                                self.SPS01[0,i[j]].displaymovementstop()
+                            if self.SPS01[i[j]].FlagIsDone == True:
+                                self.SPS01[i[j]].displaymovementstop()
                                 a=i
                                 a[j]=[]; # a=[i2 i3] for j=1, a=[i1 i3] for j=2, a=[i1 i2] for j=3
                                 ad=d
@@ -2099,21 +2099,21 @@ class LabsmithBoard:
                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                     OUTPUT.write(comment + "\n")
                                                 print(comment)
-                                                self.SPS01[0,a[0]].UpdateStatus() #////////////////////////////
-                                                self.SPS01[0,a[1]].UpdateStatus() #////////////////////////////
+                                                self.SPS01[a[0]].UpdateStatus() #////////////////////////////
+                                                self.SPS01[a[1]].UpdateStatus() #////////////////////////////
                                                 self.MulMove3(ad[1],av[1],ad[2],av[2])                            
                                                 self.flag_break_countpause = 1
                                                 break #count_pause1
                                             time.sleep(scan_rate)                                             
-                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True:
-                                        self.SPS01[0,a[0]].UpdateStatus()
+                                    elif self.SPS01[a[0]].FlagIsMoving == True and self.SPS01[a[1]].FlagIsMoving == True:
+                                        self.SPS01[a[0]].UpdateStatus()
                                         self.SPS01[1,a[1]].UpdateStatus()
                                     if self.flag_break_countpause == 1:
                                         break #counter1  
-                                    elif self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True:
+                                    elif self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True:
                                         for k in range(len(a[0])):
-                                            if self.SPS01[0,a[k]].FlagIsDone == True:
-                                                self.SPS01[0,a[k]].displaymovementstop()
+                                            if self.SPS01[a[k]].FlagIsDone == True:
+                                                self.SPS01[a[k]].displaymovementstop()
                                                 b=a
                                                 b[k]=[]
                                                 bd=ad
@@ -2135,17 +2135,17 @@ class LabsmithBoard:
                                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                                     OUTPUT.write(comment + "\n")
                                                                 print(comment)
-                                                                self.SPS01[0,b[0]].UpdateStatus() #////////////////////////////
+                                                                self.SPS01[b[0]].UpdateStatus() #////////////////////////////
                                                                 self.MulMove3[bd[1],bv[1]]                                  
                                                                 self.flag_break_countpause = 1
                                                                 break #count_pause1
                                                             time.sleep(scan_rate)                                                           
-                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True:
-                                                        self.SPSO1[0,b[0]].UpdateStatus()
+                                                    elif self.SPS01[b[0]].FlagIsMoving == True:
+                                                        self.SPS01[b[0]].UpdateStatus()
                                                     if self.flag_break_countpause == 1:
                                                         break #counter1  
-                                                    elif self.SPS01[0,b[0]].FlagIsDone == True:
-                                                        self.SPS01[0,b[0]].displaymovementstop()
+                                                    elif self.SPS01[b[0]].FlagIsDone == True:
+                                                        self.SPS01[b[0]].displaymovementstop()
                                                         break #counter 3
                                                     time.sleep(scan_rate)
                                                 break # k search of first device to be done 
@@ -2172,7 +2172,7 @@ class LabsmithBoard:
             i=[i1, i2, i3, i4]
             d=[d1, d2, d3, d4]
             v=[v1, v2, v3, v4]
-            if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
+            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True:
                 scan_rate=0.1 #the scan rate of the counter
                 target=(48)*60*60 #scan_rate; //this is the final time of the counter. It is equal to max 48 hours                   
                 for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
@@ -2190,25 +2190,25 @@ class LabsmithBoard:
                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                     OUTPUT.write(comment + "\n")
                                 print(comment)
-                                self.SPS01[0,i1].UpdateStatus() #////////////////////////////
-                                self.SPS01[0,i2].UpdateStatus() #////////////////////////////
-                                self.SPS01[0,i3].UpdateStatus() #////////////////////////////
-                                self.SPS01[0,i4].UpdateStatus() #////////////////////////////
+                                self.SPS01[i1].UpdateStatus() #////////////////////////////
+                                self.SPS01[i2].UpdateStatus() #////////////////////////////
+                                self.SPS01[i3].UpdateStatus() #////////////////////////////
+                                self.SPS01[i4].UpdateStatus() #////////////////////////////
                                 self.MulMove3(d1,v1,d2,v2,d3,v3,d4,v4)                                
                                 self.flag_break_countpause = 1
                                 break #count_pause1
                             time.sleep(scan_rate)                         
-                    elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True:
-                        self.SPS01[0,i1].UpdateStatus()
-                        self.SPS01[0,i2].UpdateStatus()
-                        self.SPS01[0,i3].UpdateStatus()
-                        self.SPS01[0,i4].UpdateStatus() 
+                    elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True:
+                        self.SPS01[i1].UpdateStatus()
+                        self.SPS01[i2].UpdateStatus()
+                        self.SPS01[i3].UpdateStatus()
+                        self.SPS01[i4].UpdateStatus() 
                     if self.flag_break_countpause == 1:
                         break #counter1  
-                    elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True:
+                    elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True:
                         for j in range(len(i[0])):
-                            if self.SPS01[0,i[j]].FlagIsDone == True:
-                                self.SPS01[0,i[j]].displaymovementstop()
+                            if self.SPS01[i[j]].FlagIsDone == True:
+                                self.SPS01[i[j]].displaymovementstop()
                                 a=i
                                 a[j]=[]
                                 ad=d
@@ -2232,23 +2232,23 @@ class LabsmithBoard:
                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                     OUTPUT.write(comment + "\n")
                                                 print(comment)
-                                                self.SPS01[0,a[0]].UpdateStatus() #////////////////////////////
-                                                self.SPS01[0,a[1]].UpdateStatus() #////////////////////////////                                                    
-                                                self.SPS01[0,a[2]].UpdateStatus() #////////////////////////////
+                                                self.SPS01[a[0]].UpdateStatus() #////////////////////////////
+                                                self.SPS01[a[1]].UpdateStatus() #////////////////////////////                                                    
+                                                self.SPS01[a[2]].UpdateStatus() #////////////////////////////
                                                 self.MulMove3(ad[1],av[1],ad[2],av[2],ad[3],av[3])                                   
                                                 self.flag_break_countpause = 1
                                                 break #count_pause1
                                             time.sleep(scan_rate)                                           
-                                    elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True:
-                                        self.SPS01[0,a[0]].UpdateStatus()
-                                        self.SPS01[0,a[1]].UpdateStatus()
-                                        self.SPS01[0,a[2]].UpdateStatus()    
+                                    elif self.SPS01[a[0]].FlagIsMoving == True and self.SPS01[a[1]].FlagIsMoving == True and self.SPS01[a[2]].FlagIsMoving == True:
+                                        self.SPS01[a[0]].UpdateStatus()
+                                        self.SPS01[a[1]].UpdateStatus()
+                                        self.SPS01[a[2]].UpdateStatus()    
                                     if self.flag_break_countpause == 1:
                                         break #counter1  
-                                    elif self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True:
+                                    elif self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True:
                                         for k in range(len(a[0])):
-                                            if self.SPS01[0,a[k]].FlagIsDone == True:
-                                                self.SPS01[0,a[k]].displaymovementstop()
+                                            if self.SPS01[a[k]].FlagIsDone == True:
+                                                self.SPS01[a[k]].displaymovementstop()
                                                 b=a
                                                 b[k]=[]
                                                 bd=ad
@@ -2272,21 +2272,21 @@ class LabsmithBoard:
                                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                                     OUTPUT.write(comment + "\n")
                                                                 print(comment)
-                                                                self.SPS01[0,b[0]].UpdateStatus() #////////////////////////////
-                                                                self.SPS01[0,b[1]].UpdateStatus() #////////////////////////////
+                                                                self.SPS01[b[0]].UpdateStatus() #////////////////////////////
+                                                                self.SPS01[b[1]].UpdateStatus() #////////////////////////////
                                                                 self.MulMove3(bd[1],bv[1],bd[2],bv[2])                                  
                                                                 self.flag_break_countpause = 1
                                                                 break #count_pause1
                                                             time.sleep(scan_rate)  
-                                                    elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True:
-                                                        self.SPS01[0,b[0]].UpdateStatus()
-                                                        self.SPS01[0,b[1]].UpdateStatus()
+                                                    elif self.SPS01[b[0]].FlagIsMoving == True and self.SPS01[b[1]].FlagIsMoving == True:
+                                                        self.SPS01[b[0]].UpdateStatus()
+                                                        self.SPS01[b[1]].UpdateStatus()
                                                     if self.flag_break_countpause == 1:
                                                         break #counter1  
-                                                    elif self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True:
+                                                    elif self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True:
                                                         for p in range(len(b[0])):
-                                                            if self.SPS01[0,b[p]].FlagIsDone == True:
-                                                                self.SPS01[0,b[p]].displaymovementstop()
+                                                            if self.SPS01[b[p]].FlagIsDone == True:
+                                                                self.SPS01[b[p]].displaymovementstop()
                                                                 c=b
                                                                 c[p]=[]
                                                                 cd=bd
@@ -2308,17 +2308,17 @@ class LabsmithBoard:
                                                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                     OUTPUT.write(comment + "\n")
                                                                                 print(comment)
-                                                                                self.SPS01[0,c[0]].UpdateStatus() #////////////////////////////
+                                                                                self.SPS01[c[0]].UpdateStatus() #////////////////////////////
                                                                                 self.MulMove3(cd[1],cv[1])                                    
                                                                                 self.flag_break_countpause = 1
                                                                                 break #count_pause1
                                                                             time.sleep(scan_rate)  
-                                                                    elif self.SPS01[0,c[0]].FlagIsMoving == True:
-                                                                        self.SPS01[0,c[0]].UpdateStatus()
+                                                                    elif self.SPS01[c[0]].FlagIsMoving == True:
+                                                                        self.SPS01[c[0]].UpdateStatus()
                                                                     if self.flag_break_countpause == 1:
                                                                         break #counter1
-                                                                    elif self.SPS01[0,c[0]].FlagIsDone == True:
-                                                                        self.SPS01[0,c[0]].displaymovementstop()
+                                                                    elif self.SPS01[c[0]].FlagIsDone == True:
+                                                                        self.SPS01[c[0]].displaymovementstop()
                                                                         break # counter 4
                                                                     time.sleep(scan_rate)
                                                                 break # p search of first device to be done
@@ -2351,7 +2351,7 @@ class LabsmithBoard:
                 i=[i1, i2, i3, i4, i5]
                 d=[d1, d2, d3, d4, d5]
                 v=[v1, v2, v3, v4, v5]
-                if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
+                if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True:
                     scan_rate=0.1 #the scan rate of the counter
                     target=(48)*60*60 #/scan_rate //this is the final time of the counter. It is equal to max 48 hours                   
                     for count1 in range (target): #//this is a counter clock to check if the stop_status variable has changed
@@ -2369,27 +2369,27 @@ class LabsmithBoard:
                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                         OUTPUT.write(comment + "\n")
                                     print(comment)
-                                    self.SPS01[0,i1].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i2].UpdateStatus() # ////////////////////////////
-                                    self.SPS01[0,i3].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i4].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i5].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i1].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i2].UpdateStatus() # ////////////////////////////
+                                    self.SPS01[i3].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i4].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i5].UpdateStatus() #////////////////////////////
                                     self.MulMove3(d1,v1,d2,v2,d3,v3,d4,v4,d5,v5)                                  
                                     self.flag_break_countpause = 1
                                     break #count_pause1
                                 time.sleep(scan_rate)
-                        elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True:
-                            self.SPS01[0,i1].UpdateStatus()
-                            self.SPS01[0,i2].UpdateStatus()
-                            self.SPS01[0,i3].UpdateStatus()
-                            self.SPS01[0,i4].UpdateStatus()
-                            self.SPS01[0,i5].UpdateStatus()                           
+                        elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True:
+                            self.SPS01[i1].UpdateStatus()
+                            self.SPS01[i2].UpdateStatus()
+                            self.SPS01[i3].UpdateStatus()
+                            self.SPS01[i4].UpdateStatus()
+                            self.SPS01[i5].UpdateStatus()                           
                         if self.flag_break_countpause == 1:
                             break #counter1  
-                        elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True:
+                        elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True:
                             for j in range(len(i[0])):
-                                if self.SPS01[0,i[j]].FlagIsDone == True:
-                                    self.SPS01[0,i[j]].displaymovementstop()
+                                if self.SPS01[i[j]].FlagIsDone == True:
+                                    self.SPS01[i[j]].displaymovementstop()
                                     a=i
                                     a[j]=[]
                                     ad=d
@@ -2411,25 +2411,25 @@ class LabsmithBoard:
                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                         OUTPUT.write(comment + "\n")
                                                     print(comment)
-                                                    self.SPS01[0,a[0]].UpdateStatus() #////////////////////////////
-                                                    self.SPS01[0,a[1]].UpdateStatus() #////////////////////////////                                                    
-                                                    self.SPS01[0,a[2]].UpdateStatus() #////////////////////////////                                                   
-                                                    self.SPS01[0,a[3]].UpdateStatus() #////////////////////////////
+                                                    self.SPS01[a[0]].UpdateStatus() #////////////////////////////
+                                                    self.SPS01[a[1]].UpdateStatus() #////////////////////////////                                                    
+                                                    self.SPS01[a[2]].UpdateStatus() #////////////////////////////                                                   
+                                                    self.SPS01[a[3]].UpdateStatus() #////////////////////////////
                                                     self.MulMove3(ad[1],av[1],ad[2],av[2],ad[3],av[3],ad[4],av[4])                                   
                                                     self.flag_break_countpause = 1
                                                     break #count_pause1
                                                 time.sleep(scan_rate)   
-                                        elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True:
-                                            self.SPS01[0,a[0]].UpdateStatus()
-                                            self.SPS01[0,a[1]].UpdateStatus()
-                                            self.SPS01[0,a[2]].UpdateStatus()
-                                            self.SPS01[0,a[3]].UpdateStatus()                                            
+                                        elif self.SPS01[a[0]].FlagIsMoving == True and self.SPS01[a[1]].FlagIsMoving == True and self.SPS01[a[2]].FlagIsMoving == True and self.SPS01[a[3]].FlagIsMoving == True:
+                                            self.SPS01[a[0]].UpdateStatus()
+                                            self.SPS01[a[1]].UpdateStatus()
+                                            self.SPS01[a[2]].UpdateStatus()
+                                            self.SPS01[a[3]].UpdateStatus()                                            
                                         if self.flag_break_countpause == 1:
                                             break #counter1  
-                                        elif self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True:
+                                        elif self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True:
                                             for k in range(len(a[0])):
-                                                if self.SPS01[0,a[k]].FlagIsDone == True:
-                                                    self.SPS01[0,a[k]].displaymovementstop()
+                                                if self.SPS01[a[k]].FlagIsDone == True:
+                                                    self.SPS01[a[k]].displaymovementstop()
                                                     b=a
                                                     b[k]=[]
                                                     bd=ad
@@ -2451,23 +2451,23 @@ class LabsmithBoard:
                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                         OUTPUT.write(comment + "\n")
                                                                     print(comment)
-                                                                    self.SPS01[0,b[0]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[1]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[2]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[0]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[1]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[2]].UpdateStatus() #////////////////////////////
                                                                     self.MulMove3(bd[1],bv[1],bd[2],bv[2],bd[3],bv[3])                                   
                                                                     self.flag_break_countpause = 1
                                                                     break #count_pause1
                                                                 time.sleep(scan_rate)
-                                                        elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True:
-                                                            self.SPS01[0,b[0]].UpdateStatus()
-                                                            self.SPS01[0,b[1]].UpdateStatus()
-                                                            self.SPS01[0,b[2]].UpdateStatus()                                                           
+                                                        elif self.SPS01[b[0]].FlagIsMoving == True and self.SPS01[b[1]].FlagIsMoving == True and self.SPS01[b[2]].FlagIsMoving == True:
+                                                            self.SPS01[b[0]].UpdateStatus()
+                                                            self.SPS01[b[1]].UpdateStatus()
+                                                            self.SPS01[b[2]].UpdateStatus()                                                           
                                                         if self.flag_break_countpause == 1:
                                                             break #counter1  
-                                                        elif self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True:
+                                                        elif self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True:
                                                             for p in range(len(b[0])):
-                                                                if self.SPS01[0,b[p]].FlagIsDone == True:
-                                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                                if self.SPS01[b[p]].FlagIsDone == True:
+                                                                    self.SPS01[b[p]].displaymovementstop()
                                                                     c=b
                                                                     c[p]=[]
                                                                     cd=bd
@@ -2489,20 +2489,20 @@ class LabsmithBoard:
                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                         OUTPUT.write(comment + "\n")
                                                                                     print(comment)
-                                                                                    self.SPS01[0,c[0]].UpdateStatus() #////////////////////////////
-                                                                                    self.SPS01[0,c[1]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[0]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[1]].UpdateStatus() #////////////////////////////
                                                                                     self.MulMove3(cd[1],cv[1],cd[2],cv[2])                                 
                                                                                     self.flag_break_countpause = 1
                                                                                     break #count_pause1
                                                                                 time.sleep(scan_rate)    
-                                                                        elif self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving:
-                                                                            self.SPS01[0,c[0]].UpdateStatus()
-                                                                            self.SPS01[0,c[1]].UpdateStatus()                                                                            
+                                                                        elif self.SPS01[c[0]].FlagIsMoving == True and self.SPS01[c[1]].FlagIsMoving:
+                                                                            self.SPS01[c[0]].UpdateStatus()
+                                                                            self.SPS01[c[1]].UpdateStatus()                                                                            
                                                                         if self.flag_break_countpause == 1:
                                                                             break #counter1
-                                                                        elif self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True:
+                                                                        elif self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True:
                                                                             for q in range(len(c[0])):
-                                                                                if self.SPS01[0,c[q]].FlagIsDone == True:
+                                                                                if self.SPS01[c[q]].FlagIsDone == True:
                                                                                     self.SPS01[1,c[q]].displaymovementstop()
                                                                                     d=c
                                                                                     d[q]=[]
@@ -2525,17 +2525,17 @@ class LabsmithBoard:
                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                     print(comment)
-                                                                                                    self.SPS01[0,d[0]].UpdateStatus() #////////////////////////////
+                                                                                                    self.SPS01[d[0]].UpdateStatus() #////////////////////////////
                                                                                                     self.MulMove3(dd[1],dv[1])                                    
                                                                                                     self.flag_break_countpause = 1
                                                                                                     break #count_pause1
                                                                                                 time.sleep(scan_rate)   
-                                                                                        elif self.SPS01[0,d[0]].FlagIsMoving:
-                                                                                            self.SPS01[0,d[0]].UpdateStatus()                                                                                         
+                                                                                        elif self.SPS01[d[0]].FlagIsMoving:
+                                                                                            self.SPS01[d[0]].UpdateStatus()                                                                                         
                                                                                         if self.flag_break_countpause == 1:
                                                                                             break #counter1
-                                                                                        elif self.SPS01[0,d[0]].FlagIsDone:
-                                                                                            self.SPS01[0,d[0]].displaymovementstop()
+                                                                                        elif self.SPS01[d[0]].FlagIsDone:
+                                                                                            self.SPS01[d[0]].displaymovementstop()
                                                                                             break #counter 5
                                                                                         time.sleep(scan_rate)                                                                                   
                                                                                     break # q search of first device to be done
@@ -2573,7 +2573,7 @@ class LabsmithBoard:
                 i=[i1, i2, i3, i4, i5, i6]
                 d=[d1, d2, d3, d4, d5, d6]
                 v=[v1, v2, v3, v4, v5, v6]
-                if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
+                if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True:
                     scan_rate=0.1 # //the scan rate of the counter
                     target=(48)*60*60 #/scan_rate; //this is the final time of the counter. It is equal to max 48 hours                   
                     for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
@@ -2591,29 +2591,29 @@ class LabsmithBoard:
                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                         OUTPUT.write(comment + "\n")
                                     print(comment)
-                                    self.SPS01[0,i1].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i2].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i3].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i4].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i5].UpdateStatus() #////////////////////////////                                    
-                                    self.SPS01[0,i6].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i1].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i2].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i3].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i4].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i5].UpdateStatus() #////////////////////////////                                    
+                                    self.SPS01[i6].UpdateStatus() #////////////////////////////
                                     self.MulMove3(d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6)                                   
                                     self.flag_break_countpause = 1
                                     break #count_pause1
                                 time.sleep(scan_rate)  
-                        elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True:
-                            self.SPS01[0,i1].UpdateStatus()
-                            self.SPS01[0,i2].UpdateStatus()
-                            self.SPS01[0,i3].UpdateStatus()
-                            self.SPS01[0,i4].UpdateStatus()
-                            self.SPS01[0,i5].UpdateStatus()
-                            self.SPS01[0,i6].UpdateStatus()                            
+                        elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True:
+                            self.SPS01[i1].UpdateStatus()
+                            self.SPS01[i2].UpdateStatus()
+                            self.SPS01[i3].UpdateStatus()
+                            self.SPS01[i4].UpdateStatus()
+                            self.SPS01[i5].UpdateStatus()
+                            self.SPS01[i6].UpdateStatus()                            
                         if self.flag_break_countpause == 1:
                             break #counter1  
-                        elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True:
+                        elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True:
                             for j in range(len(i[0])):
-                                if self.SPS01[0,i[j]].FlagIsDone == True:
-                                    self.SPS01[0,i[j]].displaymovementstop()
+                                if self.SPS01[i[j]].FlagIsDone == True:
+                                    self.SPS01[i[j]].displaymovementstop()
                                     a=i
                                     a[j]=[]
                                     ad=d
@@ -2635,27 +2635,27 @@ class LabsmithBoard:
                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                         OUTPUT.write(comment + "\n")
                                                     print(comment)
-                                                    self.SPS01[0,a[0]].UpdateStatus() #////////////////////////////
-                                                    self.SPS01[0,a[1]].UpdateStatus() #////////////////////////////                                                    
-                                                    self.SPS01[0,a[2]].UpdateStatus() #////////////////////////////                                                   
-                                                    self.SPS01[0,a[3]].UpdateStatus() #////////////////////////////                                                  
-                                                    self.SPS01[0,a[4]].UpdateStatus() #////////////////////////////
+                                                    self.SPS01[a[0]].UpdateStatus() #////////////////////////////
+                                                    self.SPS01[a[1]].UpdateStatus() #////////////////////////////                                                    
+                                                    self.SPS01[a[2]].UpdateStatus() #////////////////////////////                                                   
+                                                    self.SPS01[a[3]].UpdateStatus() #////////////////////////////                                                  
+                                                    self.SPS01[a[4]].UpdateStatus() #////////////////////////////
                                                     self.MulMove3(ad[1],av[1],ad[2],av[2],ad[3],av[3],ad[4],av[4],ad[5],av[5])                                    
                                                     self.flag_break_countpause = 1
                                                     break #count_pause1
                                                 time.sleep(scan_rate)  
-                                        elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True:
-                                            self.SPS01[0,a[0]].UpdateStatus()
-                                            self.SPS01[0,a[1]].UpdateStatus()
-                                            self.SPS01[0,a[2]].UpdateStatus()
-                                            self.SPS01[0,a[3]].UpdateStatus()
-                                            self.SPS01[0,a[4]].UpdateStatus()                                            
+                                        elif self.SPS01[a[0]].FlagIsMoving == True and self.SPS01[a[1]].FlagIsMoving == True and self.SPS01[a[2]].FlagIsMoving == True and self.SPS01[a[3]].FlagIsMoving == True and self.SPS01[a[4]].FlagIsMoving == True:
+                                            self.SPS01[a[0]].UpdateStatus()
+                                            self.SPS01[a[1]].UpdateStatus()
+                                            self.SPS01[a[2]].UpdateStatus()
+                                            self.SPS01[a[3]].UpdateStatus()
+                                            self.SPS01[a[4]].UpdateStatus()                                            
                                         if self.flag_break_countpause == 1:
                                             break #counter1  
-                                        elif self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True:
+                                        elif self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True:
                                             for k in range(len(a[0])): 
-                                                if self.SPS01[0,a[k]].FlagIsDone == True:
-                                                    self.SPS01[0,a[k]].displaymovementstop()
+                                                if self.SPS01[a[k]].FlagIsDone == True:
+                                                    self.SPS01[a[k]].displaymovementstop()
                                                     b=a
                                                     b[k]=[]
                                                     bd=ad
@@ -2677,25 +2677,25 @@ class LabsmithBoard:
                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                         OUTPUT.write(comment + "\n")
                                                                     print(comment)
-                                                                    self.SPS01[0,b[0]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[1]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[2]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[3]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[0]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[1]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[2]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[3]].UpdateStatus() #////////////////////////////
                                                                     self.MulMove3(bd[1],bv[1],bd[2],bv[2],bd[3],bv[3],bd[4],bv[4])  #CHECK THIS                                  
                                                                     self.flag_break_countpause = 1
                                                                     break #count_pause1
                                                                 time.sleep(scan_rate) 
-                                                        elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[3]].FlagIsMoving == True:
-                                                            self.SPS01[0,b[0]].UpdateStatus()
-                                                            self.SPS01[0,b[1]].UpdateStatus()
-                                                            self.SPS01[0,b[2]].UpdateStatus()
-                                                            self.SPS01[0,b[3]].UpdateStatus()                                                            
+                                                        elif self.SPS01[b[0]].FlagIsMoving == True and self.SPS01[b[1]].FlagIsMoving == True and self.SPS01[b[2]].FlagIsMoving == True and self.SPS01[b[3]].FlagIsMoving == True:
+                                                            self.SPS01[b[0]].UpdateStatus()
+                                                            self.SPS01[b[1]].UpdateStatus()
+                                                            self.SPS01[b[2]].UpdateStatus()
+                                                            self.SPS01[b[3]].UpdateStatus()                                                            
                                                         if self.flag_break_countpause == 1:
                                                             break #counter1  
-                                                        elif self.SPS01[0,b[0]].FlagIsDone == True or self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True:
+                                                        elif self.SPS01[b[0]].FlagIsDone == True or self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True:
                                                             for p in range(len(b[0])):
-                                                                if self.SPS01[0,b[p]].FlagIsDone == True:
-                                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                                if self.SPS01[b[p]].FlagIsDone == True:
+                                                                    self.SPS01[b[p]].displaymovementstop()
                                                                     c=b
                                                                     c[p]=[]
                                                                     cd=bd
@@ -2717,23 +2717,23 @@ class LabsmithBoard:
                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                         OUTPUT.write(comment + "\n")
                                                                                     print(comment)
-                                                                                    self.SPS01[0,c[0]].UpdateStatus() #////////////////////////////
-                                                                                    self.SPS01[0,c[1]].UpdateStatus() #////////////////////////////
-                                                                                    self.SPS01[0,c[2]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[0]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[1]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[2]].UpdateStatus() #////////////////////////////
                                                                                     self.MulMove3(cd[1],cv[1],cd[2],cv[2],cd[3],cv[3])                                 
                                                                                     self.flag_break_countpause = 1
                                                                                     break #count_pause1
                                                                                 time.sleep(scan_rate)  
-                                                                        elif self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving:
-                                                                            self.SPS01[0,c[0]].UpdateStatus()
-                                                                            self.SPS01[0,c[1]].UpdateStatus()
-                                                                            self.SPS01[0,c[2]].UpdateStatus()                                                                            
+                                                                        elif self.SPS01[c[0]].FlagIsMoving == True and self.SPS01[c[1]].FlagIsMoving and self.SPS01[c[2]].FlagIsMoving:
+                                                                            self.SPS01[c[0]].UpdateStatus()
+                                                                            self.SPS01[c[1]].UpdateStatus()
+                                                                            self.SPS01[c[2]].UpdateStatus()                                                                            
                                                                         if self.flag_break_countpause == 1:
                                                                             break #counter1
-                                                                        elif self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True:
+                                                                        elif self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True:
                                                                             for q in range(len(c[0])):
-                                                                                if self.SPS01[0,c[q]].FlagIsDone == True:
-                                                                                    self.SPS01[0,c[q]].displaymovementstop()
+                                                                                if self.SPS01[c[q]].FlagIsDone == True:
+                                                                                    self.SPS01[c[q]].displaymovementstop()
                                                                                     d=c
                                                                                     d[q]=[]
                                                                                     dd=cd
@@ -2755,21 +2755,21 @@ class LabsmithBoard:
                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                     print(comment)
-                                                                                                    self.SPS01[0,d[0]].UpdateStatus() #////////////////////////////
-                                                                                                    self.SPS01[0,d[1]].UpdateStatus() #////////////////////////////
+                                                                                                    self.SPS01[d[0]].UpdateStatus() #////////////////////////////
+                                                                                                    self.SPS01[d[1]].UpdateStatus() #////////////////////////////
                                                                                                     self.MulMove3(dd[1],dv[1],dd[2],dv[2])                                    
                                                                                                     self.flag_break_countpause = 1
                                                                                                     break #count_pause1
                                                                                                 time.sleep(scan_rate)   
-                                                                                        elif self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving:
-                                                                                            self.SPS01[0,d[0]].UpdateStatus()
-                                                                                            self.SPS01[0,d[1]].UpdateStatus()                                                                                            
+                                                                                        elif self.SPS01[d[0]].FlagIsMoving and self.SPS01[d[1]].FlagIsMoving:
+                                                                                            self.SPS01[d[0]].UpdateStatus()
+                                                                                            self.SPS01[d[1]].UpdateStatus()                                                                                            
                                                                                         if self.flag_break_countpause == 1:
                                                                                             break #counter1
-                                                                                        elif self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone:
+                                                                                        elif self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone:
                                                                                             for r in range(len(d[0])):
-                                                                                                if self.SPS01[0,d[r]].FlagIsDone == True:
-                                                                                                    self.SPS01[0,d[r]].displaymovementstop()
+                                                                                                if self.SPS01[d[r]].FlagIsDone == True:
+                                                                                                    self.SPS01[d[r]].displaymovementstop()
                                                                                                     e=d
                                                                                                     e[r]=[]
                                                                                                     ed=dd
@@ -2791,17 +2791,17 @@ class LabsmithBoard:
                                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                                     print(comment)
-                                                                                                                    self.SPS01[0,e[0]].UpdateStatus() #////////////////////////////
+                                                                                                                    self.SPS01[e[0]].UpdateStatus() #////////////////////////////
                                                                                                                     self.MulMove3(ed[1],ev[1])                                   
                                                                                                                     self.flag_break_countpause = 1
                                                                                                                     break #count_pause1
                                                                                                                 time.sleep(scan_rate)  
-                                                                                                        elif self.SPS01[0,e[0]].FlagIsMoving:
-                                                                                                            self.SPS01[0,e[0]].UpdateStatus()
+                                                                                                        elif self.SPS01[e[0]].FlagIsMoving:
+                                                                                                            self.SPS01[e[0]].UpdateStatus()
                                                                                                         if self.flag_break_countpause == 1:
                                                                                                             break #counter1
-                                                                                                        elif self.SPS01[0,e[0]].FlagIsDone:
-                                                                                                            self.SPS01[0,e[0]].displaymovementstop()
+                                                                                                        elif self.SPS01[e[0]].FlagIsDone:
+                                                                                                            self.SPS01[e[0]].displaymovementstop()
                                                                                                             break # counter 6                                                                                                       
                                                                                                         time.sleep(scan_rate)                                                                                                   
                                                                                                     break # r search of first device to be done
@@ -2845,7 +2845,7 @@ class LabsmithBoard:
                 i=[i1, i2, i3, i4, i5, i6, i7]
                 d=[d1, d2, d3, d4, d5, d6, d7]
                 v=[v1, v2, v3, v4, v5, v6, v7]
-                if self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
+                if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True and self.SPS01[i7].FlagIsMoving == True:
                     scan_rate=0.1 #the scan rate of the counter
                     target=(48)*60*60 #/scan_rate; //this is the final time of the counter. It is equal to max 48 hours                   
                     for count1 in range(target): #this is a counter clock to check if the stop_status variable has changed
@@ -2863,31 +2863,31 @@ class LabsmithBoard:
                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                         OUTPUT.write(comment + "\n")
                                     print(comment)
-                                    self.SPS01[0,i1].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i2].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i3].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i4].UpdateStatus() #////////////////////////////
-                                    self.SPS01[0,i5].UpdateStatus() #////////////////////////////                                    
-                                    self.SPS01[0,i6].UpdateStatus() #////////////////////////////                                  
-                                    self.SPS01[0,i7].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i1].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i2].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i3].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i4].UpdateStatus() #////////////////////////////
+                                    self.SPS01[i5].UpdateStatus() #////////////////////////////                                    
+                                    self.SPS01[i6].UpdateStatus() #////////////////////////////                                  
+                                    self.SPS01[i7].UpdateStatus() #////////////////////////////
                                     self.MulMove3(d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7)                                   
                                     self.flag_break_countpause = 1
                                     break #count_pause1
                                 time.sleep(scan_rate)   
-                        elif self.SPS01[0,i1].FlagIsMoving == True and self.SPS01[0,i2].FlagIsMoving == True and self.SPS01[0,i3].FlagIsMoving == True and self.SPS01[0,i4].FlagIsMoving == True and self.SPS01[0,i5].FlagIsMoving == True and self.SPS01[0,i6].FlagIsMoving == True and self.SPS01[0,i7].FlagIsMoving == True:
-                            self.SPS01[0,i1].UpdateStatus()
-                            self.SPS01[0,i2].UpdateStatus()
-                            self.SPS01[0,i3].UpdateStatus()
-                            self.SPS01[0,i4].UpdateStatus()
-                            self.SPS01[0,i5].UpdateStatus()
-                            self.SPS01[0,i6].UpdateStatus()
-                            self.SPS01[0,i7].UpdateStatus()
+                        elif self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True and self.SPS01[i5].FlagIsMoving == True and self.SPS01[i6].FlagIsMoving == True and self.SPS01[i7].FlagIsMoving == True:
+                            self.SPS01[i1].UpdateStatus()
+                            self.SPS01[i2].UpdateStatus()
+                            self.SPS01[i3].UpdateStatus()
+                            self.SPS01[i4].UpdateStatus()
+                            self.SPS01[i5].UpdateStatus()
+                            self.SPS01[i6].UpdateStatus()
+                            self.SPS01[i7].UpdateStatus()
                         if self.flag_break_countpause == 1:
                             break #counter1  
-                        elif self.SPS01[0,i1].FlagIsDone == True or self.SPS01[0,i2].FlagIsDone == True or self.SPS01[0,i3].FlagIsDone == True or self.SPS01[0,i4].FlagIsDone == True or self.SPS01[0,i5].FlagIsDone == True or self.SPS01[0,i6].FlagIsDone == True or self.SPS01[0,i7].FlagIsDone == True:
+                        elif self.SPS01[i1].FlagIsDone == True or self.SPS01[i2].FlagIsDone == True or self.SPS01[i3].FlagIsDone == True or self.SPS01[i4].FlagIsDone == True or self.SPS01[i5].FlagIsDone == True or self.SPS01[i6].FlagIsDone == True or self.SPS01[i7].FlagIsDone == True:
                             for j in range(len(i[0])):
-                                if self.SPS01[0,i[j]].FlagIsDone == True:
-                                    self.SPS01[0,i[j]].displaymovementstop()
+                                if self.SPS01[i[j]].FlagIsDone == True:
+                                    self.SPS01[i[j]].displaymovementstop()
                                     a=i
                                     a[j]=[]
                                     ad=d
@@ -2909,29 +2909,29 @@ class LabsmithBoard:
                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                         OUTPUT.write(comment + "\n")
                                                     print(comment)
-                                                    self.SPS01[0,a[0]].UpdateStatus() #////////////////////////////
-                                                    self.SPS01[0,a[1]].UpdateStatus() #////////////////////////////                                                    
-                                                    self.SPS01[0,a[2]].UpdateStatus() #////////////////////////////                                                   
-                                                    self.SPS01[0,a[3]].UpdateStatus() #////////////////////////////                                                  
-                                                    self.SPS01[0,a[4]].UpdateStatus() #////////////////////////////                                                 
-                                                    self.SPS01[0,a[5]].UpdateStatus() #////////////////////////////
+                                                    self.SPS01[a[0]].UpdateStatus() #////////////////////////////
+                                                    self.SPS01[a[1]].UpdateStatus() #////////////////////////////                                                    
+                                                    self.SPS01[a[2]].UpdateStatus() #////////////////////////////                                                   
+                                                    self.SPS01[a[3]].UpdateStatus() #////////////////////////////                                                  
+                                                    self.SPS01[a[4]].UpdateStatus() #////////////////////////////                                                 
+                                                    self.SPS01[a[5]].UpdateStatus() #////////////////////////////
                                                     self.MulMove3(ad[1],av[1],ad[2],av[2],ad[3],av[3],ad[4],av[4],ad[5],av[5],ad[6],av[6])                                    
                                                     self.flag_break_countpause = 1
                                                     break #count_pause1
                                                 time.sleep(scan_rate)
-                                        elif self.SPS01[0,a[0]].FlagIsMoving == True and self.SPS01[0,a[1]].FlagIsMoving == True and self.SPS01[0,a[2]].FlagIsMoving == True and self.SPS01[0,a[3]].FlagIsMoving == True and self.SPS01[0,a[4]].FlagIsMoving == True and self.SPS01[0,a[5]].FlagIsMoving == True:
-                                            self.SPS01[0,a[0]].UpdateStatus()
-                                            self.SPS01[0,a[1]].UpdateStatus()
-                                            self.SPS01[0,a[2]].UpdateStatus()
-                                            self.SPS01[0,a[3]].UpdateStatus()
-                                            self.SPS01[0,a[4]].UpdateStatus()
-                                            self.SPS01[0,a[5]].UpdateStatus()
+                                        elif self.SPS01[a[0]].FlagIsMoving == True and self.SPS01[a[1]].FlagIsMoving == True and self.SPS01[a[2]].FlagIsMoving == True and self.SPS01[a[3]].FlagIsMoving == True and self.SPS01[a[4]].FlagIsMoving == True and self.SPS01[a[5]].FlagIsMoving == True:
+                                            self.SPS01[a[0]].UpdateStatus()
+                                            self.SPS01[a[1]].UpdateStatus()
+                                            self.SPS01[a[2]].UpdateStatus()
+                                            self.SPS01[a[3]].UpdateStatus()
+                                            self.SPS01[a[4]].UpdateStatus()
+                                            self.SPS01[a[5]].UpdateStatus()
                                         if self.flag_break_countpause == 1:
                                             break #counter1  
-                                        elif self.SPS01[0,a[0]].FlagIsDone == True or self.SPS01[0,a[1]].FlagIsDone == True or self.SPS01[0,a[2]].FlagIsDone == True or self.SPS01[0,a[3]].FlagIsDone == True or self.SPS01[0,a[4]].FlagIsDone == True or self.SPS01[0,a[5]].FlagIsDone == True:
+                                        elif self.SPS01[a[0]].FlagIsDone == True or self.SPS01[a[1]].FlagIsDone == True or self.SPS01[a[2]].FlagIsDone == True or self.SPS01[a[3]].FlagIsDone == True or self.SPS01[a[4]].FlagIsDone == True or self.SPS01[a[5]].FlagIsDone == True:
                                             for k in range(len(a[0])):
-                                                if self.SPS01[0,a[k]].FlagIsDone == True:
-                                                    self.SPS01[0,a[0]].displaymovementstop()
+                                                if self.SPS01[a[k]].FlagIsDone == True:
+                                                    self.SPS01[a[0]].displaymovementstop()
                                                     b=a
                                                     b[k]=[]
                                                     bd=ad
@@ -2953,27 +2953,27 @@ class LabsmithBoard:
                                                                         comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                         OUTPUT.write(comment + "\n")
                                                                         print(comment)
-                                                                    self.SPS01[0,b[0]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[1]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[2]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[3]].UpdateStatus() #////////////////////////////
-                                                                    self.SPS01[0,b[4]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[0]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[1]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[2]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[3]].UpdateStatus() #////////////////////////////
+                                                                    self.SPS01[b[4]].UpdateStatus() #////////////////////////////
                                                                     self.MulMove3(bd[1],bv[1],bd[2],bv[2],bd[3],bv[3],bd[4],bv[4],bd[5],bv[5])                                    
                                                                     self.flag_break_countpause = 1
                                                                     break #count_pause1
                                                                 time.sleep(scan_rate)    
-                                                        elif self.SPS01[0,b[0]].FlagIsMoving == True and self.SPS01[0,b[1]].FlagIsMoving == True and self.SPS01[0,b[2]].FlagIsMoving == True and self.SPS01[0,b[4]].FlagIsMoving == True and self.SPS01[0,b[4]].FlagIsMoving == True:
-                                                            self.SPS01[0,b[0]].UpdateStatus()
-                                                            self.SPS01[0,b[1]].UpdateStatus()
-                                                            self.SPS01[0,b[2]].UpdateStatus()
-                                                            self.SPS01[0,b[3]].UpdateStatus()
-                                                            self.SPS01[0,b[4]].UpdateStatus()
+                                                        elif self.SPS01[b[0]].FlagIsMoving == True and self.SPS01[b[1]].FlagIsMoving == True and self.SPS01[b[2]].FlagIsMoving == True and self.SPS01[b[4]].FlagIsMoving == True and self.SPS01[b[4]].FlagIsMoving == True:
+                                                            self.SPS01[b[0]].UpdateStatus()
+                                                            self.SPS01[b[1]].UpdateStatus()
+                                                            self.SPS01[b[2]].UpdateStatus()
+                                                            self.SPS01[b[3]].UpdateStatus()
+                                                            self.SPS01[b[4]].UpdateStatus()
                                                         if self.flag_break_countpause == 1:
                                                             break #counter1  
-                                                        elif self.SPS01[0,b[1]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[2]].FlagIsDone == True or self.SPS01[0,b[3]].FlagIsDone == True or self.SPS01[0,b[4]].FlagIsDone == True:
+                                                        elif self.SPS01[b[1]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[2]].FlagIsDone == True or self.SPS01[b[3]].FlagIsDone == True or self.SPS01[b[4]].FlagIsDone == True:
                                                             for p in range(len(b[0])):
-                                                                if self.SPS01[0,b[p]].FlagIsDone == True:
-                                                                    self.SPS01[0,b[p]].displaymovementstop()
+                                                                if self.SPS01[b[p]].FlagIsDone == True:
+                                                                    self.SPS01[b[p]].displaymovementstop()
                                                                     c=b
                                                                     c[p]=[]
                                                                     cd=bd
@@ -2995,25 +2995,25 @@ class LabsmithBoard:
                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                         OUTPUT.write(comment + "\n")
                                                                                     print(comment)
-                                                                                    self.SPS01[0,c[0]].UpdateStatus() #////////////////////////////
-                                                                                    self.SPS01[0,c[1]].UpdateStatus() #////////////////////////////
-                                                                                    self.SPS01[0,c[2]].UpdateStatus() #////////////////////////////
-                                                                                    self.SPS01[0,c[3]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[0]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[1]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[2]].UpdateStatus() #////////////////////////////
+                                                                                    self.SPS01[c[3]].UpdateStatus() #////////////////////////////
                                                                                     self.MulMove3(cd[1],cv[1],cd[2],cv[2],cd[3],cv[3],cd[4],cv[4])                                    
                                                                                     self.flag_break_countpause = 1
                                                                                     break #count_pause1
                                                                                 time.sleep(scan_rate)   
-                                                                        elif self.SPS01[0,c[0]].FlagIsMoving == True and self.SPS01[0,c[1]].FlagIsMoving and self.SPS01[0,c[2]].FlagIsMoving and self.SPS01[0,c[3]].FlagIsMoving:
-                                                                            self.SPS01[0,c[0]].UpdateStatus()
-                                                                            self.SPS01[0,c[1]].UpdateStatus()
-                                                                            self.SPS01[0,c[2]].UpdateStatus()
-                                                                            self.SPS01[0,c[3]].UpdateStatus()
+                                                                        elif self.SPS01[c[0]].FlagIsMoving == True and self.SPS01[c[1]].FlagIsMoving and self.SPS01[c[2]].FlagIsMoving and self.SPS01[c[3]].FlagIsMoving:
+                                                                            self.SPS01[c[0]].UpdateStatus()
+                                                                            self.SPS01[c[1]].UpdateStatus()
+                                                                            self.SPS01[c[2]].UpdateStatus()
+                                                                            self.SPS01[c[3]].UpdateStatus()
                                                                         if self.flag_break_countpause == 1:
                                                                             break #counter1
-                                                                        elif self.SPS01[0,c[0]].FlagIsDone == True or self.SPS01[0,c[1]].FlagIsDone == True or self.SPS01[0,c[2]].FlagIsDone == True or self.SPS01[0,c[3]].FlagIsDone == True:
+                                                                        elif self.SPS01[c[0]].FlagIsDone == True or self.SPS01[c[1]].FlagIsDone == True or self.SPS01[c[2]].FlagIsDone == True or self.SPS01[c[3]].FlagIsDone == True:
                                                                             for q in range(len(c[0])):
-                                                                                if self.SPS01[0,c[q]].FlagIsDone == True:
-                                                                                    self.SPS01[0,c[q]].displaymovementstop()
+                                                                                if self.SPS01[c[q]].FlagIsDone == True:
+                                                                                    self.SPS01[c[q]].displaymovementstop()
                                                                                     d=c
                                                                                     d[q]=[]
                                                                                     dd=cd
@@ -3035,23 +3035,23 @@ class LabsmithBoard:
                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                     print(comment)
-                                                                                                    self.SPS01[0,d[0]].UpdateStatus() #////////////////////////////
-                                                                                                    self.SPS01[0,d[1]].UpdateStatus() #////////////////////////////
-                                                                                                    self.SPS01[0,d[2]].UpdateStatus() #////////////////////////////
+                                                                                                    self.SPS01[d[0]].UpdateStatus() #////////////////////////////
+                                                                                                    self.SPS01[d[1]].UpdateStatus() #////////////////////////////
+                                                                                                    self.SPS01[d[2]].UpdateStatus() #////////////////////////////
                                                                                                     self.MulMove3(dd[1],dv[1],dd[2],dv[2],dd[3],dv[3])                                   
                                                                                                     self.flag_break_countpause = 1
                                                                                                     break #count_pause1
                                                                                                 time.sleep(scan_rate)   
-                                                                                        elif self.SPS01[0,d[0]].FlagIsMoving and self.SPS01[0,d[1]].FlagIsMoving and self.SPS01[0,d[2]].FlagIsMoving:
-                                                                                            self.SPS01[0,d[0]].UpdateStatus()
-                                                                                            self.SPS01[0,d[1]].UpdateStatus()
-                                                                                            self.SPS01[0,d[2]].UpdateStatus()
+                                                                                        elif self.SPS01[d[0]].FlagIsMoving and self.SPS01[d[1]].FlagIsMoving and self.SPS01[d[2]].FlagIsMoving:
+                                                                                            self.SPS01[d[0]].UpdateStatus()
+                                                                                            self.SPS01[d[1]].UpdateStatus()
+                                                                                            self.SPS01[d[2]].UpdateStatus()
                                                                                         if self.flag_break_countpause == 1:
                                                                                             break #counter1
-                                                                                        elif self.SPS01[0,d[0]].FlagIsDone or self.SPS01[0,d[1]].FlagIsDone or self.SPS01[0,d[2]].FlagIsDone:
+                                                                                        elif self.SPS01[d[0]].FlagIsDone or self.SPS01[d[1]].FlagIsDone or self.SPS01[d[2]].FlagIsDone:
                                                                                             for r in range(len(d[0])):
-                                                                                                if self.SPS01[0,d[r]].FlagIsDone == True:
-                                                                                                    self.SPS01[0,d[r]].displaymovementstop()
+                                                                                                if self.SPS01[d[r]].FlagIsDone == True:
+                                                                                                    self.SPS01[d[r]].displaymovementstop()
                                                                                                     e=d
                                                                                                     e[r]=[]
                                                                                                     ed=dd
@@ -3073,22 +3073,22 @@ class LabsmithBoard:
                                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                                     print(comment)
-                                                                                                                    self.SPS01[0,e[0]].UpdateStatus() #////////////////////////////                                                                                                                    
-                                                                                                                    self.SPS01[0,e[1]].UpdateStatus() #////////////////////////////
+                                                                                                                    self.SPS01[e[0]].UpdateStatus() #////////////////////////////                                                                                                                    
+                                                                                                                    self.SPS01[e[1]].UpdateStatus() #////////////////////////////
                                                                                                                     self.MulMove3(ed[1],ev(1),ed[2],ev[2])                                    
                                                                                                                     self.flag_break_countpause = 1
                                                                                                                     break #count_pause1
                                                                                                                 time.sleep(scan_rate)   
                                                                                                                     
-                                                                                                        elif self.SPS01[0,e[0]].FlagIsMoving and self.SPS01[0,e[1]].FlagIsMoving: 
-                                                                                                            self.SPS01[0,e[0]].UpdateStatus()
-                                                                                                            self.SPS01[0,e[1]].UpdateStatus()
+                                                                                                        elif self.SPS01[e[0]].FlagIsMoving and self.SPS01[e[1]].FlagIsMoving: 
+                                                                                                            self.SPS01[e[0]].UpdateStatus()
+                                                                                                            self.SPS01[e[1]].UpdateStatus()
                                                                                                         if self.flag_break_countpause == 1:
                                                                                                             break #counter1
-                                                                                                        elif self.SPS01[0,e[0]].FlagIsDone or self.SPS01[0,e[1]].FlagIsDone:
+                                                                                                        elif self.SPS01[e[0]].FlagIsDone or self.SPS01[e[1]].FlagIsDone:
                                                                                                             for s in range(len(e[0])):
-                                                                                                                if self.SPS01[0,e[s]].FlagIsDone == True:
-                                                                                                                    self.SPS01[0,e[s]].displaymovementstop()
+                                                                                                                if self.SPS01[e[s]].FlagIsDone == True:
+                                                                                                                    self.SPS01[e[s]].displaymovementstop()
                                                                                                                     f=e
                                                                                                                     f[s]=[]
                                                                                                                     fd=ed
@@ -3110,17 +3110,17 @@ class LabsmithBoard:
                                                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                                                     print(comment)
-                                                                                                                                    self.SPS01[0,f[0]].UpdateStatus() #////////////////////////////
+                                                                                                                                    self.SPS01[f[0]].UpdateStatus() #////////////////////////////
                                                                                                                                     self.MulMove3(fd[1],fv[1]);                                    
                                                                                                                                     self.flag_break_countpause = 1
                                                                                                                                     break #count_pause1
                                                                                                                                 time.sleep(scan_rate)
-                                                                                                                        elif self.SPS01[0,f[0]].FlagIsMoving:
-                                                                                                                            self.SPS01[0,f[0]].UpdateStatus()
+                                                                                                                        elif self.SPS01[f[0]].FlagIsMoving:
+                                                                                                                            self.SPS01[f[0]].UpdateStatus()
                                                                                                                         if self.flag_break_countpause == 1:
                                                                                                                             break #counter1
-                                                                                                                        elif self.SPS01[0,f[0]].FlagIsDone: 
-                                                                                                                            self.SPS01[0,f[0]].displaymovementstop()
+                                                                                                                        elif self.SPS01[f[0]].FlagIsDone: 
+                                                                                                                            self.SPS01[f[0]].displaymovementstop()
                                                                                                                             break # counter 7
                                                                                                                         time.sleep(scan_rate)
                                                                                                                     break # s search of first device to be done
@@ -3145,11 +3145,11 @@ class LabsmithBoard:
         ## TODO ##
 
     ## Multiple Movement with stop (at the same time. It allows the stop and pause)
-    def MulMove3(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
+    def MulMove3(self, d1 = None, v1 = None, d2 = None, v2 = None, d3 = None, v3 = None, d4 = None, v4 = None, d5 = None, v5 = None, d6 = None, v6 = None, d7 = None, v7 = None, d8 = None, v8 = None):
         self.flag_break_countpause = 0
         if self.Stop == False:
-            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 ==0:
-                comment='Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).'
+            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 !=0:
+                comment='Error, missing input. Number of inputs has to be even (name of syringes and corresponding flow rates).'
                 with open("OUTPUT.txt", "a") as OUTPUT:
                     OUTPUT.write(comment + "\n")
                     print(comment)
@@ -3159,7 +3159,7 @@ class LabsmithBoard:
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1]) ##it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
                     if len(self.SPS01) == 1:
                         if self.SPS01[i1].FlagIsDone == True:
-                            self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                            self.SPS01[i1].evice.CmdMoveToVolume(v1) 
                             self.SPS01[i1].FlagReady = False
                             self.SPS01[i1].displaymovement()
                             if self.SPS01[i1].FlagIsMoving == True:
@@ -3474,17 +3474,32 @@ class LabsmithBoard:
     ## TODO ##
 
     ## Set Valves2 It allows the pause too
-    def SetValves2(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24):
+    def SetValves2(self, d1 = None,v11 = None,v12 = None,v13 = None, v14 = None, d2 = None, v21 = None, v22 = None, v23 = None, v24 = None):
         self.flag_break_countpause = 0
         if self.Stop == False:
             if v14 != None and d2 == None:## 1 manifold as input
                 i1=self.FindIndexM(d1)
                 self.addlistener('FirstDoneStopPauseM', "listener_firstdoneM", self.CheckFirstDoneStopPauseM, [i1,d1,v11,v12,v13,v14]) ##it listens for the manifold FlagIsDone, so it updtades continuously the state to determine the end of the command. 
-                if i1:
+                if len(self.C4VM) == 1:
                     if self.C4VM[i1].FlagIsDone == True:
                         self.C4VM[i1].device.CmdSetValves(np.int8(v11),np.int8(v12),np.int8(v13),np.int8(v14))                              
                         self.C4VM[i1].displayswitch(v11,v12,v13,v14)
                         if self.C4VM[i1].FlagIsDone == False:
+                            self.notify('FirstDoneStopPauseM')
+            if v24 != None:## 2 manifold as input
+                i1=self.FindIndexM(d1)
+                i2 = self.FindIndexM(d2)
+                self.addlistener('FirstDoneStopPauseM', "listener_firstdoneM", self.CheckFirstDoneStopPauseM, [i1,d1,v11,v12,v13,v14]) ##it listens for the manifold FlagIsDone, so it updtades continuously the state to determine the end of the command. 
+                if len(self.C4VM) == 2:
+                    if self.C4VM[i1].FlagIsDone == True:
+                        self.C4VM[i1].device.CmdSetValves(np.int8(v11),np.int8(v12),np.int8(v13),np.int8(v14))                              
+                        self.C4VM[i1].displayswitch(v11,v12,v13,v14)
+                        if self.C4VM[i1].FlagIsDone == False:
+                            self.notify('FirstDoneStopPauseM')
+                    if self.C4VM[i2].FlagIsDone == True:
+                        self.C4VM[i2].device.CmdSetValves(np.int8(v21),np.int8(v22),np.int8(v23),np.int8(v24))                              
+                        self.C4VM[i2].displayswitch(v21,v22,v23,v24)
+                        if self.C4VM[i2].FlagIsDone == False:
                             self.notify('FirstDoneStopPauseM')
 
     ## Check First Done Stop Pause M
