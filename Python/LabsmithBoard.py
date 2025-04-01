@@ -172,8 +172,11 @@ class LabsmithBoard:
             k.append(self.SPS01[i].name == n)               
         out = np.nonzero(k)[0][0]
         if not k:
-            comment=['Error : ' ,n, ' does not exist. Check name again.']
-            print(comment)
+            with open("OUTPUT.txt", "a") as OUTPUT:
+                comment=f"Error : {n} does not exist. Check name again."
+                OUTPUT.write(comment + "\n")
+                print(comment) 
+        return out
     
     ### FindIndexM (find index of Manifold from name of device)
     def FindIndexM(self, n):
@@ -190,8 +193,8 @@ class LabsmithBoard:
 
     ### Set Multiple FlowRates (at the same time)
     def SetFlowRate(self, d1 = None, f1 = None, d2 = None, f2 = None, d3 = None, f3 = None, d4 = None, f4 = None, d5 = None, f5 = None, d6 = None, f6 = None, d7 = None, f7 = None, d8 = None, f8 = None):
-        if [d1, f1, d2, f2, d3, f3, d4, f4, d5, f5, d6, f6, d7, f7, d8, f8].count(None)%2 ==0:
-                print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
+        if [d1, f1, d2, f2, d3, f3, d4, f4, d5, f5, d6, f6, d7, f7, d8, f8].count(None)%2 !=0:
+                print('Error, missing input. Number of inputs has to be even (name of syringes and corresponding flow rates).')
         else:
             if f1 != None and d2 == None:
                 i1=self.FindIndexS(d1)
@@ -324,7 +327,7 @@ class LabsmithBoard:
     ### Multiple Movement (at the same time)
     def MulMove(self, d1 = None, v1 = None, d2  = None, v2 = None, d3 = None, v3 = None, d4 = None, v4 = None, d5 = None, v5 = None, d6 = None, v6 = None, d7 = None, v7 = None, d8 = None, v8 = None):
         if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 !=0:
-            print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
+            print('Error, missing input. Number of inputs has to be even (name of syringes and corresponding flow rates).')
         else:
             if v1 != None and d2 == None:  # # 1 syringe as input
                 i1=self.FindIndexS(d1) 
