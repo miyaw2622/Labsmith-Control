@@ -3154,7 +3154,7 @@ class LabsmithBoard:
                 if v1 != None and d2 == None: ## 1 syringe as input
                     i1=self.FindIndexS(d1)
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1]) ##it listens for the syringe FlagIsMoving == True, so it updtades continuously the state to determine the end of the command. It results in FlagReady = True again.
-                    if i1:
+                    if len(self.SPS01) == 1:
                         if self.SPS01[i1].FlagIsDone == True:
                             self.SPS01[i1].device.CmdMoveToVolume(v1) 
                             self.SPS01[i1].FlagReady = False
@@ -3165,7 +3165,7 @@ class LabsmithBoard:
                     i1=self.FindIndexS(d1)
                     i2=self.FindIndexS(d2) 
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                    if i1 and i2:
+                    if len(self.SPS01) == 2:
                         if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True:
                             self.SPS01[i1].device.CmdMoveToVolume(v1)
                             self.SPS01[i2].device.CmdMoveToVolume(v2)
@@ -3180,7 +3180,7 @@ class LabsmithBoard:
                     i2=self.FindIndexS(d2)
                     i3=self.FindIndexS(d3)
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                    if i1 and i2 and i3:
+                    if len(self.SPS01) == 3:
                         self.SPS01[i1].device.CmdMoveToVolume(v1)
                         self.SPS01[i2].device.CmdMoveToVolume(v2)
                         self.SPS01[i3].device.CmdMoveToVolume(v3)
@@ -3198,7 +3198,7 @@ class LabsmithBoard:
                     i3=self.FindIndexS(d3)
                     i4=self.FindIndexS(d4)
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                    if i1 and i2 and i3 and i4:
+                    if len(self.SPS01) == 4:
                         self.SPS01[i1].device.CmdMoveToVolume(v1)
                         self.SPS01[i2].device.CmdMoveToVolume(v2)
                         self.SPS01[i3].device.CmdMoveToVolume(v3)
@@ -3220,7 +3220,7 @@ class LabsmithBoard:
                     i4=self.FindIndexS(d4)
                     i5=self.FindIndexS(d5)
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4,i5,d5,v5]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                    if i1 and i2 and i3 and i4 and i5:
+                    if len(self.SPS01) == 5:
                         self.SPS01[i1].device.CmdMoveToVolume(v1)
                         self.SPS01[i2].device.CmdMoveToVolume(v2)
                         self.SPS01[i3].device.CmdMoveToVolume(v3)
@@ -3246,7 +3246,7 @@ class LabsmithBoard:
                     i5=self.FindIndexS(d5)
                     i6=self.FindIndexS(d6)
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4,i5,d5,v5,i6,d6,v6]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                    if i1 and i2 and i3 and i4 and i5 and i6:
+                    if len(self.SPS01) == 6:
                         self.SPS01[i1].device.CmdMoveToVolume(v1)
                         self.SPS01[i2].device.CmdMoveToVolume(v2)
                         self.SPS01[i3].device.CmdMoveToVolume(v3)
@@ -3276,7 +3276,7 @@ class LabsmithBoard:
                     i6=self.FindIndexS(d6)
                     i7=self.FindIndexS(d7)
                     self.addlistener('FirstDoneStopPause', "listener_firstdonepause", self.CheckFirstDoneStopPause, [i1,d1,v1,i2,d2,v2,i3,d3,v3,i4,d4,v4,i5,d5,v5,i6,d6,v6,i7,d7,v7]) ##it listens for the syringes FlagIsMoving == True, so it updtades continuously the states to determine the end of the commands. It results in FlagReady = True again.
-                    if i1 and i2 and i3 and i4 and i5 and i6 and i7:
+                    if len(self.SPS01) == 7:
                         self.SPS01[i1].device.CmdMoveToVolume(v1)
                         self.SPS01[i2].device.CmdMoveToVolume(v2)
                         self.SPS01[i3].device.CmdMoveToVolume(v3)
@@ -3334,12 +3334,12 @@ class LabsmithBoard:
 
     ## Listener Function : Display the first device to be done and Stop and Pause and chech the WAIT (called in MoveWait)
     def CheckFirstDoneStopPauseWait(self,args):
-        if len(args) == 8:
-            t=args[2]
-            i1=args[3]
-            d1=args[4]
-            v1=args[5]
-            ts=args[6]
+        if len(args) == 5:
+            t=args[0]
+            i1=args[1]
+            d1=args[2]
+            v1=args[3]
+            ts=args[4]
             var_not_disp=0
             if self.SPS01[i1].FlagIsMoving == True:
                 scan_rate=0.1
@@ -3386,18 +3386,18 @@ class LabsmithBoard:
                         self.flag_a = 0
                         self.flag_b = 0
 
-        elif len(args) == 11:
-            t=args[2]
-            i1=args[3]
-            d1=args[4]
-            v1=args[5]
-            i2=args[6]
-            d2=args[7]
-            v2=args[8]
+        elif len(args) == 8:
+            t=args[0]
+            i1=args[1]
+            d1=args[2]
+            v1=args[3]
+            i2=args[4]
+            d2=args[5]
+            v2=args[6]
             i=[i1, i2]
             d=[d1, d2]
             v=[v1, v2]
-            ts=args[9]
+            ts=args[7]
             var_not_disp = 0
             if self.SPS01[ i1].FlagIsMoving == True and self.SPS01[ i2].FlagIsMoving == True:
                 scan_rate=0.1
@@ -3486,13 +3486,13 @@ class LabsmithBoard:
 
     ## Check First Done Stop Pause M
     def CheckFirstDoneStopPauseM(self, *args):
-        if len(args) == 7: ## only one manifold in motion (=numb input + self + 2more input (source and event))  
-            i1=args[2] ##vararging doesn't include the self, so its size is nargin-1. The index is the third.
-            d1=args[3]
-            v11=args[4]
-            v12=args[5]
-            v13=args[6]
-            v14=args[7]
+        if len(args) == 6: ## only one manifold in motion (=numb input + self + 2more input (source and event))  
+            i1=args[0] ##vararging doesn't include the self, so its size is nargin-1. The index is the third.
+            d1=args[1]
+            v11=args[2]
+            v12=args[3]
+            v13=args[4]
+            v14=args[5]
             if self.C4VM[i1].FlagIsDone == False:
                 scan_rate=0.1 ##the scan rate of the counter
                 target=(48)*60*60#scan_rate ##this is the final time of the counter. It is equal to max 48 hours                   
