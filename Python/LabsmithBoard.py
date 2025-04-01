@@ -87,7 +87,7 @@ class LabsmithBoard:
                 self.isDisconnected = True
                 self.ClockStopConnection = datetime.now()
                 com= f"Disconnected on {self.ClockStartConnection}"
-                namefile=f"OUTPUT_{self.ClockStartConnection.strftime('%y_%m_%d_%H_%M_%S')}.txt"
+                namefile=f"OUTPUT_{self.ClockStartConnection.strftime('#y_#m_#d_#H_#M_#S')}.txt"
                 shutil.copy('OUTPUT.txt', namefile)
             else:
                 com='Error, still connected'
@@ -138,7 +138,7 @@ class LabsmithBoard:
                 self.C4VM[i].device.CmdStop()
                 self.C4VM[i].UpdateStatus()
             self.ClockStop = datetime.now()
-            comment = f"{self.ClockStop.strftime('%X')} Interface stopped by the user."
+            comment = f"{self.ClockStop.strftime('#X')} Interface stopped by the user."
             with open("OUTPUT.txt", "a") as OUTPUT:
                 OUTPUT.write(comment + "\n")
                 print(comment)
@@ -190,7 +190,7 @@ class LabsmithBoard:
 
     ### Set Multiple FlowRates (at the same time)
     def SetFlowRate(self, d1 = None, f1 = None, d2 = None, f2 = None, d3 = None, f3 = None, d4 = None, f4 = None, d5 = None, f5 = None, d6 = None, f6 = None, d7 = None, f7 = None, d8 = None, f8 = None):
-        if [d1, f1, d2, f2, d3, f3, d4, f4, d5, f5, d6, f6, d7, f7, d8, f8].count(None)%2 ==0:
+        if [d1, f1, d2, f2, d3, f3, d4, f4, d5, f5, d6, f6, d7, f7, d8, f8].count(None)#2 ==0:
                 print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
         else:
             if f1 != None and d2 == None:
@@ -323,7 +323,7 @@ class LabsmithBoard:
 
     ### Multiple Movement (at the same time)
     def MulMove(self, d1 = None, v1 = None, d2  = None, v2 = None, d3 = None, v3 = None, d4 = None, v4 = None, d5 = None, v5 = None, d6 = None, v6 = None, d7 = None, v7 = None, d8 = None, v8 = None):
-        if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 !=0:
+        if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)#2 !=0:
             print('Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).')
         else:
             if v1 != None and d2 == None:  # # 1 syringe as input
@@ -519,7 +519,7 @@ class LabsmithBoard:
     ## Multiple Movement with stop (at the same time. It allows the stop)
     def MulMove2(self, d1 = None, v1= None, d2= None, v2= None, d3= None, v3= None, d4= None, v4= None, d5= None, v5= None, d6= None, v6= None, d7= None, v7= None, d8= None, v8= None):
         if self.Stop == False:
-            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 !=0:
+            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)#2 !=0:
                 print('Error, missing input. Number of inputs has to be even (name of syringes and corresponding flow rates).')
             else:
                 if v1 != None and d2 == None: ## 1 syringe as input
@@ -1816,8 +1816,8 @@ class LabsmithBoard:
     ##  Set Valves
     def SetValves(self,d1,v11,v12,v13,v14,d2,v21,v22,v23,v24): 
         if self.Stop == False:
-            if [d1,v11,v12,v13,v14,d2,v21,v22,v23,v24].count(None)%2 !=0:
-                print('Error, missing input. Number of inputs has to be even (interface, name of manifold and the four corresponding valve entries).')
+            if [d1,v11,v12,v13,v14,d2,v21,v22,v23,v24].count(None)#2 ==0:
+                print('Error, missing input. Number of inputs has to be odd (name of manifold and the four corresponding valve entries).')
             else:
                 if v14 != None and d2 == None: ## 1 manifold as input
                     i1=self.FindIndexM(d1)
@@ -1840,6 +1840,8 @@ class LabsmithBoard:
                             self.C4VM[i2].displayswitch(v21,v22,v23,v24)  
                             if self.C4VM[i1].FlagIsDone == False and self.C4VM[i2].FlagIsDone == False:
                                 self.notify('FirstDoneStopM')
+                else:
+                    print("Error, wrong number of inputs.")
 
     ## Check First Done Stop M
     def CheckFirstDoneStopM(self, *args):
@@ -1902,17 +1904,17 @@ class LabsmithBoard:
             self.C4VM[i].device.CmdStop()
             self.C4VM[i].UpdateStatus()
         self.ClockStop = datetime.now()
-        comment=f"{self.ClockStop.strftime('%X')} Interface paused by the user."
+        comment=f"{self.ClockStop.strftime('#X')} Interface paused by the user."
         with open("OUTPUT.txt", "a") as OUTPUT:
             OUTPUT.write(comment + "\n")
             print(comment)
 
     ## Listener Function : Display the first device to be done and Stop and Pause (called in MulMove3)
     def CheckFirstDoneStopPause(self,*args):
-        if len(args) == 6: #only one syringe in motion (=numb input + obj + 2more input (source and event))   
-            i1=args[2] #vararging doesn't include the obj, so its size is nargin-1. The index is the last.
-            d1=args[3]
-            v1=args[4]
+        if len(args) == 3: #only one syringe in motion (=numb input + obj + 2more input (source and event))   
+            i1=args[0] #vararging doesn't include the obj, so its size is nargin-1. The index is the last.
+            d1=args[1]
+            v1=args[2]
             if self.SPS01[0,i1].FlagIsMoving == True:  
                 scan_rate=0.1 #the scan rate of the counter
                 target=(48)*60*60 #/scan_rate; #this is the final time of the counter. It is equal to max 48 hours                   
@@ -1927,7 +1929,7 @@ class LabsmithBoard:
                                 break #count_pause1
                             elif self.Resume == True:
                                 self.ClockResume = datetime.now()
-                                comment=f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                comment=f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                 with open("OUTPUT.txt","a") as OUTPUT:
                                     OUTPUT.write(comment +"\n")
                                     print(comment) 
@@ -1944,13 +1946,13 @@ class LabsmithBoard:
                         self.SPS01[0,i1].displaymovementstop()
                         break #counter1
                     time.sleep(scan_rate)
-        elif nargin == 9: # 2 syringes
-            i1=args[2] 
-            d1=args[3]
-            v1=args[4]
-            i2=args[5]
-            d2=args[6]
-            v2=args[7]
+        elif len(args) == 6: # 2 syringes
+            i1=args[0] 
+            d1=args[1]
+            v1=args[2]
+            i2=args[3]
+            d2=args[4]
+            v2=args[5]
             i=[i1, i2]
             d=[d1, d2]
             v=[v1, v2]
@@ -1968,7 +1970,7 @@ class LabsmithBoard:
                                 break #count_pause1
                             elif self.Resume == True:
                                 self.ClockResume = datetime.now
-                                comment=f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                comment=f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                 with open("OUTPUT.txt","a") as OUTPUT:
                                     OUTPUT.write(comment + "\n")
                                 print(comment)
@@ -2004,7 +2006,7 @@ class LabsmithBoard:
                                                 break #count_pause1
                                             elif self.Resume == True:
                                                 self.ClockResume = datetime.now()
-                                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                     OUTPUT.write(comment + "\n")
                                                 print(comment)
@@ -2025,16 +2027,16 @@ class LabsmithBoard:
                         break # counter 1
                     time.sleep(scan_rate)            
                     
-        elif nargin == 12: # 3 syringes
-            i1=args[2] 
-            d1=args[3]
-            v1=args[4]
-            i2=args[5]
-            d2=args[6]
-            v2=args[7]
-            i3=args[8]
-            d3=args[9]
-            v3=args[10]
+        elif len(args) == 9: # 3 syringes
+            i1=args[0] 
+            d1=args[1]
+            v1=args[2]
+            i2=args[3]
+            d2=args[4]
+            v2=args[5]
+            i3=args[6]
+            d3=args[7]
+            v3=args[8]
             i=[i1, i2, i3]
             d=[d1, d2, d3]
             v=[v1, v2, v3]
@@ -2052,7 +2054,7 @@ class LabsmithBoard:
                                 break #count_pause1
                             elif self.Resume == True:
                                 self.ClockResume = datetime.now()
-                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                     OUTPUT.write(comment + "\n")
                                 print(comment) 
@@ -2090,7 +2092,7 @@ class LabsmithBoard:
                                                 break #count_pause1
                                             elif self.Resume == True:
                                                 self.ClockResume = datetime.now()
-                                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                     OUTPUT.write(comment + "\n")
                                                 print(comment)
@@ -2126,7 +2128,7 @@ class LabsmithBoard:
                                                                 break #count_pause1
                                                             elif self.Resume == True:
                                                                 self.ClockResume = datetime.now()
-                                                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                                     OUTPUT.write(comment + "\n")
                                                                 print(comment)
@@ -2151,19 +2153,19 @@ class LabsmithBoard:
                     time.sleep(scan_rate)
 
 
-        elif len(args) == 15: # 4 syringes
-            i1=args[2]
-            d1=args[3]
-            v1=args[4]
-            i2=args[5]
-            d2=args[6]
-            v2=args[7]
-            i3=args[8]
-            d3=args[9]
-            v3=args[10]
-            i4=args[11]
-            d4=args[12]
-            v4=args[13]
+        elif len(args) == 12: # 4 syringes
+            i1=args[0]
+            d1=args[1]
+            v1=args[2]
+            i2=args[3]
+            d2=args[4]
+            v2=args[5]
+            i3=args[6]
+            d3=args[7]
+            v3=args[8]
+            i4=args[9]
+            d4=args[10]
+            v4=args[11]
             i=[i1, i2, i3, i4]
             d=[d1, d2, d3, d4]
             v=[v1, v2, v3, v4]
@@ -2181,7 +2183,7 @@ class LabsmithBoard:
                                 break #count_pause1
                             elif self.Resume == True:
                                 self.ClockResume = datetime.now()
-                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                     OUTPUT.write(comment + "\n")
                                 print(comment)
@@ -2223,7 +2225,7 @@ class LabsmithBoard:
                                                 break #count_pause1
                                             elif self.Resume == True:
                                                 self.ClockResume = datetime.now()
-                                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                     OUTPUT.write(comment + "\n")
                                                 print(comment)
@@ -2263,7 +2265,7 @@ class LabsmithBoard:
                                                                 break #count_pause1
                                                             elif self.Resume == True:
                                                                 self.ClockResume = datetime.now()
-                                                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                                     OUTPUT.write(comment + "\n")
                                                                 print(comment)
@@ -2299,7 +2301,7 @@ class LabsmithBoard:
                                                                                 break #count_pause1
                                                                             elif self.Resume == True:
                                                                                 self.ClockResume = datetime.now()
-                                                                                comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                 with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                     OUTPUT.write(comment + "\n")
                                                                                 print(comment)
@@ -2327,22 +2329,22 @@ class LabsmithBoard:
                     time.sleep(scan_rate)
                     
 
-            elif len(args) == 18: # 5 syringes
-                i1=args[2] 
-                d1=args[3]
-                v1=args[4]
-                i2=args[5]
-                d2=args[6]
-                v2=args[7]
-                i3=args[8]
-                d3=args[9]
-                v3=args[10]
-                i4=args[11]
-                d4=args[12]
-                v4=args[13]
-                i5=args[14]
-                d5=args[15]
-                v5=args[16]
+            elif len(args) == 15: # 5 syringes
+                i1=args[0] 
+                d1=args[1]
+                v1=args[2]
+                i2=args[3]
+                d2=args[4]
+                v2=args[5]
+                i3=args[6]
+                d3=args[7]
+                v3=args[8]
+                i4=args[9]
+                d4=args[10]
+                v4=args[11]
+                i5=args[12]
+                d5=args[13]
+                v5=args[14]
                 i=[i1, i2, i3, i4, i5]
                 d=[d1, d2, d3, d4, d5]
                 v=[v1, v2, v3, v4, v5]
@@ -2360,7 +2362,7 @@ class LabsmithBoard:
                                     break #count_pause1
                                 elif self.Resume == True:
                                     self.ClockResume = datetime.now()
-                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                         OUTPUT.write(comment + "\n")
                                     print(comment)
@@ -2402,7 +2404,7 @@ class LabsmithBoard:
                                                     break #count_pause1
                                                 elif self.Resume == True:
                                                     self.ClockResume = datetime.now()
-                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                         OUTPUT.write(comment + "\n")
                                                     print(comment)
@@ -2442,7 +2444,7 @@ class LabsmithBoard:
                                                                     break #count_pause1
                                                                 elif self.Resume == True:
                                                                     self.ClockResume = datetime.now()
-                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                         OUTPUT.write(comment + "\n")
                                                                     print(comment)
@@ -2480,7 +2482,7 @@ class LabsmithBoard:
                                                                                     break #count_pause1
                                                                                 elif self.Resume == True:
                                                                                     self.ClockResume = datetime.now()
-                                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                         OUTPUT.write(comment + "\n")
                                                                                     print(comment)
@@ -2516,7 +2518,7 @@ class LabsmithBoard:
                                                                                                     break #count_pause1
                                                                                                 elif self.Resume == True:
                                                                                                     self.ClockResume = datetime.now()
-                                                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                     print(comment)
@@ -2546,25 +2548,25 @@ class LabsmithBoard:
                             break # counter 1                      
                         time.sleep(scan_rate)      
                                 
-            elif len(args) == 21: # 6 syringes
-                i1=args[2] 
-                d1=args[3]
-                v1=args[4]
-                i2=args[5]
-                d2=args[6]
-                v2=args[7]
-                i3=args[8]
-                d3=args[9]
-                v3=args[10]
-                i4=args[11]
-                d4=args[12]
-                v4=args[13]
-                i5=args[14]
-                d5=args[15]
-                v5=args[16]
-                i6=args[17]
-                d6=args[18]
-                v6=args[19]
+            elif len(args) == 18: # 6 syringes
+                i1=args[0] 
+                d1=args[1]
+                v1=args[2]
+                i2=args[3]
+                d2=args[4]
+                v2=args[5]
+                i3=args[6]
+                d3=args[7]
+                v3=args[8]
+                i4=args[9]
+                d4=args[10]
+                v4=args[11]
+                i5=args[12]
+                d5=args[13]
+                v5=args[14]
+                i6=args[15]
+                d6=args[16]
+                v6=args[17]
                 i=[i1, i2, i3, i4, i5, i6]
                 d=[d1, d2, d3, d4, d5, d6]
                 v=[v1, v2, v3, v4, v5, v6]
@@ -2582,7 +2584,7 @@ class LabsmithBoard:
                                     break #count_pause1
                                 elif self.Resume == True:
                                     self.ClockResume = datetime.now()
-                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                         OUTPUT.write(comment + "\n")
                                     print(comment)
@@ -2626,7 +2628,7 @@ class LabsmithBoard:
                                                     break #count_pause1
                                                 elif self.Resume == True:
                                                     self.ClockResume = datetime.now()
-                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                         OUTPUT.write(comment + "\n")
                                                     print(comment)
@@ -2668,7 +2670,7 @@ class LabsmithBoard:
                                                                     break #count_pause1
                                                                 elif self.Resume == True:
                                                                     self.ClockResume = datetime.now()
-                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                         OUTPUT.write(comment + "\n")
                                                                     print(comment)
@@ -2708,7 +2710,7 @@ class LabsmithBoard:
                                                                                     break #count_pause1
                                                                                 elif self.Resume == True:
                                                                                     self.ClockResume = datetime.now()
-                                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                         OUTPUT.write(comment + "\n")
                                                                                     print(comment)
@@ -2746,7 +2748,7 @@ class LabsmithBoard:
                                                                                                     break #count_pause1
                                                                                                 elif self.Resume == True:
                                                                                                     self.ClockResume = datetime.now()
-                                                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                     print(comment)
@@ -2782,7 +2784,7 @@ class LabsmithBoard:
                                                                                                                     break #count_pause1
                                                                                                                 elif self.Resume == True:
                                                                                                                     self.ClockResume = datetime.now()
-                                                                                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                                         OUTPUT.write(comment + "\n")
                                                                                                                     print(comment)
@@ -2815,28 +2817,28 @@ class LabsmithBoard:
                             break # counter 1
                         time.sleep(scan_rate)  
 
-            elif len(args) == 24: #7 syringes
-                i1=args[2]
-                d1=args[3]
-                v1=args[4]
-                i2=args[5]
-                d2=args[6]
-                v2=args[7]
-                i3=args[8]
-                d3=args[9]
-                v3=args[10]
-                i4=args[11]
-                d4=args[12]
-                v4=args[13]
-                i5=args[14]
-                d5=args[15]
-                v5=args[16]
-                i6=args[17]
-                d6=args[18]
-                v6=args[19]
-                i7=args[20]
-                d7=args[21]
-                v7=args[22]
+            elif len(args) == 21: #7 syringes
+                i1=args[0]
+                d1=args[1]
+                v1=args[2]
+                i2=args[3]
+                d2=args[4]
+                v2=args[5]
+                i3=args[6]
+                d3=args[7]
+                v3=args[8]
+                i4=args[9]
+                d4=args[10]
+                v4=args[11]
+                i5=args[12]
+                d5=args[13]
+                v5=args[14]
+                i6=args[15]
+                d6=args[16]
+                v6=args[17]
+                i7=args[18]
+                d7=args[19]
+                v7=args[20]
                 i=[i1, i2, i3, i4, i5, i6, i7]
                 d=[d1, d2, d3, d4, d5, d6, d7]
                 v=[v1, v2, v3, v4, v5, v6, v7]
@@ -2854,7 +2856,7 @@ class LabsmithBoard:
                                     break #count_pause1
                                 elif self.Resume == True:
                                     self.ClockResume = clock
-                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                         OUTPUT.write(comment + "\n")
                                     print(comment)
@@ -2900,7 +2902,7 @@ class LabsmithBoard:
                                                     break #count_pause1
                                                 elif self.Resume == True:
                                                     self.ClockResume = clock
-                                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                     with open("OUTPUT.txt", "a") as OUTPUT:
                                                         OUTPUT.write(comment + "\n")
                                                     print(comment)
@@ -2944,7 +2946,7 @@ class LabsmithBoard:
                                                             break #count_pause1
                                                         elif self.Resume == True:
                                                             self.ClockResume = clock
-                                                            comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                            comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                             with open("OUTPUT.txt", "a") as OUTPUT:
                                                                 OUTPUT.write(comment + "\n")
                                                             print(comment)
@@ -2986,7 +2988,7 @@ class LabsmithBoard:
                                                                             break #count_pause1
                                                                         elif self.Resume == True:
                                                                             self.ClockResume = clock
-                                                                            comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                            comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                             with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                 OUTPUT.write(comment + "\n")
                                                                             print(comment)
@@ -3026,7 +3028,7 @@ class LabsmithBoard:
                                                                                             break #count_pause1
                                                                                         elif self.Resume == True:
                                                                                             self.ClockResume = clock
-                                                                                            comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                            comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                             with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                 OUTPUT.write(comment + "\n")
                                                                                             print(comment)
@@ -3064,7 +3066,7 @@ class LabsmithBoard:
                                                                                                             break #count_pause1
                                                                                                         elif self.Resume == True:
                                                                                                             self.ClockResume = clock
-                                                                                                            comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                                            comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                                             with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                                 OUTPUT.write(comment + "\n")
                                                                                                             print(comment)
@@ -3101,7 +3103,7 @@ class LabsmithBoard:
                                                                                                                             break #count_pause1
                                                                                                                         elif self.Resume == True:
                                                                                                                             self.ClockResume = clock
-                                                                                                                            comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                                                                                                            comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                                                                                                             with open("OUTPUT.txt", "a") as OUTPUT:
                                                                                                                                 OUTPUT.write(comment + "\n")
                                                                                                                             print(comment)
@@ -3113,30 +3115,50 @@ class LabsmithBoard:
                                                                                                                 elif self.SPS01[0,f[0]].FlagIsMoving:
                                                                                                                     self.SPS01[0,f[0]].UpdateStatus()
                                                                                                                 if self.flag_break_countpause == 1:
-                                                                                                                break #counter1
-                                                                                                        elif self.SPS01[0,f[0]].FlagIsDone: 
+                                                                                                                    break #counter1
+                                                                                                                elif self.SPS01[0,f[0]].FlagIsDone: 
                                                                                                                     self.SPS01[0,f[0]].displaymovementstop()
                                                                                                                     break # counter 7
-                                                                                                                time.sleep(scan_rate) 
+                                                                                                                time.sleep(scan_rate)
                                                                                                             break # s search of first device to be done
-                                                                                                    break # counter 6 
-                                                                                                time.sleep(scan_rate)   
-                                                                                            break # r search of first device to be done
+                                                                                                    break # counter 6
+                                                                                                time.sleep(scan_rate)  
+                                                                                            break # r search of first device to be done9999999999sa
+                                                                                    end
                                                                                     break # counter 5
-                                                                                time.sleep(scan_rate)
+                                                                                end  
+                                                                                pause(scan_rate)
+                                                                            end  
                                                                             break # q search of first device to be done
-                                                                    break # counter 4     
-                                                                time.sleep(scan_rate)  
-                                                                    break # p search of first device to be done
-                                                    break # counter 3                                                       
-                                                time.sleep(scan_rate)
+                                                                        end
+                                                                    end
+                                                                    break # counter 4
+                                                                end      
+                                                                pause(scan_rate)
+                                                            end    
+                                                            break # p search of first device to be done
+                                                        end
+                                                    end
+                                                    break # counter 3
+                                                end                                                        
+                                                pause(scan_rate)
+                                            end  
                                             break # k search of first device to be done
-                                    break # counter 2                                    
-                                time.sleep(scan_rate) 
+                                        end
+                                    end
+                                    break # counter 2
+                                end                                        
+                                pause(scan_rate)
+                            end  
                             break # j search of first device to be done
-                    break # counter 1                      
-                time.sleep(scan_rate)
-                            
+                        end
+                    end
+                    break # counter 1
+                end                        
+                pause(scan_rate)
+            end
+        end 
+                    
             pass
         ## TODO ##
 
@@ -3144,7 +3166,7 @@ class LabsmithBoard:
     def MulMove3(self,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
         self.flag_break_countpause = 0
         if self.Stop == False:
-            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 ==0:
+            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)#2 ==0:
                 comment='Error, missing input. Number of inputs has to be odd (interface, name of syringes and corresponding flow rates).'
                 with open("OUTPUT.txt", "a") as OUTPUT:
                     OUTPUT.write(comment + "\n")
@@ -3305,7 +3327,7 @@ class LabsmithBoard:
     def displaymovementstopwait(self,t):
         self.ClockStop = datetime.now()
         with open("OUTPUT.txt", "a") as OUTPUT:
-            comment = f"{self.ClockStop.strftime('%X')} Step done after waiting for {t} seconds."
+            comment = f"{self.ClockStop.strftime('#X')} Step done after waiting for {t} seconds."
             OUTPUT.write(comment + "\n")
             print(comment)
 
@@ -3358,7 +3380,7 @@ class LabsmithBoard:
                             elif self.Resume == True:
                                 self.ClockResume = datetime.now()
                                 with open("OUTPUT.txt", "a") as OUTPUT:
-                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                     OUTPUT.write(comment + "\n")
                                     print(comment)
                                 self.SPS01[i1].UpdateStatus()
@@ -3416,7 +3438,7 @@ class LabsmithBoard:
                             elif self.Resume == True:
                                 self.ClockResume = datetime.now()
                                 with open("OUTPUT.txt", "a") as OUTPUT:
-                                    comment = f"{self.ClockResume.strftime('%X')} Interface resumed by the user."
+                                    comment = f"{self.ClockResume.strftime('#X')} Interface resumed by the user."
                                     OUTPUT.write(comment + "\n")
                                     print(comment)
                                 self.SPS01[i1].UpdateStatus()
@@ -3506,7 +3528,7 @@ class LabsmithBoard:
                                 break
                             elif self.Resume == True:
                                 with open("OUTPUT.txt", "a") as OUTPUT:
-                                    comment = f"{self.ClockStop.strftime('%X')}  Interface resumed by the user."
+                                    comment = f"{self.ClockStop.strftime('#X')}  Interface resumed by the user."
                                     OUTPUT.write(comment + "\n")
                                     print(comment)
                                 self.SetValves2(d1,v11,v12,v13,v14)                                    
