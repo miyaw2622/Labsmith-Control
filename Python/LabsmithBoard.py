@@ -3330,9 +3330,81 @@ class LabsmithBoard:
             self.C4VM[i].UpdateStatus()
 
     ## Wait Movement
-    def MoveWait(self,time,d1,v1,d2,v2,d3,v3,d4,v4,d5,v5,d6,v6,d7,v7,d8,v8):
-        pass
-    ## TODO ##
+    def MoveWait(self,time,d1 = None, v1 = None, d2 = None, v2 = None, d3 = None, v3 = None, d4 = None, v4 = None, d5 = None, v5 = None, d6 = None, v6 = None, d7 = None, v7 = None, d8 = None, v8 = None):
+        t_s=datetime.now()
+        self.flag_break_countpause = 0
+        self.flag_break_stop = 0
+        if self.Stop == False:
+            if [d1, v1, d2, v2, d3, v3, d4, v4, d5, v5, d6, v6, d7, v7, d8, v8].count(None)%2 != 0:
+                comment="Error, missing input. Number of inputs has to be even (time, name of syringes and corresponding flow rates)."
+                with open("OUTPUT.txt","a") as OUTPUT:
+                    OUTPUT.write(comment +"\n")
+                    print(comment) 
+            else:
+                if v1 != None and d2 == None: ## 1 syringe as input
+                    i1=self.FindIndexS(d1)
+                    self.addlistener('FirstDoneStopPauseWait', "listener_firstdonepausewait", self.CheckFirstDoneStopPauseWait, [time, i1,d1,v1,t_s]) ##it listens for the syringe FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. It results in FlagReady = true again.
+                    if len(self.SPS01) == 1:
+                        if self.SPS01[i1].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1) 
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i1].displaymovement()                              
+                            if self.SPS01[i1].FlagIsMoving == True:
+                                self.notify('FirstDoneStopPauseWait')
+                elif v2 != None and d3 == None: ## 2 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    self.addlistener('FirstDoneStopPauseWait', "listener_firstdonepausewait", self.CheckFirstDoneStopPauseWait, [time,i1,d1,v1,i2,d2,v2,t_s]) ##it listens for the syringe FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. It results in FlagReady = true again.
+                    if len(self.SPS01) == 2:
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1)
+                            self.SPS01[i2].device.CmdMoveToVolume(v2)
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i2].FlagReady = False
+                            self.SPS01[i1].displaymovement()
+                            self.SPS01[i2].displaymovement()  
+                            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True:
+                                self.notify('FirstDoneStopPauseWait')
+                elif v3 != None and d4 == None: ## 3 syringes as input
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    i3=self.FindIndexS(d3)
+                    self.addlistener('FirstDoneStopPauseWait', "listener_firstdonepausewait", self.CheckFirstDoneStopPauseWait, [time,i1,d1,v1,i2,d2,v2,d3,v3,t_s]) ##it listens for the syringe FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. It results in FlagReady = true again.
+                    if len(self.SPS01) == 3:
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1)
+                            self.SPS01[i2].device.CmdMoveToVolume(v2)
+                            self.SPS01[i3].device.CmdMoveToVolume(v3)
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i2].FlagReady = False
+                            self.SPS01[i3].FlagReady = False
+                            self.SPS01[i1].displaymovement()
+                            self.SPS01[i2].displaymovement()
+                            self.SPS01[i3].displaymovement()
+                            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True:
+                                self.notify('FirstDoneStopPauseWait')
+        elif v4 != None and d5 == None: ## 4 syringes as input:
+                    i1=self.FindIndexS(d1)
+                    i2=self.FindIndexS(d2)
+                    i3=self.FindIndexS(d3)
+                    i4=self.FindIndexS(d4)
+                    self.addlistener('FirstDoneStopPauseWait', "listener_firstdonepausewait", self.CheckFirstDoneStopPauseWait, [time,i1,d1,v1,i2,d2,v2,d3,v3,d4,v4,t_s]) ##it listens for the syringe FlagIsMoving == true, so it updtades continuously the state to determine the end of the command. It results in FlagReady = true again.
+                    if len(self.SPS01) == 4:
+                        if self.SPS01[i1].FlagIsDone == True and self.SPS01[i2].FlagIsDone == True and self.SPS01[i3].FlagIsDone == True and self.SPS01[i4].FlagIsDone == True:
+                            self.SPS01[i1].device.CmdMoveToVolume(v1)
+                            self.SPS01[i2].device.CmdMoveToVolume(v2)
+                            self.SPS01[i3].device.CmdMoveToVolume(v3)
+                            self.SPS01[i4].device.CmdMoveToVolume(v4)
+                            self.SPS01[i1].FlagReady = False
+                            self.SPS01[i2].FlagReady = False
+                            self.SPS01[i3].FlagReady = False
+                            self.SPS01[i4].FlagReady = False
+                            self.SPS01[i1].displaymovement()
+                            self.SPS01[i2].displaymovement()
+                            self.SPS01[i3].displaymovement()                                
+                            self.SPS01[i4].displaymovement()
+                            if self.SPS01[i1].FlagIsMoving == True and self.SPS01[i2].FlagIsMoving == True and self.SPS01[i3].FlagIsMoving == True and self.SPS01[i4].FlagIsMoving == True:
+                                self.notify('FirstDoneStopPauseWait')
 
     ## Listener Function : Display the first device to be done and Stop and Pause and chech the WAIT (called in MoveWait)
     def CheckFirstDoneStopPauseWait(self,args):
@@ -3353,7 +3425,8 @@ class LabsmithBoard:
                         break
                     elif self.Pause == True:
                         self.PauseBoard()
-                        te = toc(ts)
+                        te = datetime.now()
+                        te = te - ts
                         difftime = t - te
                         for count_pause1 in range(target):
                             if self.Stop == True:
@@ -3411,7 +3484,8 @@ class LabsmithBoard:
                         break
                     elif self.Pause == True:
                         self.PauseBoard
-                        te=toc(ts)
+                        te = datetime.now()
+                        te=te - ts
                         diff_time=t-te
                         for count_pause1 in range(target):
                             if self.Stop == True:
@@ -3439,9 +3513,10 @@ class LabsmithBoard:
                         for j in len(i):
                             if self.SPS01[i[j]].FlagIsDone == True:
                                 self.SPS01[i[j]].displaymovementstop()
-                                te=toc(ts)
+                                te = datetime.now()
+                                te = te - ts
                                 t1=(t-te)
-                                ts=tic
+                                ts=datetime.now()
                                 a=i
                                 a[j]=[]
                                 ad=d
@@ -3455,7 +3530,8 @@ class LabsmithBoard:
                                         break
                                     elif self.Pause == True:
                                         self.PauseBoard
-                                        te=toc(ts)
+                                        te = datetime.now()
+                                        te = te - ts
                                         diff_time=t-te
                                         for count_pause1 in range(target):
                                             if self.Stop == True:
@@ -3463,15 +3539,6 @@ class LabsmithBoard:
                                             elif self.Resume == True:
                                                 self.ClockResume = datetime.now()
                                             
-                        
-                    
-                    
-            
-                        
-            
-        pass
-    ## TODO ##
-
     ## Set Valves2 It allows the pause too
     def SetValves2(self, d1 = None,v11 = None,v12 = None,v13 = None, v14 = None, d2 = None, v21 = None, v22 = None, v23 = None, v24 = None):
         self.flag_break_countpause = 0
