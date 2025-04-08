@@ -114,7 +114,7 @@ class CSyringe:
     def displaymovementstop(self):
         self.ClockStopCmd = datetime.now()
         with open("OUTPUT.txt", "a") as OUTPUT:
-                comment = f"{self.ClockStartCmd.strftime('%X')} Syringe {self.name} is done."
+                comment = f"{self.ClockStopCmd.strftime('%X')} Syringe {self.name} is done."
                 OUTPUT.write(comment + "\n")
                 print(comment)
         self.FlagReady = True
